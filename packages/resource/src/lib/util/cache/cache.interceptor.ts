@@ -25,7 +25,7 @@ export function setCacheContext(
   ctx = new HttpContext(),
   opt: Omit<CacheEntryOptions, 'cache' | 'key'> & {
     key: Required<CacheEntryOptions>['key'];
-  }
+  },
 ) {
   return ctx.set(CACHE_CONTEXT, { ...opt, cache: true });
 }
@@ -44,7 +44,7 @@ type ResolvedCacheControl = {
 };
 
 function parseCacheControlHeader(
-  req: HttpResponse<unknown>
+  req: HttpResponse<unknown>,
 ): ResolvedCacheControl {
   const header = req.headers.get('Cache-Control');
 
@@ -80,11 +80,12 @@ function parseCacheControlHeader(
       case 'immutable':
         directives.immutable = true;
         break;
-      case 'max-age':
+      case 'max-age': {
         if (!value) break;
         const parsedValue = parseInt(value, 10);
         if (!isNaN(parsedValue)) directives.maxAge = parsedValue;
         break;
+      }
       case 's-max-age': {
         if (!value) break;
         const parsedValue = parseInt(value, 10);
@@ -127,7 +128,7 @@ function parseCacheControlHeader(
 function resolveTimings(
   cacheControl: ResolvedCacheControl,
   staleTime?: number,
-  ttl?: number
+  ttl?: number,
 ): { staleTime?: number; ttl?: number } {
   const timings = {
     staleTime,
@@ -160,13 +161,13 @@ function resolveTimings(
 }
 
 export function createCacheInterceptor(
-  allowedMethods = ['GET', 'HEAD', 'OPTIONS']
+  allowedMethods = ['GET', 'HEAD', 'OPTIONS'],
 ): HttpInterceptorFn {
   const CACHE_METHODS = new Set<string>(allowedMethods);
 
   return (
     req: HttpRequest<unknown>,
-    next: HttpHandlerFn
+    next: HttpHandlerFn,
   ): Observable<HttpEvent<unknown>> => {
     const cache = injectQueryCache();
 
@@ -203,7 +204,7 @@ export function createCacheInterceptor(
           const { staleTime, ttl } = resolveTimings(
             cacheControl,
             opt.staleTime,
-            opt.ttl
+            opt.ttl,
           );
 
           cache.store(key, event, staleTime, ttl);
@@ -216,7 +217,7 @@ export function createCacheInterceptor(
         }
 
         return event;
-      })
+      }),
     );
   };
 }

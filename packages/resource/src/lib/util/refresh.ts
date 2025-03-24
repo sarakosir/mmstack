@@ -16,7 +16,7 @@ export function refresh<T>(
     .pipe(takeUntilDestroyed(destroyRef))
     .subscribe(() => resource.reload());
 
-  let reload = (): boolean => {
+  const reload = (): boolean => {
     sub.unsubscribe(); // do not conflict with manual reload
 
     const hasReloaded = resource.reload();
