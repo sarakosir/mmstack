@@ -34,28 +34,83 @@ import {
   type RetryOptions,
 } from './util';
 
+/**
+ * Options for configuring caching behavior of a `queryResource`.
+ * - `true`: Enables caching with default settings.
+ * - `{ ttl?: number; staleTime?: number; hash?: (req: HttpResourceRequest) => string; }`:  Configures caching with custom settings.
+ */
 type ResourceCacheOptions =
   | true
   | {
+      /**
+       * The Time To Live (TTL) for the cached data, in milliseconds. After this time, the cached data is
+       * considered expired and will be refetched.
+       */
       ttl?: number;
+      /**
+       * The duration, in milliseconds, during which stale data can be served while a revalidation request
+       * is made in the background.
+       */
       staleTime?: number;
+      /**
+       * A custom function to generate the cache key. Defaults to using the request URL with parameters.
+       * Provide a custom hash function if you need more control over how cache keys are generated,
+       * for instance, to ignore certain query parameters or to use request body for the cache key.
+       */
       hash?: (req: HttpResourceRequest) => string;
     };
 
+/**
+ * Options for configuring a `queryResource`.
+ */
 export type QueryResourceOptions<TResult, TRaw = TResult> = HttpResourceOptions<
   TResult,
   TRaw
 > & {
-  keepPrevious?: boolean; // Keep the previous value when refreshing
-  refresh?: number; // Refresh the value every n milliseconds
-  retry?: RetryOptions; // Retry on error options
-  onError?: (err: unknown) => void; // Error handler, useful for say displaying a toast
-  circuitBreaker?: CircuitBreakerOptions;
+  /**
+   * Whether to keep the previous value of the resource while a refresh is in progress.
+   * Defaults to `false`. Also keeps status & headers while refreshing.
+   */
+  keepPrevious?: boolean;
+  /**
+   * The refresh interval, in milliseconds. If provided, the resource will automatically
+   * refresh its data at the specified interval.
+   */
+  refresh?: number;
+  /**
+   * Options for retrying failed requests.
+   */
+  retry?: RetryOptions;
+  /**
+   * An optional error handler callback.  This function will be called whenever the
+   * underlying HTTP request fails. Useful for displaying toasts or other error messages.
+   */
+  onError?: (err: unknown) => void;
+  /**
+   * Options for configuring a circuit breaker for the resource.
+   */
+  circuitBreaker?: CircuitBreakerOptions | true;
+  /**
+   * Options for enabling and configuring caching for the resource.
+   */
   cache?: ResourceCacheOptions;
 };
 
+/**
+ * Represents a resource created by `queryResource`. Extends `HttpResourceRef` with additional properties.
+ */
 export type QueryResourceRef<TResult> = HttpResourceRef<TResult> & {
+  /**
+   * A signal indicating whether the resource is currently disabled (due to circuit breaker or undefined request).
+   */
   disabled: Signal<boolean>;
+  /**
+   * Prefetches data for the resource, populating the cache if caching is enabled.  This can be
+   * used to proactively load data before it's needed.  If a slow connection is detected, prefetching is skipped.
+   *
+   * @param req - Optional partial request parameters to use for the prefetch.  This allows you
+   *              to prefetch data with different parameters than the main resource request.
+   */
   prefetch: (req?: Partial<HttpResourceRequest>) => Promise<void>;
 };
 
@@ -66,6 +121,18 @@ export function queryResource<TResult, TRaw = TResult>(
   },
 ): QueryResourceRef<TResult>;
 
+/**
+ * Creates an extended HTTP resource with features like caching, retries, refresh intervals,
+ * circuit breaker, and optimistic updates. Without additional options it is equivalent to simply calling `httpResource`.
+ *
+ * @param request A function that returns the `HttpResourceRequest` to be made.  This function
+ *                is called reactively, so the request can change over time.  If the function
+ *                returns `undefined`, the resource is considered "disabled" and no request will be made.
+ * @param options Configuration options for the resource.  These options extend the basic
+ *                `HttpResourceOptions` and add features like `keepPrevious`, `refresh`, `retry`,
+ *                `onError`, `circuitBreaker`, and `cache`.
+ * @returns An `QueryResourceRef` instance, which extends the basic `HttpResourceRef` with additional features.
+ */
 export function queryResource<TResult, TRaw = TResult>(
   request: () => HttpResourceRequest | undefined,
   options?: QueryResourceOptions<TResult, TRaw>,
@@ -81,7 +148,11 @@ export function queryResource<TResult, TRaw = TResult>(
     ? options.injector.get(DestroyRef)
     : inject(DestroyRef);
 
-  const cb = createCircuitBreaker(options?.circuitBreaker);
+  const cb = createCircuitBreaker(
+    options?.circuitBreaker === true
+      ? undefined
+      : (options?.circuitBreaker ?? false),
+  );
 
   const stableRequest = computed(
     () => {

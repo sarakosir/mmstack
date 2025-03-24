@@ -160,6 +160,33 @@ function resolveTimings(
   return timings;
 }
 
+/**
+ * Creates an `HttpInterceptorFn` that implements caching for HTTP requests. This interceptor
+ * checks for a caching configuration in the request's `HttpContext` (internally set by the queryResource).
+ * If caching is enabled, it attempts to retrieve responses from the cache. If a cached response
+ * is found and is not stale, it's returned directly.  If the cached response is stale, it's returned,
+ * and a background revalidation request is made.  If no cached response is found, the request
+ * is made to the server, and the response is cached according to the configured TTL and staleness.
+ * The interceptor also respects `Cache-Control` headers from the server.
+ *
+ * @param allowedMethods - An array of HTTP methods for which caching should be enabled.
+ *                        Defaults to `['GET', 'HEAD', 'OPTIONS']`.
+ *
+ * @returns An `HttpInterceptorFn` that implements the caching logic.
+ *
+ * @example
+ * // In your app.config.ts or module providers:
+ *
+ * import { provideHttpClient, withInterceptors } from '@angular/common/http';
+ * import { createCacheInterceptor } from '@mmstack/resource';
+ *
+ * export const appConfig: ApplicationConfig = {
+ *   providers: [
+ *     provideHttpClient(withInterceptors([createCacheInterceptor()])),
+ *     // ... other providers
+ *   ],
+ * };
+ */
 export function createCacheInterceptor(
   allowedMethods = ['GET', 'HEAD', 'OPTIONS'],
 ): HttpInterceptorFn {

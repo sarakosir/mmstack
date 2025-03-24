@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "@mmstack/object": ["packages/common/object/src/index.ts"],
-      "@mmstack/primitives": ["packages/primitives/src/index.ts"]
+      "@mmstack/primitives": ["packages/primitives/src/index.ts"],
+      "@mmstack/resource": ["packages/resource/src/index.ts"],
     }
   },
   "exclude": ["node_modules", "tmp"]

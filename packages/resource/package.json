@@ -1,6 +1,7 @@
 {
   "name": "@mmstack/resource",
   "version": "19.0.0",
+  "license": "MIT",
   "peerDependencies": {
     "@angular/common": "19.2.3",
     "@angular/core": "19.2.3",
