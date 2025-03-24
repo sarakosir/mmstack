@@ -1,7 +1,7 @@
 # @mmstack/resource
 
 [![npm version](https://badge.fury.io/js/%40mmstack%2Fresource.svg)](https://www.npmjs.com/package/@mmstack/resource)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mihajm/mmstack/blob/master/packages/resource/LICENSE)
 
 `@mmstack/resource` is an Angular library that provides powerful, signal-based primitives for managing asynchronous data fetching and mutations. It builds upon Angular's `httpResource` and offers features like caching, retries, refresh intervals, circuit breakers, and request deduplication, all while maintaining a fine-grained reactive graph. It's inspired by libraries like TanStack Query, but aims for a more Angular-idiomatic and signal-centric approach.
 
