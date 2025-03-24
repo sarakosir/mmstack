@@ -144,7 +144,7 @@ export function mutationResource<TResult, TRaw = TResult, TCTX = void>(
 
     const base = baseRequest();
 
-    const url = base?.url ?? nr.url;
+    const url = nr.url ?? base?.url;
     if (!url) return;
 
     return {
@@ -181,7 +181,7 @@ export function mutationResource<TResult, TRaw = TResult, TCTX = void>(
           };
         }
 
-        if (status === ResourceStatus.Resolved) {
+        if (status === ResourceStatus.Resolved && value !== null) {
           return {
             status: ResourceStatus.Resolved,
             value,

@@ -85,6 +85,7 @@ export class PostsService {
   updatePost(id: number, post: Partial<Post>) {
     this.createPostResource.mutate({
       body: { id, ...post },
+      url: `${this.endpoint}/${id}`,
       method: 'PATCH',
     }); // send the request
   }
@@ -122,23 +123,34 @@ function createPostState(post: Post, loading: Signal<boolean>): PostState {
   selector: 'app-root',
   imports: [FormsModule],
   template: `
-    <label>{{ formState().children().title.label() }}</label>
-    <input
-      [(ngModel)]="formState().children().title.value"
-      [class.error]="
-        formState().children().title.touched() &&
-        formState().children().title.error()
-      "
-    />
+    <label
+      >{{ formState().children().title.label() }}
+      <input
+        [(ngModel)]="formState().children().title.value"
+        [readonly]="formState().children().body.readonly()"
+        [class.error]="
+          formState().children().title.touched() &&
+          formState().children().title.error()
+        "
+      />
+    </label>
+    <br />
 
-    <label>{{ formState().children().body.label() }}</label>
-    <textarea
-      [(ngModel)]="formState().children().body.value"
-      [class.error]="
-        formState().children().body.touched() &&
-        formState().children().body.error()
-      "
-    ></textarea>
+    <label
+      >{{ formState().children().body.label() }}
+      <textarea
+        [(ngModel)]="formState().children().body.value"
+        [readonly]="formState().children().body.readonly()"
+        [class.error]="
+          formState().children().body.touched() &&
+          formState().children().body.error()
+        "
+      ></textarea>
+    </label>
+
+    {{ formState().children().body.dirty() }}
+
+    <br />
 
     <button (click)="submit()" [disabled]="svc.loading()">Submit</button>
   `,
@@ -151,7 +163,7 @@ export class AppComponent {
       this.svc.post.value() ?? { title: '', body: '', id: -1, userId: -1 },
     computation: (source, prev) => {
       if (prev) {
-        prev.value.reconcile(source);
+        prev.value.forceReconcile(source);
         return prev.value;
       }
 

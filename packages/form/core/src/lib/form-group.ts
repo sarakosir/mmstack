@@ -196,12 +196,11 @@ export function formGroup<
 
   const touched = computed(() => ctrl.touched() || childrenTouched());
 
-  const dirty = computed(() => ctrl.dirty() || childrenDirty());
-
   const childError = computed(() => {
     if (!derivationsArray().length) return '';
     return derivationsArray()
-      .map((d) => d.error())
+      .map((d) => (d.error() ? `${d.label()}: ${d.error()}` : ''))
+      .filter(Boolean)
       .join('\n');
   });
 
@@ -253,12 +252,15 @@ export function formGroup<
     : computed(() => ({}));
 
   const partialValue = computed(() => {
-    const obj: Partial<DerivationPartialValues<TDerivations>> =
-      basePartialValue();
-    if (!dirty()) return obj;
+    const obj: Partial<DerivationPartialValues<TDerivations>> = {
+      ...basePartialValue(),
+    };
+
+    if (!ctrl.dirty()) return obj;
 
     for (const [key, ctrl] of entries(children())) {
       const pv = ctrl.partialValue();
+
       if (pv === undefined) continue;
       obj[key] = pv;
     }
@@ -274,7 +276,6 @@ export function formGroup<
     forceReconcile,
     ownError: ctrl.error,
     touched,
-    dirty,
     error,
     markAllAsPristine,
     markAllAsTouched,

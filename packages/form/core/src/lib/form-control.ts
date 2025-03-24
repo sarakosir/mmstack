@@ -196,7 +196,7 @@ export function formControl<
 
   const label = computed(() => opt?.label?.() ?? '');
 
-  const patchValue = computed(() => (dirty() ? value() : undefined));
+  const partialValue = computed(() => (dirty() ? value() : undefined));
 
   const internalReconcile = (newValue: T, force = false) => {
     const isDirty = untracked(dirty);
@@ -204,6 +204,7 @@ export function formControl<
     if (!isDirty || force) {
       // very dangerous use of untracked here, don't do this everywhere :)
       // thanks to  u/synalx for the idea to use untracked here
+
       untracked(() => {
         initialValue.set(newValue);
         value.set(newValue);
@@ -245,6 +246,6 @@ export function formControl<
     equal: eq,
     [CONTROL_SYMBOL]: true,
     controlType: (opt?.controlType ?? 'control') as TControlType,
-    partialValue: patchValue as Signal<TPartialValue>,
+    partialValue: partialValue as Signal<TPartialValue>,
   };
 }

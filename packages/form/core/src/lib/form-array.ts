@@ -195,9 +195,13 @@ export function formArray<
   const ownError = computed(() => validator()(ctrl.value()));
 
   const error = computed((): string => {
-    if (ownError()) return ownError();
+    const own = ownError();
+    if (own) return own;
     if (!children().length) return '';
-    return children().some((c) => c.error()) ? 'INVALID' : '';
+    return children()
+      .map((c, idx) => (c.error() ? `${idx}: ${c.error()}` : ''))
+      .filter(Boolean)
+      .join('\n');
   });
 
   const dirty = computed(() => {

@@ -264,7 +264,7 @@ export function queryResource<TResult, TRaw = TResult>(
   });
 
   const set = (value: TResult) => {
-    resource.set(value);
+    resource.value.set(value);
     const k = untracked(cacheKey);
     if (options?.cache && k)
       cache.store(

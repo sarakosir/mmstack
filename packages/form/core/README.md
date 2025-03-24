@@ -65,6 +65,11 @@
 ## Slightly more complex example
 
 ```typescript
+import { Component, computed, inject, Injectable, isDevMode, linkedSignal, Signal, signal, untracked } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { derived, formControl, FormControlSignal, formGroup, FormGroupSignal } from '@mmstack/form-core';
+import { mutationResource, queryResource } from '@mmstack/resource';
+
 type Post = {
   id: number;
   title?: string;
@@ -123,14 +128,15 @@ export class PostsService {
   createPost(post: Post) {
     this.createPostResource.mutate({
       body: post,
-    });
+    }); // send the request
   }
 
   updatePost(id: number, post: Partial<Post>) {
     this.createPostResource.mutate({
       body: { id, ...post },
+      url: `${this.endpoint}/${id}`,
       method: 'PATCH',
-    });
+    }); // send the request
   }
 }
 
@@ -163,26 +169,33 @@ function createPostState(post: Post, loading: Signal<boolean>): PostState {
 }
 
 @Component({
-  selector: 'app-root',
+  selector: 'app-post-form',
   imports: [FormsModule],
   template: `
-    <label>{{ formState().children().title.label() }}</label>
-    <input [(ngModel)]="formState().children().title.value" [class.error]="formState().children().title.touched() && formState().children().title.error()" />
+    <label
+      >{{ formState().children().title.label() }}
+      <input [(ngModel)]="formState().children().title.value" [readonly]="formState().children().body.readonly()" [class.error]="formState().children().title.touched() && formState().children().title.error()" />
+    </label>
+    <br />
 
-    <label>{{ formState().children().body.label() }}</label>
-    <textarea [(ngModel)]="formState().children().body.value" [class.error]="formState().children().body.touched() && formState().children().body.error()"></textarea>
+    <label
+      >{{ formState().children().body.label() }}
+      <textarea [(ngModel)]="formState().children().body.value" [readonly]="formState().children().body.readonly()" [class.error]="formState().children().body.touched() && formState().children().body.error()"></textarea>
+    </label>
+
+    <br />
 
     <button (click)="submit()" [disabled]="svc.loading()">Submit</button>
   `,
 })
-export class AppComponent {
+export class PostFormComponent {
   protected readonly svc = inject(PostsService);
 
   protected readonly formState = linkedSignal<Post, PostState>({
     source: () => this.svc.post.value() ?? { title: '', body: '', id: -1, userId: -1 },
     computation: (source, prev) => {
       if (prev) {
-        prev.value.reconcile(source);
+        prev.value.forceReconcile(source);
         return prev.value;
       }
 
@@ -196,7 +209,7 @@ export class AppComponent {
     if (untracked(state.error)) return state.markAllAsTouched();
     const value = untracked(state.value);
     if (value.id === -1) this.svc.createPost(value);
-    else this.svc.updatePost(value.id, untracked(state.partialValue)); // only patch dirty values
+    else this.svc.updatePost(value.id, untracked(state.partialValue));
   }
 }
 ```

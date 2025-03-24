@@ -1110,7 +1110,7 @@ export function mutationResource<TResult, TRaw = TResult, TCTX = void>(request: 
           };
         }
 
-        if (status === ResourceStatus.Resolved) {
+        if (status === ResourceStatus.Resolved && value !== null) {
           return {
             status: ResourceStatus.Resolved,
             value,
