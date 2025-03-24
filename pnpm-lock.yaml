@@ -4,10 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@mmstack/primitives': workspace:*
-  '@mmstack/object': workspace:*
-
 importers:
 
   .:
