@@ -1,24 +1,28 @@
 import {
   Component,
+  computed,
   inject,
   Injectable,
   isDevMode,
+  linkedSignal,
+  Signal,
   signal,
   untracked,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { derived, formControl, formGroup } from '@mmstack/form-core';
 import {
-  createCircuitBreaker,
-  mutationResource,
-  queryResource,
-} from '@mmstack/resource';
+  derived,
+  formControl,
+  FormControlSignal,
+  formGroup,
+  FormGroupSignal,
+} from '@mmstack/form-core';
+import { mutationResource, queryResource } from '@mmstack/resource';
 
 type Post = {
-  userId: number;
   id: number;
-  title: string;
-  body: string;
+  title?: string;
+  body?: string;
 };
 
 @Injectable({
@@ -26,23 +30,6 @@ type Post = {
 })
 export class PostsService {
   private readonly endpoint = 'https://jsonplaceholder.typicode.com/posts';
-  private readonly cb = createCircuitBreaker();
-  readonly posts = queryResource<Post[]>(
-    () => ({
-      url: this.endpoint,
-    }),
-    {
-      keepPrevious: true, // keep data between requests
-      refresh: 5 * 60 * 1000, // refresh every 5 minutes
-      circuitBreaker: this.cb, // use shared circuit breaker use true if not sharing
-      retry: 3, // retry 3 times on error using default backoff
-      onError: (err) => {
-        if (!isDevMode()) return;
-        console.error(err);
-      }, // log errors in dev mode
-      defaultValue: [],
-    },
-  );
 
   readonly id = signal(1);
 
@@ -71,48 +58,113 @@ export class PostsService {
     }),
     {
       onMutate: (post: Post) => {
-        const prev = untracked(this.posts.value);
-        this.posts.set([...prev, post]); // optimistically update
+        const prev = untracked(this.post.value);
+        this.post.set({ ...prev, ...post });
         return prev;
       },
       onError: (err, prev) => {
         if (isDevMode()) console.error(err);
-        this.posts.set(prev); // rollback on error
+        this.post.set(prev); // rollback on error
       },
       onSuccess: (next) => {
-        this.posts.update((posts) =>
-          posts.map((p) => (p.id === next.id ? next : p)),
-        ); // replace with value from server
+        this.post.set(next);
       },
     },
   );
 
+  readonly loading = computed(
+    () => this.createPostResource.isLoading() || this.post.isLoading(),
+  );
+
   createPost(post: Post) {
-    this.createPostResource.mutate({ body: post }); // send the request
+    this.createPostResource.mutate({
+      body: post,
+    }); // send the request
   }
+
+  updatePost(id: number, post: Partial<Post>) {
+    this.createPostResource.mutate({
+      body: { id, ...post },
+      method: 'PATCH',
+    }); // send the request
+  }
+}
+
+type PostState = FormGroupSignal<
+  Post,
+  {
+    title: FormControlSignal<string | undefined, Post>;
+    body: FormControlSignal<string | undefined, Post>;
+  }
+>;
+
+function createPostState(post: Post, loading: Signal<boolean>): PostState {
+  const value = signal<Post>(post);
+
+  return formGroup(value, {
+    title: formControl(derived(value, 'title'), {
+      label: () => 'Title',
+      readonly: loading,
+      validator: () => (value) => (value ? '' : 'Title is required'),
+    }),
+    body: formControl(derived(value, 'body'), {
+      label: () => 'Body',
+      readonly: loading,
+      validator: () => (value) => {
+        if (value && value.length > 255) return 'Body is too long';
+        return '';
+      },
+    }),
+  });
 }
 
 @Component({
   selector: 'app-root',
   imports: [FormsModule],
   template: `
+    <label>{{ formState().children().title.label() }}</label>
     <input
-      [value]="testForm.children().name.value()"
-      (input)="testForm.children().name.value.set($any($event).target.value)"
+      [(ngModel)]="formState().children().title.value"
+      [class.error]="
+        formState().children().title.touched() &&
+        formState().children().title.error()
+      "
     />
-    {{ testForm.children().name.value() }}
+
+    <label>{{ formState().children().body.label() }}</label>
+    <textarea
+      [(ngModel)]="formState().children().body.value"
+      [class.error]="
+        formState().children().body.touched() &&
+        formState().children().body.error()
+      "
+    ></textarea>
+
+    <button (click)="submit()" [disabled]="svc.loading()">Submit</button>
   `,
 })
 export class AppComponent {
-  readonly svc = inject(PostsService);
+  protected readonly svc = inject(PostsService);
 
-  protected readonly test = signal({
-    name: 'test',
-    age: 1,
+  protected readonly formState = linkedSignal<Post, PostState>({
+    source: () =>
+      this.svc.post.value() ?? { title: '', body: '', id: -1, userId: -1 },
+    computation: (source, prev) => {
+      if (prev) {
+        prev.value.reconcile(source);
+        return prev.value;
+      }
+
+      return createPostState(source, this.svc.loading);
+    },
   });
 
-  protected readonly testForm = formGroup(this.test, {
-    name: formControl(derived(this.test, 'name')),
-    age: formControl(derived(this.test, 'age')),
-  });
+  protected submit() {
+    if (untracked(this.svc.loading)) return;
+    const state = untracked(this.formState);
+    if (untracked(state.error)) return state.markAllAsTouched();
+    const value = untracked(state.value);
+    if (value.id === -1) this.svc.createPost(value);
+    else this.svc.updatePost(value.id, untracked(state.partialValue));
+  }
 }
