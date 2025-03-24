@@ -6,6 +6,8 @@ import {
   signal,
   untracked,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { derived, formControl, formGroup } from '@mmstack/form-core';
 import {
   createCircuitBreaker,
   mutationResource,
@@ -92,13 +94,25 @@ export class PostsService {
 
 @Component({
   selector: 'app-root',
-  imports: [],
+  imports: [FormsModule],
   template: `
-    <button (click)="svc.prev()">Prev</button>
-    <button (click)="svc.next()">Next</button>
-    {{ svc.post.isLoading() }}<br />{{ svc.post.value()?.title }}
+    <input
+      [value]="testForm.children().name.value()"
+      (input)="testForm.children().name.value.set($any($event).target.value)"
+    />
+    {{ testForm.children().name.value() }}
   `,
 })
 export class AppComponent {
   readonly svc = inject(PostsService);
+
+  protected readonly test = signal({
+    name: 'test',
+    age: 1,
+  });
+
+  protected readonly testForm = formGroup(this.test, {
+    name: formControl(derived(this.test, 'name')),
+    age: formControl(derived(this.test, 'age')),
+  });
 }
