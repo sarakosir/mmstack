@@ -1,13 +1,10 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { NxWelcomeComponent } from './nx-welcome.component';
+
+// used for testing out new components/primitives
 
 @Component({
-  imports: [NxWelcomeComponent, RouterModule],
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+  imports: [],
+  template: ``,
 })
-export class AppComponent {
-  title = 'mmstack';
-}
+export class AppComponent {}

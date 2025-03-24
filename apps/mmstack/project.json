@@ -13,7 +13,7 @@
         "outputPath": "dist/apps/mmstack",
         "index": "apps/mmstack/src/index.html",
         "browser": "apps/mmstack/src/main.ts",
-        "polyfills": ["zone.js"],
+        "polyfills": [],
         "tsConfig": "apps/mmstack/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
