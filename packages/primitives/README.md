@@ -1,7 +1,3 @@
-# primitives
+# mmstack/primitives
 
-This library was generated with [Nx](https://nx.dev).
-
-## Running unit tests
-
-Run `nx test primitives` to execute the unit tests.
+A library for signal primitives, still working on the docs ;)

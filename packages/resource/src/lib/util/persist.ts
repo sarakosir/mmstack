@@ -1,6 +1,5 @@
 import { type HttpHeaders, type HttpResourceRef } from '@angular/common/http';
 import {
-  computed,
   linkedSignal,
   type Signal,
   type ValueEqualityFn,
@@ -25,6 +24,7 @@ function presist<T>(
   equal?: ValueEqualityFn<T>,
 ): WritableSignal<T> | Signal<T> {
   // linkedSignal allows us to access previous source value
+
   const persisted = linkedSignal<
     {
       value: T;
@@ -32,10 +32,12 @@ function presist<T>(
     },
     T
   >({
-    source: () => ({
-      value: value(),
-      usePrevious: usePrevious(),
-    }),
+    source: () => {
+      return {
+        value: value(),
+        usePrevious: usePrevious(),
+      };
+    },
     computation: (source, prev) => {
       if (source.usePrevious && prev) return prev.value;
 
@@ -56,7 +58,6 @@ function presist<T>(
 
 export function persistResourceValues<T>(
   resource: HttpResourceRef<T>,
-  hasCachedValue: Signal<boolean>,
   persist = false,
   equal?: ValueEqualityFn<T>,
 ): HttpResourceRef<T> {
@@ -72,10 +73,6 @@ export function persistResourceValues<T>(
       resource.headers,
       resource.isLoading,
     ),
-    value: presist<T>(
-      resource.value,
-      computed(() => resource.isLoading() || !hasCachedValue()), // should show cached value if available
-      equal,
-    ),
+    value: presist<T>(resource.value, resource.isLoading, equal),
   };
 }

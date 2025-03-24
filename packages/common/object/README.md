@@ -1,7 +1,3 @@
-# common-object
+# mmstack/object
 
-This library was generated with [Nx](https://nx.dev).
-
-## Running unit tests
-
-Run `nx test common-object` to execute the unit tests.
+A library for js object utilities, still working on the docs

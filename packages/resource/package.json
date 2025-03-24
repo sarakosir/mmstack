@@ -1,6 +1,6 @@
 {
   "name": "@mmstack/resource",
-  "version": "19.0.1",
+  "version": "19.0.3",
   "keywords": ["angular", "signals", "http", "resource", "cache", "mutation", "rxjs"],
   "repository": {
     "type": "git",
@@ -12,11 +12,9 @@
     "@angular/common": "~19.2.3",
     "@angular/core": "~19.2.3",
     "rxjs": "~7.8.2",
-    "uuid": "~11.1.0"
-  },
-  "dependencies": {
-    "@mmstack/primitives": "*",
-    "@mmstack/object": "*"
+    "uuid": "~11.1.0",
+    "@mmstack/primitives": "19.0.0",
+    "@mmstack/object": "19.0.0"
   },
   "exports": {
     ".": {

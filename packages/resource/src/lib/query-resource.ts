@@ -209,8 +209,8 @@ export function queryResource<TResult, TRaw = TResult>(
 
   const actualCacheValue = computed((): TResult | undefined => {
     const ce = cachedEvent();
-    if (!ce || !(ce instanceof HttpResponse)) return;
-    return parse(ce.body as TRaw);
+    if (!ce || !(ce.value instanceof HttpResponse)) return;
+    return parse(ce.value.body as TRaw);
   });
 
   // retains last cache value after it is invalidated for lifetime of resource
@@ -222,6 +222,15 @@ export function queryResource<TResult, TRaw = TResult>(
     },
   });
 
+  resource = refresh(resource, destroyRef, options?.refresh);
+  resource = retryOnError(resource, options?.retry);
+
+  resource = persistResourceValues<TResult>(
+    resource,
+    options?.keepPrevious,
+    options?.equal,
+  );
+
   const value = options?.cache
     ? toWritable(
         computed((): TResult => {
@@ -231,15 +240,6 @@ export function queryResource<TResult, TRaw = TResult>(
         resource.value.update,
       )
     : resource.value;
-
-  resource = refresh(resource, destroyRef, options?.refresh);
-  resource = retryOnError(resource, options?.retry);
-  resource = persistResourceValues<TResult>(
-    { ...resource, value },
-    computed(() => !!cachedValue()),
-    options?.keepPrevious,
-    options?.equal,
-  );
 
   const onError = options?.onError; // Put in own variable to ensure value remains even if options are somehow mutated in-line
   if (onError) {

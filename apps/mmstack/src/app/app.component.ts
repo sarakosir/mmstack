@@ -1,4 +1,11 @@
-import { Component, Injectable, isDevMode, untracked } from '@angular/core';
+import {
+  Component,
+  inject,
+  Injectable,
+  isDevMode,
+  signal,
+  untracked,
+} from '@angular/core';
 import {
   createCircuitBreaker,
   mutationResource,
@@ -35,6 +42,26 @@ export class PostsService {
     },
   );
 
+  readonly id = signal(1);
+
+  readonly post = queryResource<Post>(
+    () => ({
+      url: `${this.endpoint}/${this.id()}`,
+    }),
+    {
+      keepPrevious: true,
+      cache: true,
+    },
+  );
+
+  next() {
+    this.id.update((id) => id + 1);
+  }
+
+  prev() {
+    this.id.update((id) => id - 1);
+  }
+
   private readonly createPostResource = mutationResource(
     () => ({
       url: this.endpoint,
@@ -66,6 +93,12 @@ export class PostsService {
 @Component({
   selector: 'app-root',
   imports: [],
-  template: ``,
+  template: `
+    <button (click)="svc.prev()">Prev</button>
+    <button (click)="svc.next()">Next</button>
+    {{ svc.post.isLoading() }}<br />{{ svc.post.value()?.title }}
+  `,
 })
-export class AppComponent {}
+export class AppComponent {
+  readonly svc = inject(PostsService);
+}

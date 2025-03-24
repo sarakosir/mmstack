@@ -797,24 +797,6 @@ export function createCacheInterceptor(allowedMethods = ['GET', 'HEAD', 'OPTIONS
 ```
 
 ```typescript
-// persist-values.ts
-export function persistResourceValues<T>(resource: HttpResourceRef<T>, hasCachedValue: Signal<boolean>, persist = false, equal?: ValueEqualityFn<T>): HttpResourceRef<T> {
-  if (!persist) return resource;
-
-  return {
-    ...resource,
-    statusCode: presist<number | undefined>(resource.statusCode, resource.isLoading),
-    headers: presist<HttpHeaders | undefined>(resource.headers, resource.isLoading),
-    value: presist<T>(
-      resource.value,
-      computed(() => resource.isLoading() || !hasCachedValue()), // should show cached value if available
-      equal,
-    ),
-  };
-}
-```
-
-```typescript
 // has-slow-connection.ts
 
 // check if user on slow mobile connection
@@ -934,13 +916,6 @@ export function extendedResource<TResult, TRaw = TResult>(
     : resource.value;
 
   ...otherCode
-
-  resource = persistResourceValues<TResult>(
-    { ...resource, value }, // pass cached value to be 'persisted' in ui as well
-    computed(() => !!cachedValue()),
-    options?.keepPrevious,
-    options?.equal
-  );
 
   ...otherCode
 
