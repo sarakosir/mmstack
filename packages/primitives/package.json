@@ -1,0 +1,8 @@
+{
+  "name": "@mmstack/primitives",
+  "version": "19.0.0",
+  "peerDependencies": {
+    "@angular/core": "19.2.3"
+  },
+  "sideEffects": false
+}

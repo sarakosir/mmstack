@@ -14,7 +14,10 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@mmstack/object": ["packages/common/object/src/index.ts"],
+      "@mmstack/primitives": ["packages/primitives/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
