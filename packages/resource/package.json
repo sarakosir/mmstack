@@ -1,14 +1,28 @@
 {
   "name": "@mmstack/resource",
   "version": "19.0.0",
+  "keywords": ["angular", "signals", "http", "resource", "cache", "mutation", "rxjs"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mihajm/mmstack"
+  },
+  "homepage": "https://github.com/mihajm/mmstack/blob/master/packages/resource",
   "license": "MIT",
   "peerDependencies": {
-    "@angular/common": "19.2.3",
-    "@angular/core": "19.2.3",
-    "rxjs": "7.8.2",
-    "uuid": "11.1.0",
-    "@mmstack/primitives": "19.0.0",
-    "@mmstack/object": "19.0.0"
+    "@angular/common": "~19.2.3",
+    "@angular/core": "~19.2.3",
+    "rxjs": "~7.8.2",
+    "uuid": "~11.1.0"
+  },
+  "dependencies": {
+    "@mmstack/primitives": "*",
+    "@mmstack/object": "*"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./esm2022/index.js"
+    }
   },
   "sideEffects": false
 }
