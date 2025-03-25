@@ -34,9 +34,9 @@ export type DateValidatorOptions = {
   notOneOf?: (Date | string | null)[];
 };
 
-export function createDateValidators(
+export function createDateValidators<TDate = Date>(
   factories?: Partial<DateMessageFactories>,
-  toDate = defaultToDate,
+  toDate = defaultToDate<TDate>,
   formatDate = defaultFormatDate,
   locale = 'en-US',
   generalValidators = createGeneralValidators(),

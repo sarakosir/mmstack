@@ -24,11 +24,11 @@ type MessageFactories = {
   merge: Parameters<typeof createMergeValidators>[0];
 };
 
-export type Validators = {
+export type Validators<TDate = Date> = {
   general: ReturnType<typeof createGeneralValidators>;
   string: ReturnType<typeof createStringValidators>;
   number: ReturnType<typeof createNumberValidators>;
-  date: ReturnType<typeof createDateValidators>;
+  date: ReturnType<typeof createDateValidators<TDate>>;
   array: ReturnType<typeof createArrayValidators>;
   boolean: ReturnType<typeof createBooleanValidators>;
 };
@@ -50,12 +50,12 @@ function createDefaultValidators() {
   return defaultValidators;
 }
 
-function createValidators(
+function createValidators<TDate = Date>(
   msg: Partial<MessageFactories>,
-  toDate: <TDate = Date>(date: TDate | string) => Date,
+  toDate: (date: TDate | string) => Date,
   formatDate: (date: Date, locale: string) => string,
   locale: string,
-): Validators {
+): Validators<TDate> {
   const general = createGeneralValidators(msg.general);
 
   const merger = createMergeValidators(msg.merge);
@@ -64,7 +64,7 @@ function createValidators(
     general,
     string: createStringValidators(msg.string, general, merger),
     number: createNumberValidators(msg.number, general, merger),
-    date: createDateValidators(
+    date: createDateValidators<TDate>(
       msg.date,
       toDate,
       formatDate,
@@ -77,9 +77,9 @@ function createValidators(
   };
 }
 
-export function provideValidators(
+export function provideValidatorConfig<TDate = Date>(
   factory: (locale: string) => Partial<MessageFactories>,
-  toDate: <TDate = Date>(date: TDate | string) => Date = defaultToDate,
+  toDate: (date: TDate | string) => Date = defaultToDate<TDate>,
   formatDate: (date: Date, locale: string) => string = defaultFormatDate,
 ): Provider {
   return {

@@ -14,6 +14,7 @@ import {
   withHttpTransferCacheOptions,
 } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
+import { provideValidatorConfig } from '@mmstack/form-material';
 import {
   createCacheInterceptor,
   createDedupeRequestsInterceptor,
@@ -52,5 +53,26 @@ export const appConfig: ApplicationConfig = {
       ]),
     ),
     provideRouter(appRoutes),
+    provideValidatorConfig(
+      (locale) => {
+        switch (locale) {
+          case 'sl-SI':
+            return {
+              general: {
+                required: () => 'To polje je obvezno',
+              },
+            };
+          default: {
+            return {
+              general: {
+                required: (label) => `This ${label} is required`,
+              },
+            };
+          }
+        }
+      },
+      // provide a custom toDate function if you're using non-date objects like Luxon's DateTime or Moment
+      (date) => new Date(date),
+    ),
   ],
 };
