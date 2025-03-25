@@ -16,8 +16,8 @@ export type NumberState<TParent = undefined> = FormControlSignal<
 > & {
   placeholder: Signal<string>;
   step: Signal<number>;
-  type: 'number';
   errorTooltip: Signal<string>;
+  type: 'number';
 };
 
 export type NumberStateOptions = CreateFormControlOptions<

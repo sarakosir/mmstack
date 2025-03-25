@@ -1,3 +1,4 @@
+import { computed, Signal } from '@angular/core';
 import { StringValidatorOptions } from '@mmstack/form-validation';
 import { DerivedSignal } from '@mmstack/primitives';
 import {
@@ -11,16 +12,38 @@ export type TextareaState<TParent = undefined> = Omit<
   StringState<TParent>,
   'type'
 > & {
+  rows: Signal<number>;
+  minRows: Signal<number>;
+  maxRows: Signal<number>;
+  autosize: Signal<boolean>;
   type: 'textarea';
 };
 
-export type TextareaStateOptions = StringStateOptions;
+export type TextareaStateOptions = StringStateOptions & {
+  rows?: () => number;
+  minRows?: () => number;
+  maxRows?: () => number;
+  autosize?: () => boolean;
+};
 
 function toTextareaState<TParent = undefined>(
   state: StringState<TParent>,
+  opt?: TextareaStateOptions,
 ): TextareaState<TParent> {
+  const minRows = computed(() => opt?.minRows?.() ?? 3);
+  const maxRows = computed(() => opt?.maxRows?.() ?? 10);
+
+  const rows = computed(() => {
+    const rows = opt?.rows?.() ?? 3;
+    if (rows > maxRows() || rows < minRows()) return minRows();
+    return rows;
+  });
   return {
     ...state,
+    rows,
+    minRows,
+    maxRows,
+    autosize: computed(() => opt?.autosize?.() ?? true),
     type: 'textarea',
   };
 }
@@ -29,7 +52,7 @@ export function createTextareaState<TParent = undefined>(
   value: string | null | DerivedSignal<TParent, string | null>,
   opt?: TextareaStateOptions,
 ): TextareaState<TParent> {
-  return toTextareaState(createStringState(value, opt));
+  return toTextareaState(createStringState(value, opt), opt);
 }
 
 export function injectCreateTextareaState() {
@@ -41,6 +64,6 @@ export function injectCreateTextareaState() {
       validation?: () => StringValidatorOptions;
     },
   ): TextareaState<TParent> => {
-    return toTextareaState(factory(value, opt));
+    return toTextareaState(factory(value, opt), opt);
   };
 }

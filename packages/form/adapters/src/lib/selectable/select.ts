@@ -19,6 +19,9 @@ export type SelectState<T, TParent = undefined> = FormControlSignal<
   valueLabel: Signal<string>;
   equal: (a: T, b: T) => boolean;
   panelWidth: Signal<string | number | null>;
+  disableOptionCentering: Signal<boolean>;
+  hideSingleSelectionIndicator: Signal<boolean>;
+  overlayPanelClass: Signal<string>;
   type: 'select';
 };
 
@@ -27,6 +30,9 @@ export type SelectStateOptions<T> = CreateFormControlOptions<T, 'control'> & {
   identify?: () => (value: NoInfer<T>) => string;
   display?: () => (value: NoInfer<T>) => string;
   disableOption?: () => (value: NoInfer<T>) => boolean;
+  disableOptionCentering?: () => boolean;
+  hideSingleSelectionIndicator?: () => boolean;
+  overlayPanelClass?: () => string;
   options: () => T[];
   panelWidth?: () => string | number | null;
 };
@@ -102,6 +108,13 @@ export function createSelectState<T, TParent = undefined>(
     }),
     equal,
     placeholder: computed(() => opt.placeholder?.() ?? ''),
+    disableOptionCentering: computed(
+      () => opt.disableOptionCentering?.() ?? false,
+    ),
+    overlayPanelClass: computed(() => opt.overlayPanelClass?.() ?? ''),
+    hideSingleSelectionIndicator: computed(
+      () => opt.hideSingleSelectionIndicator?.() ?? false,
+    ),
     type: 'select',
   };
 }
