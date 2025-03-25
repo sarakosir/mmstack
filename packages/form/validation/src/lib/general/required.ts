@@ -1,6 +1,6 @@
 import { Validator } from '../validator.type';
 
-export function defaultRequiredMessageFactory(label: string = 'Field') {
+export function defaultRequiredMessageFactory(label = 'Field') {
   return `${label} is required`;
 }
 

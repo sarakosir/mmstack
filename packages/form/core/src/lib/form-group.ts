@@ -288,7 +288,8 @@ export function formGroup<
     resetWithInitial: (initial: T) => {
       for (const ctrl of untracked(derivationsArray)) {
         const from = ctrl.from;
-        from ? ctrl.resetWithInitial(from(initial)) : ctrl.reset();
+        if (from) ctrl.resetWithInitial(from(initial));
+        else ctrl.reset();
       }
       ctrl.resetWithInitial(initial);
     },

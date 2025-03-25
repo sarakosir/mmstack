@@ -1,3 +1,4 @@
+export * from '@mmstack/form-adapters';
 export * from './lib/autocomplete-field.component';
 export * from './lib/booelan-field.compoent';
 export * from './lib/date-field.component';

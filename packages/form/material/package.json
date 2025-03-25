@@ -12,7 +12,6 @@
     "@angular/forms": "~19.2.3",
     "@angular/material": "~19.2.4",
     "@angular/cdk": "~19.2.4",
-    "@mmstack/form-core": "~19.0.4",
     "@mmstack/form-adapters": "~19.0.0"
   },
   "sideEffects": false

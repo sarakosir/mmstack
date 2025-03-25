@@ -9,7 +9,7 @@ export function createNotValidator(
 ) {
   return <T>(
     value: T,
-    valueLabel: string = `${value}`,
+    valueLabel = `${value}`,
     matcher: (a: T, b: T) => boolean = Object.is,
   ): Validator<T> => {
     const msg = createMessage(valueLabel);

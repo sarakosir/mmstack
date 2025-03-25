@@ -52,7 +52,7 @@ export function defaultToDate<TDate>(date: TDate | string): Date {
 export function defaultFormatDate(
   date: Date,
   locale: string,
-  format: string = 'mediumDate',
+  format = 'mediumDate',
 ) {
   return formatDate(date, format, locale);
 }
