@@ -8,8 +8,8 @@ import {
   type ValueEqualityFn,
   type WritableSignal,
 } from '@angular/core';
+import { type DerivedSignal } from '@mmstack/primitives';
 import { v7 } from 'uuid';
-import { type DerivedSignal } from './derived';
 
 /**
  * A symbol used to identify `FormControlSignal` instances.  This is for internal type checking.

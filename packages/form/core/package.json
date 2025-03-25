@@ -8,9 +8,8 @@
   },
   "homepage": "https://github.com/mihajm/mmstack/blob/master/packages/form/core",
   "peerDependencies": {
-    "@angular/common": "~19.2.3",
     "@angular/core": "~19.2.3",
-    "@mmstack/primitives": "~19.0.0",
+    "@mmstack/primitives": "~19.0.1",
     "@mmstack/object": "~19.0.0",
     "uuid": "~11.1.0"
   },

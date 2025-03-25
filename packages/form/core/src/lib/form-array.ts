@@ -5,7 +5,7 @@ import {
   type Signal,
   type WritableSignal,
 } from '@angular/core';
-import { derived, type DerivedSignal } from './derived';
+import { derived, type DerivedSignal } from '@mmstack/primitives';
 import {
   formControl,
   type CreateFormControlOptions,

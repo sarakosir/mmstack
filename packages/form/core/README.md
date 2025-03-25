@@ -15,7 +15,7 @@
 - **Dirty and Touched Tracking:** Built-in tracking of `dirty` and `touched` states for individual controls and aggregated states for groups and arrays.
 - **Reconciliation:** Efficiently updates form state when underlying data changes (e.g., when receiving data from an API).
 - **Extensible:** Designed to be easily extended with custom form controls and validation logic.
-- **Framework Agnostic**: `form-core` can be used with any UI library
+- **UI Library Agnostic**: `form-core` can be used with any UI library
 
 ## Quick Start
 

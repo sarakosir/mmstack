@@ -11,7 +11,7 @@ import {
   isDerivation,
   toFakeSignalDerivation,
   type DerivedSignal,
-} from './derived';
+} from '@mmstack/primitives';
 import {
   formControl,
   type CreateFormControlOptions,
