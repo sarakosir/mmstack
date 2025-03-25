@@ -24,7 +24,7 @@ const DEFAULT_MESSAGES: DateMessageFactories = {
   isDate: defaultIsDateMessageFactory,
 };
 
-type DateValidatorOptions = {
+export type DateValidatorOptions = {
   required?: boolean;
   min?: Date | string;
   max?: Date | string;

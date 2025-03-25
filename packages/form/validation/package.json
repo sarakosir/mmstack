@@ -10,7 +10,7 @@
   "peerDependencies": {
     "@angular/core": "~19.2.3",
     "@angular/common": "~19.2.3",
-    "@mmstack/form-core": "~19.0.3"
+    "@mmstack/form-core": "~19.0.4"
   },
   "sideEffects": false
 }

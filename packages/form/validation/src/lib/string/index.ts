@@ -44,7 +44,7 @@ const DEFAULT_MESSAGES: StringMessageFactories = {
   maxLength: defaultMaxLengthMessageFactory,
 };
 
-type StringValidatorOptions = {
+export type StringValidatorOptions = {
   pattern?: RegExp | 'email' | 'uri' | Omit<string, 'email' | 'uri'>;
   trimmed?: boolean;
   minLength?: number;

@@ -12,12 +12,6 @@ import { type DerivedSignal } from '@mmstack/primitives';
 import { v7 } from 'uuid';
 
 /**
- * A symbol used to identify `FormControlSignal` instances.  This is for internal type checking.
- * @internal
- */
-export const CONTROL_SYMBOL = Symbol.for('INTERNAL_CLIENT_FORM_CONTROL');
-
-/**
  * Represents the type of a form control.
  * - `control`: A single form control (e.g., an input field).
  * - `array`: An array of form controls (like Angular's `FormArray`).
@@ -91,8 +85,6 @@ export type FormControlSignal<
   from?: DerivedSignal<TParent, T>['from'];
   /** The equality function used to compare values. Defaults to `Object.is`. */
   equal: (a: T, b: T) => boolean;
-  /** @internal  A symbol used for internal type checking.*/
-  [CONTROL_SYMBOL]: true;
   /** The type of the control ('control', 'array', or 'group'). */
   controlType: TControlType;
   /**
@@ -244,7 +236,6 @@ export function formControl<
       value.set(initial);
     },
     equal: eq,
-    [CONTROL_SYMBOL]: true,
     controlType: (opt?.controlType ?? 'control') as TControlType,
     partialValue: partialValue as Signal<TPartialValue>,
   };

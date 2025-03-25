@@ -6,6 +6,7 @@ import {
   Provider,
 } from '@angular/core';
 import { createArrayValidators } from './array';
+import { createBooleanValidators } from './boolean';
 import { createDateValidators } from './date';
 import { defaultFormatDate, defaultToDate } from './date/util';
 import { createGeneralValidators } from './general';
@@ -19,15 +20,17 @@ type MessageFactories = {
   number: Parameters<typeof createNumberValidators>[0];
   date: Parameters<typeof createDateValidators>[0];
   array: Parameters<typeof createArrayValidators>[0];
+  boolean: Parameters<typeof createBooleanValidators>[0];
   merge: Parameters<typeof createMergeValidators>[0];
 };
 
-type Validators = {
+export type Validators = {
   general: ReturnType<typeof createGeneralValidators>;
   string: ReturnType<typeof createStringValidators>;
   number: ReturnType<typeof createNumberValidators>;
   date: ReturnType<typeof createDateValidators>;
   array: ReturnType<typeof createArrayValidators>;
+  boolean: ReturnType<typeof createBooleanValidators>;
 };
 
 const token = new InjectionToken<Validators>('INTERNAL_MMSTACK_VALIDATORS');
@@ -69,7 +72,8 @@ function createValidators(
       general,
       merger,
     ),
-    array: createArrayValidators(msg.array),
+    array: createArrayValidators(msg.array, merger),
+    boolean: createBooleanValidators(msg.boolean),
   };
 }
 

@@ -1,5 +1,7 @@
 import { Validator } from './validator.type';
 
+const INTERNAL_ERROR_MERGE_DELIM = '::INTERNAL_MMSTACK_MERGE_DELIM::';
+
 export function defaultMergeMessage(errors: string[]): {
   error: string;
   tooltip: string;
@@ -34,6 +36,7 @@ function toTooltipFn(
       return {
         error: result,
         tooltip: '',
+        merged: errors.join(INTERNAL_ERROR_MERGE_DELIM),
       };
     }
 
@@ -49,6 +52,13 @@ export function mergeValidators<T>(
   return (value) => validators.map((val) => val(value)).filter(Boolean);
 }
 
+type MergeFn<T> = ((value: T) => string) & {
+  resolve: (mergedError: string) => {
+    error: string;
+    tooltip: string;
+  };
+};
+
 export function createMergeValidators(
   merge?: (errors: string[]) =>
     | string
@@ -62,6 +72,13 @@ export function createMergeValidators(
   return <T>(validators: Validator<T>[]) => {
     const validate = mergeValidators(...validators);
 
-    return (value: T) => mergeFn(validate(value));
+    const fn = ((value: T) =>
+      validate(value).join(INTERNAL_ERROR_MERGE_DELIM)) as MergeFn<T>;
+
+    fn.resolve = (mergedError: string) => {
+      return mergeFn(mergedError.split(INTERNAL_ERROR_MERGE_DELIM));
+    };
+
+    return fn;
   };
 }

@@ -32,7 +32,7 @@ const DEFAULT_MESSAGES: NumberMessageFactories = {
   integer: defaultIntegerMessageFactory,
 };
 
-type NumberValidatorOptions = {
+export type NumberValidatorOptions = {
   min?: number;
   max?: number;
   integer?: boolean;
