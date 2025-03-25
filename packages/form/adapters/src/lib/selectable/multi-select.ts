@@ -96,6 +96,13 @@ export function createMultiSelectState<T extends any[], TParent = undefined>(
     equal,
     placeholder: computed(() => opt.placeholder?.() ?? ''),
     errorTooltip: computed(() => ''),
+    disableOptionCentering: computed(
+      () => opt.disableOptionCentering?.() ?? false,
+    ),
+    overlayPanelClass: computed(() => opt.overlayPanelClass?.() ?? ''),
+    hideSingleSelectionIndicator: computed(
+      () => opt.hideSingleSelectionIndicator?.() ?? false,
+    ),
     type: 'multi-select',
   };
 }
