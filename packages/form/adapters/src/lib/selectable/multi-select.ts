@@ -88,7 +88,6 @@ export function createMultiSelectState<T extends any[], TParent = undefined>(
 
   return {
     ...state,
-    valueId,
     valueLabel,
     options,
     panelWidth: computed(() => {

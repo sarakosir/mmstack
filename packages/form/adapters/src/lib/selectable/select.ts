@@ -15,7 +15,6 @@ export type SelectState<T, TParent = undefined> = FormControlSignal<
   options: Signal<
     { id: string; value: T; label: Signal<string>; disabled: Signal<boolean> }[]
   >;
-  valueId: Signal<string | null>;
   valueLabel: Signal<string>;
   equal: (a: T, b: T) => boolean;
   panelWidth: Signal<string | number | null>;
@@ -98,7 +97,6 @@ export function createSelectState<T, TParent = undefined>(
 
   return {
     ...state,
-    valueId,
     valueLabel,
     options,
     panelWidth: computed(() => {

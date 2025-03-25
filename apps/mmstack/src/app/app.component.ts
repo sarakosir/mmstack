@@ -1,10 +1,9 @@
 import {
   Component,
   computed,
-  inject,
+  effect,
   Injectable,
   isDevMode,
-  linkedSignal,
   Signal,
   signal,
   untracked,
@@ -17,6 +16,7 @@ import {
   formGroup,
   FormGroupSignal,
 } from '@mmstack/form-core';
+import { debounced } from '@mmstack/primitives';
 import { mutationResource, queryResource } from '@mmstack/resource';
 
 type Post = {
@@ -122,61 +122,10 @@ function createPostState(post: Post, loading: Signal<boolean>): PostState {
 @Component({
   selector: 'app-root',
   imports: [FormsModule],
-  template: `
-    <label
-      >{{ formState().children().title.label() }}
-      <input
-        [(ngModel)]="formState().children().title.value"
-        [readonly]="formState().children().body.readonly()"
-        [class.error]="
-          formState().children().title.touched() &&
-          formState().children().title.error()
-        "
-      />
-    </label>
-    <br />
-
-    <label
-      >{{ formState().children().body.label() }}
-      <textarea
-        [(ngModel)]="formState().children().body.value"
-        [readonly]="formState().children().body.readonly()"
-        [class.error]="
-          formState().children().body.touched() &&
-          formState().children().body.error()
-        "
-      ></textarea>
-    </label>
-
-    {{ formState().children().body.dirty() }}
-
-    <br />
-
-    <button (click)="submit()" [disabled]="svc.loading()">Submit</button>
-  `,
+  template: ` <input [(ngModel)]="value" /> `,
 })
 export class AppComponent {
-  protected readonly svc = inject(PostsService);
+  protected readonly value = debounced('yay');
 
-  protected readonly formState = linkedSignal<Post, PostState>({
-    source: () =>
-      this.svc.post.value() ?? { title: '', body: '', id: -1, userId: -1 },
-    computation: (source, prev) => {
-      if (prev) {
-        prev.value.forceReconcile(source);
-        return prev.value;
-      }
-
-      return createPostState(source, this.svc.loading);
-    },
-  });
-
-  protected submit() {
-    if (untracked(this.svc.loading)) return;
-    const state = untracked(this.formState);
-    if (untracked(state.error)) return state.markAllAsTouched();
-    const value = untracked(state.value);
-    if (value.id === -1) this.svc.createPost(value);
-    else this.svc.updatePost(value.id, untracked(state.partialValue));
-  }
+  e = effect(() => console.log(this.value()));
 }
