@@ -187,7 +187,7 @@ export function injectSearchResourceOptions(): QueryResourceOptions<any> {
     }
   `,
 })
-export class SelectFieldComponent<T, TParent = undefined> {
+export class SearchFieldComponent<T, TParent = undefined> {
   readonly state = input.required<SearchState<T, TParent>>();
 
   readonly appearance = input<MatFormFieldAppearance>(

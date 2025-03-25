@@ -7,6 +7,13 @@ import {
 import { DerivedSignal } from '@mmstack/primitives';
 import { SelectState, SelectStateOptions } from './select';
 
+function defaultJoinLabel(labels: string[]) {
+  const first = labels.at(0);
+  if (!first) return '';
+  if (labels.length === 1) return first;
+  return `${first}, +${labels.length - 1}`;
+}
+
 export type MultiSelectState<T extends any[], TParent = undefined> = Omit<
   SelectState<T, TParent>,
   'type' | 'equal' | 'options'
@@ -25,6 +32,7 @@ export type MultiSelectStateOptions<T extends any[]> = Omit<
   identify?: SelectStateOptions<T[number]>['identify'];
   display?: SelectStateOptions<T[number]>['display'];
   disableOption?: SelectStateOptions<T[number]>['disableOption'];
+  joinLabel?: () => (labels: string[]) => string;
 };
 
 export function createMultiSelectState<T extends any[], TParent = undefined>(
@@ -42,12 +50,13 @@ export function createMultiSelectState<T extends any[], TParent = undefined>(
     equal: opt.equal ?? equal,
   });
 
-  const display = computed(() => opt.display?.() ?? ((v: T) => `${v}`));
+  const display = computed(() => opt.display?.() ?? ((v: T[number]) => `${v}`));
 
   const disableOption = computed(() => opt.disableOption?.() ?? (() => false));
 
-  const valueId = computed(() => identify()(state.value()));
-  const valueLabel = computed(() => display()(state.value()));
+  const valueIds = computed(() => new Set(state.value().map(identify())));
+  const joinLabel = computed(() => opt.joinLabel?.() ?? defaultJoinLabel);
+  const valueLabel = computed(() => joinLabel()(state.value().map(display())));
 
   const identifiedOptions = computed(() => {
     const identityFn = identify();
@@ -58,32 +67,15 @@ export function createMultiSelectState<T extends any[], TParent = undefined>(
     }));
   });
 
-  const allOptions = computed(() => {
+  const options = computed(() => {
     return identifiedOptions().map((o) => ({
       ...o,
       label: computed(() => display()(o.value)),
       disabled: computed(() => {
-        if (valueId() === o.id) return false;
+        if (valueIds().has(o.id)) return false;
         return state.disabled() || state.readonly() || disableOption()(o.value);
       }),
     }));
-  });
-
-  const options = computed(() => {
-    const currentId = valueId();
-
-    const opt = allOptions();
-    if (opt.some((o) => o.id === currentId)) return opt;
-
-    return [
-      {
-        id: currentId,
-        value: state.value(),
-        label: valueLabel,
-        disabled: computed(() => false),
-      },
-      ...opt,
-    ];
   });
 
   return {
