@@ -41,13 +41,17 @@ export function createMultiSelectState<T extends any[], TParent = undefined>(
 ): MultiSelectState<T, TParent> {
   const identify = computed(() => opt.identify?.() ?? ((v: T) => `${v}`));
 
-  const equal = (a: T, b: T) => {
+  const equal = (a: T[number], b: T[number]) => {
     return identify()(a) === identify()(b);
   };
 
   const state = formControl<T, TParent>(value, {
     ...opt,
-    equal: opt.equal ?? equal,
+    equal:
+      opt.equal ??
+      ((a: T, b: T) => {
+        return a.length === b.length && a.every((v, i) => equal(v, b[i]));
+      }),
   });
 
   const display = computed(() => opt.display?.() ?? ((v: T[number]) => `${v}`));
