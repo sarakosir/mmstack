@@ -9,6 +9,7 @@
   "homepage": "https://github.com/mihajm/mmstack/blob/master/packages/form/adapters",
   "peerDependencies": {
     "@angular/core": "~19.2.3",
+    "@angular/common": "~19.2.3",
     "@angular/forms": "~19.2.3",
     "@mmstack/form-core": "~19.0.5",
     "@mmstack/form-validation": "~19.0.1",
