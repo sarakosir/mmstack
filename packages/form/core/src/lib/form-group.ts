@@ -183,7 +183,7 @@ export function formGroup<
       if (opt?.disable?.()) return true;
       return (
         !!derivationsArray().length &&
-        derivationsArray().some((d) => d.disabled())
+        derivationsArray().every((d) => d.disabled())
       );
     },
   }) satisfies FormControlSignal<T, TParent, 'group'>;
