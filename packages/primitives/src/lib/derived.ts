@@ -6,7 +6,7 @@ import {
   type WritableSignal,
 } from '@angular/core';
 import type { UnknownObject } from '@mmstack/object';
-import { toWritable } from '@mmstack/primitives';
+import { toWritable } from './to-writable';
 
 /**
  * Options for creating a derived signal using the full `derived` function signature.
