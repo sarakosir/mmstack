@@ -19,6 +19,12 @@ const DEFAULT_MESSAGES: ArrayMessageFactories = {
   maxLength: defaultMaxLengthMessageFactory,
 };
 
+export type ArrayValidatorOptions = {
+  minLength?: number;
+  maxLength?: number;
+  elementsLabel?: string;
+};
+
 export function createArrayValidators(
   factories?: Partial<ArrayMessageFactories>,
   merger = createMergeValidators(),
@@ -31,13 +37,13 @@ export function createArrayValidators(
 
   return {
     ...base,
-    all: <T extends any[]>(opt: { minLength?: number; maxLength?: number }) => {
+    all: <T extends any[]>(opt: ArrayValidatorOptions) => {
       const validators: Validator<T>[] = [];
 
       if (opt.minLength !== undefined)
-        validators.push(base.minLength(opt.minLength));
+        validators.push(base.minLength(opt.minLength, opt.elementsLabel));
       if (opt.maxLength !== undefined)
-        validators.push(base.maxLength(opt.maxLength));
+        validators.push(base.maxLength(opt.maxLength, opt.elementsLabel));
 
       return merger(validators);
     },

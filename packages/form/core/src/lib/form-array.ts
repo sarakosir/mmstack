@@ -31,7 +31,7 @@ function maxArrayLengthValidator(max: number, elementLabel: string) {
   return (val: any[]) => (val.length <= max ? '' : msg);
 }
 
-export type ArrayValidatorOpt = {
+type ArrayValidatorOpt = {
   min?: number;
   max?: number;
   elementLabel?: string;

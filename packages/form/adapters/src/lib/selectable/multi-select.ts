@@ -1,6 +1,9 @@
 import { computed, Signal } from '@angular/core';
 import { formControl } from '@mmstack/form-core';
-import { injectValidators } from '@mmstack/form-validation';
+import {
+  ArrayValidatorOptions,
+  injectValidators,
+} from '@mmstack/form-validation';
 import { DerivedSignal } from '@mmstack/primitives';
 import { SelectState, SelectStateOptions } from './select';
 
@@ -113,10 +116,7 @@ export function injectCreateMultiSelectState() {
   return <T extends any[], TParent = undefined>(
     value: T | DerivedSignal<TParent, T>,
     opt: Omit<SelectStateOptions<T>, 'required' | 'validator'> & {
-      validation?: () => {
-        minLength?: number;
-        maxLength?: number;
-      };
+      validation?: () => ArrayValidatorOptions;
     },
   ): MultiSelectState<T, TParent> => {
     const validation = computed(() => ({
