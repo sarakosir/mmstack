@@ -82,7 +82,7 @@ export function createSelectState<T, TParent = undefined>(
     const currentId = valueId();
 
     const opt = allOptions();
-    if (opt.some((o) => o.id === currentId)) return opt;
+    if (opt.length && opt.some((o) => o.id === currentId)) return opt;
 
     return [
       {

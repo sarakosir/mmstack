@@ -8,7 +8,6 @@ import {
 } from '@mmstack/form-core';
 import { injectValidators } from '@mmstack/form-validation';
 import { debounced } from '@mmstack/primitives';
-import { QueryResourceOptions } from '@mmstack/resource';
 
 export type SearchState<T, TParent = undefined> = FormControlSignal<
   T,
@@ -21,9 +20,14 @@ export type SearchState<T, TParent = undefined> = FormControlSignal<
   disableOption: Signal<(item: NoInfer<T>) => boolean>;
   query: WritableSignal<string>;
   request: Signal<HttpResourceRequest | undefined>;
-  resourceOptions: QueryResourceOptions<T[]>;
   panelWidth: Signal<string | number | null>;
+  disableOptionCentering: Signal<boolean>;
+  hideSingleSelectionIndicator: Signal<boolean>;
+  overlayPanelClass: Signal<string>;
   type: 'search';
+  valueLabel: Signal<string>;
+  valueId: Signal<string>;
+  onSelected: (value: T) => void;
 };
 
 export type SearchStateOptions<T> = CreateFormControlOptions<T, 'control'> & {
@@ -35,8 +39,10 @@ export type SearchStateOptions<T> = CreateFormControlOptions<T, 'control'> & {
   toRequest: () => (query: string) => HttpResourceRequest | undefined;
   panelWidth?: () => string | number | null;
   onSelected?: (value: T) => void;
+  disableOptionCentering?: () => boolean;
+  hideSingleSelectionIndicator?: () => boolean;
+  overlayPanelClass?: () => string;
   debounce?: number;
-  resourceOptions?: QueryResourceOptions<T[]>;
 };
 
 export function createSearchState<T, TParent = undefined>(
@@ -62,6 +68,12 @@ export function createSearchState<T, TParent = undefined>(
 
   const toRequest = computed(() => opt.toRequest());
 
+  const onSelected =
+    opt.onSelected ??
+    (() => {
+      // noop
+    });
+
   return {
     ...state,
     placeholder: computed(() => opt.placeholder?.() ?? ''),
@@ -70,13 +82,26 @@ export function createSearchState<T, TParent = undefined>(
     displayWith,
     disableOption,
     query,
-    request: computed(() => toRequest()(query())),
+    request: computed(() => {
+      if (state.disabled() || state.readonly()) return;
+
+      return toRequest()(query());
+    }),
     panelWidth: computed(() => {
       const pw = opt.panelWidth?.();
       if (!pw || pw === 'auto') return null;
       return pw;
     }),
-    resourceOptions: opt.resourceOptions ?? {},
+    disableOptionCentering: computed(
+      () => opt.disableOptionCentering?.() ?? false,
+    ),
+    overlayPanelClass: computed(() => opt.overlayPanelClass?.() ?? ''),
+    hideSingleSelectionIndicator: computed(
+      () => opt.hideSingleSelectionIndicator?.() ?? false,
+    ),
+    valueLabel: computed(() => displayWith()(state.value())),
+    valueId: computed(() => identify()(state.value())),
+    onSelected,
     type: 'search',
   };
 }

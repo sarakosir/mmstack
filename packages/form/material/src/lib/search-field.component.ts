@@ -1,0 +1,266 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  InjectionToken,
+  input,
+  Provider,
+  viewChild,
+  ViewEncapsulation,
+} from '@angular/core';
+import { FormsModule, NgModel } from '@angular/forms';
+import {
+  FloatLabelType,
+  MAT_FORM_FIELD_DEFAULT_OPTIONS,
+  MatError,
+  MatFormField,
+  MatFormFieldAppearance,
+  MatHint,
+  MatLabel,
+  SubscriptSizing,
+} from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import {
+  MatOption,
+  MatSelect,
+  MatSelectTrigger,
+} from '@angular/material/select';
+import { SearchState, SignalErrorValidator } from '@mmstack/form-adapters';
+import { queryResource, QueryResourceOptions } from '@mmstack/resource';
+
+const SEARCH_QUERY_RESOURCE_OPTIONS = new InjectionToken<
+  QueryResourceOptions<any>
+>('MMSTACK_SEARCH_QUERY_RESOURCE_OPTIONS');
+
+export function provideSearchResourceOptions(
+  opt: QueryResourceOptions<any>,
+): Provider {
+  return {
+    provide: SEARCH_QUERY_RESOURCE_OPTIONS,
+    useValue: opt,
+  };
+}
+
+export function injectSearchResourceOptions(): QueryResourceOptions<any> {
+  return (
+    inject(SEARCH_QUERY_RESOURCE_OPTIONS, { optional: true }) ?? {
+      keepPrevious: true,
+      defaultValue: [],
+    }
+  );
+}
+
+@Component({
+  selector: 'mm-search-field',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+  imports: [
+    FormsModule,
+    MatFormField,
+    MatLabel,
+    MatHint,
+    MatError,
+    MatSelect,
+    MatOption,
+    MatSelectTrigger,
+    MatInput,
+    MatProgressSpinner,
+    SignalErrorValidator,
+  ],
+  host: {
+    class: 'mm-search-field',
+  },
+  template: `
+    <mat-form-field
+      [appearance]="appearance()"
+      [floatLabel]="floatLabel()"
+      [subscriptSizing]="subscriptSizing()"
+      [hideRequiredMarker]="hideRequiredMarker()"
+    >
+      <mat-label>{{ state().label() }}</mat-label>
+
+      <mat-select
+        [class.readonly]="state().readonly()"
+        [(ngModel)]="state().value"
+        [required]="state().required()"
+        [mmSignalError]="state().error()"
+        [panelWidth]="state().panelWidth()"
+        [disabled]="state().disabled()"
+        [compareWith]="state().equal"
+        [placeholder]="state().placeholder()"
+        [disableOptionCentering]="state().disableOptionCentering()"
+        [hideSingleSelectionIndicator]="state().hideSingleSelectionIndicator()"
+        (blur)="state().markAsTouched()"
+        (closed)="state().markAsTouched()"
+      >
+        <mat-select-trigger>
+          {{ state().valueLabel() }}
+        </mat-select-trigger>
+
+        <mat-option disabled>
+          <div>
+            <input
+              #searchInput
+              #searchModel="ngModel"
+              class="mm-search-select-input"
+              matInput
+              [disabled]="state().disabled() || state().readonly()"
+              [(ngModel)]="state().query"
+              [placeholder]="state().searchPlaceholder()"
+              (input)="$event.stopPropagation()"
+            />
+            <mat-progress-spinner
+              matSuffix
+              [style.visibility]="resource.isLoading() ? 'visible' : 'hidden'"
+              mode="indeterminate"
+              diameter="15"
+            />
+          </div>
+        </mat-option>
+
+        @for (opt of options(); track opt.id) {
+          <mat-option
+            [value]="opt.value"
+            [disabled]="opt.disabled()"
+            (onSelectionChange)="
+              $event.isUserInput && state().onSelected(opt.value)
+            "
+          >
+            {{ opt.label() }}
+          </mat-option>
+        }
+      </mat-select>
+
+      <mat-error>{{ state().error() }}</mat-error>
+
+      @if (state().hint()) {
+        <mat-hint>{{ state().hint() }}</mat-hint>
+      }
+
+      <ng-content />
+    </mat-form-field>
+  `,
+  styles: `
+    .mm-search-field {
+      display: contents;
+
+      mat-form-field {
+        width: 100%;
+
+        input.mm-search-select-input {
+          padding-top: 10px;
+
+          &::placeholder {
+            opacity: 0.8;
+          }
+        }
+
+        .mat-mdc-option[aria-disabled='true']:has(
+            input.mm-search-select-input
+          ) {
+          position: sticky;
+          top: -8px;
+          z-index: 1;
+          opacity: 1;
+          margin-top: -8px;
+          pointer-events: all;
+          background: inherit;
+          border-bottom: 1px solid var(--mat-sys-outline);
+          span.mdc-list-item__primary-text {
+            width: 100%;
+          }
+
+          div {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+          }
+
+          .mdc-list-item__primary-text {
+            opacity: 1;
+          }
+        }
+      }
+    }
+  `,
+})
+export class SelectFieldComponent<T, TParent = undefined> {
+  readonly state = input.required<SearchState<T, TParent>>();
+
+  readonly appearance = input<MatFormFieldAppearance>(
+    inject(MAT_FORM_FIELD_DEFAULT_OPTIONS, { optional: true })?.appearance ??
+      'fill',
+  );
+  readonly floatLabel = input<FloatLabelType>(
+    inject(MAT_FORM_FIELD_DEFAULT_OPTIONS, { optional: true })?.floatLabel ??
+      'auto',
+  );
+  readonly subscriptSizing = input<SubscriptSizing>(
+    inject(MAT_FORM_FIELD_DEFAULT_OPTIONS, { optional: true })
+      ?.subscriptSizing ?? 'fixed',
+  );
+  readonly hideRequiredMarker = input<boolean>(
+    inject(MAT_FORM_FIELD_DEFAULT_OPTIONS, { optional: true })
+      ?.hideRequiredMarker ?? false,
+  );
+
+  private readonly model = viewChild.required(NgModel);
+
+  protected readonly resource = queryResource<T[]>(
+    () => this.state().request(),
+    injectSearchResourceOptions(),
+  );
+
+  private readonly identifiedOptions = computed(() => {
+    const identify = this.state().identify();
+
+    return (this.resource.value() ?? []).map((value) => ({
+      value,
+      id: identify(value),
+    }));
+  });
+
+  private readonly allOptions = computed(() =>
+    this.identifiedOptions().map((o) => {
+      return {
+        ...o,
+        label: computed(() => this.state().displayWith()(o.value)),
+        disabled: computed(() => {
+          if (o.id === this.state().valueId()) return false;
+          return (
+            this.state().disabled() ||
+            this.state().readonly() ||
+            this.state().disableOption()(o.value)
+          );
+        }),
+      };
+    }),
+  );
+
+  protected readonly options = computed(() => {
+    const curId = this.state().valueId();
+    const opt = this.allOptions();
+
+    if (opt.length && opt.some((o) => o.id === curId)) return opt;
+
+    return [
+      {
+        id: curId,
+        value: this.state().value(),
+        label: computed(() => this.state().valueLabel()),
+        disabled: computed(() => false),
+      },
+      ...opt,
+    ];
+  });
+
+  constructor() {
+    effect(() => {
+      if (this.state().touched()) this.model().control.markAsTouched();
+      else this.model().control.markAsUntouched();
+    });
+  }
+}

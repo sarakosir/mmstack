@@ -12,8 +12,7 @@
     "@angular/forms": "~19.2.3",
     "@mmstack/form-core": "~19.0.5",
     "@mmstack/form-validation": "~19.0.1",
-    "@mmstack/primitives": "~19.0.2",
-    "@mmstack/resource": "~19.0.5"
+    "@mmstack/primitives": "~19.0.2"
   },
   "sideEffects": false
 }
