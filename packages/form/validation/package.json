@@ -1,9 +1,16 @@
 {
   "name": "@mmstack/form-validation",
-  "version": "0.0.1",
+  "version": "19.0.0",
+  "keywords": ["angular", "signals", "form", "validation", "error"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mihajm/mmstack"
+  },
+  "homepage": "https://github.com/mihajm/mmstack/blob/master/packages/form/validation",
   "peerDependencies": {
-    "@angular/common": "^19.2.0",
-    "@angular/core": "^19.2.0"
+    "@angular/core": "~19.2.3",
+    "@angular/common": "~19.2.3",
+    "@mmstack/form-core": "~19.0.3"
   },
   "sideEffects": false
 }

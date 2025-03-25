@@ -1,1 +1,1 @@
-export * from './lib/form-validation.component';
+export * from './lib/validators';
