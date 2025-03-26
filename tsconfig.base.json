@@ -21,7 +21,9 @@
       "@mmstack/form-validation": ["packages/form/validation/src/index.ts"],
       "@mmstack/object": ["packages/common/object/src/index.ts"],
       "@mmstack/primitives": ["packages/primitives/src/index.ts"],
-      "@mmstack/resource": ["packages/resource/src/index.ts"]
+      "@mmstack/resource": ["packages/resource/src/index.ts"],
+      "@mmstack/table-core": ["packages/table/core/src/index.ts"],
+      "@mmstack/table-material": ["packages/table/material/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
