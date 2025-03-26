@@ -5,7 +5,7 @@ import {
   createButtonGroupState as genericCreateButtonGroupState,
   injectCreateButtonGroupState as genericInjectCreateButtonGroupState,
 } from '@mmstack/form-adapters';
-import { DerivedSignal } from '@mmstack/primitives';
+import { DerivedSignal } from '@mmstack/form-core';
 
 export type ButtonGroupState<T, TParent = undefined> = GenericButtonGroupState<
   T,
