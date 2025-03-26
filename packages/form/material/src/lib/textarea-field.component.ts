@@ -2,6 +2,7 @@ import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   input,
@@ -52,7 +53,7 @@ import { SignalErrorValidator, TextareaState } from './adapters';
 
       <textarea
         matInput
-        [cdkTextareaAutosize]="state().autosize()"
+        [cdkTextareaAutosize]="autosize()"
         [cdkAutosizeMinRows]="state().minRows()"
         [cdkAutosizeMaxRows]="state().maxRows()"
         [rows]="state().rows()"
@@ -106,6 +107,10 @@ export class TextareaFieldComponent<TParent = undefined> {
   );
 
   private readonly model = viewChild.required(NgModel);
+
+  protected readonly autosize = computed(
+    () => this.state().autosize?.() ?? true,
+  );
 
   constructor() {
     effect(() => {

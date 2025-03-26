@@ -1,1 +1,1 @@
-export * from './lib/table-core.component';
+export * from './lib/util/public_api';

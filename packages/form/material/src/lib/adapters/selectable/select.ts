@@ -8,11 +8,10 @@ import {
 import { DerivedSignal } from '@mmstack/form-core';
 
 export type MaterialSelectStateExtension = {
-  disableOptionCentering: Signal<boolean>;
-  hideSingleSelectionIndicator: Signal<boolean>;
-  overlayPanelClass: Signal<string>;
-  panelWidth: Signal<string | number | null>;
-  prefixIcon: Signal<string>;
+  disableOptionCentering?: Signal<boolean>;
+  hideSingleSelectionIndicator?: Signal<boolean>;
+  panelWidth?: Signal<string | number | null>;
+  prefixIcon?: Signal<string>;
 };
 
 export type SelectState<T, TParent = undefined> = GenericSelectState<
@@ -24,7 +23,6 @@ export type SelectState<T, TParent = undefined> = GenericSelectState<
 export type MaterialSelectStateOptionsExtension = {
   disableOptionCentering?: () => boolean;
   hideSingleSelectionIndicator?: () => boolean;
-  overlayPanelClass?: () => string;
   panelWidth?: () => string | number | null;
   prefixIcon?: () => string;
 };
@@ -46,7 +44,6 @@ export function toMaterialSelectSpecifics<T>(
     disableOptionCentering: computed(
       () => opt.disableOptionCentering?.() ?? false,
     ),
-    overlayPanelClass: computed(() => opt.overlayPanelClass?.() ?? ''),
     hideSingleSelectionIndicator: computed(
       () => opt.hideSingleSelectionIndicator?.() ?? false,
     ),

@@ -12,8 +12,8 @@ export type DateState<TParent = undefined, TDate = Date> = GenericDateState<
   TParent,
   TDate
 > & {
-  min: Signal<Date | null>;
-  max: Signal<Date | null>;
+  min?: Signal<Date | null>;
+  max?: Signal<Date | null>;
 };
 
 export type DateStateOptions<TDate = Date> = GenericDateStateOptions<TDate> & {

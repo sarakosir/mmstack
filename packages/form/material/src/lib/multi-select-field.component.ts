@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   input,
@@ -58,8 +59,8 @@ import { MultiSelectState, SignalErrorValidator } from './adapters';
     >
       <mat-label>{{ state().label() }}</mat-label>
 
-      @if (state().prefixIcon()) {
-        <mat-icon matPrefix>{{ state().prefixIcon() }}</mat-icon>
+      @if (prefixIcon()) {
+        <mat-icon matPrefix>{{ prefixIcon() }}</mat-icon>
       }
 
       <mat-select
@@ -68,12 +69,12 @@ import { MultiSelectState, SignalErrorValidator } from './adapters';
         [(ngModel)]="state().value"
         [required]="state().required()"
         [mmSignalError]="state().error()"
-        [panelWidth]="state().panelWidth()"
+        [panelWidth]="panelWidth()"
         [disabled]="state().disabled()"
         [compareWith]="state().equal"
         [placeholder]="state().placeholder()"
-        [disableOptionCentering]="state().disableOptionCentering()"
-        [hideSingleSelectionIndicator]="state().hideSingleSelectionIndicator()"
+        [disableOptionCentering]="disableOptionCentering()"
+        [hideSingleSelectionIndicator]="hideSingleSelectionIndicator()"
         (blur)="state().markAsTouched()"
         (closed)="state().markAsTouched()"
       >
@@ -128,6 +129,22 @@ export class MultiSelectFieldComponent<T extends any[], TParent = undefined> {
   );
 
   private readonly model = viewChild.required(NgModel);
+
+  protected readonly prefixIcon = computed(
+    () => this.state().prefixIcon?.() ?? '',
+  );
+
+  protected readonly panelWidth = computed(
+    () => this.state().panelWidth?.() ?? 'auto',
+  );
+
+  protected readonly disableOptionCentering = computed(
+    () => this.state().disableOptionCentering?.() ?? false,
+  );
+
+  protected readonly hideSingleSelectionIndicator = computed(
+    () => this.state().hideSingleSelectionIndicator?.() ?? false,
+  );
 
   constructor() {
     effect(() => {

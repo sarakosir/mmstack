@@ -10,7 +10,7 @@ import { StringValidatorOptions } from '@mmstack/form-validation';
 
 export type TextareaState<TParent = undefined> =
   GenericTextareaState<TParent> & {
-    autosize: Signal<boolean>;
+    autosize?: Signal<boolean>;
   };
 
 export type TextareaStateOptions = GenericTextareaStateOptions & {

@@ -8,7 +8,7 @@ import {
 import { type DerivedSignal } from '@mmstack/form-core';
 
 export type MaterialBooleanStateExtension = {
-  labelPosition: Signal<'before' | 'after'>;
+  labelPosition?: Signal<'before' | 'after'>;
 };
 
 export type BooleanState<TParent = undefined> = GenericBooleanState<TParent> &

@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   input,
   viewChild,
@@ -26,6 +27,7 @@ import { BooleanState, SignalErrorValidator } from './adapters';
         [class.error]="!!state().error()"
         [disabled]="state().disabled()"
         [required]="state().required()"
+        [labelPosition]="labelPosition()"
         [(ngModel)]="state().value"
         (ngModelChange)="state().markAsTouched()"
         [mmSignalError]="state().error()"
@@ -104,6 +106,10 @@ export class BooleanFieldComponent<TParent = undefined> {
   readonly state = input.required<BooleanState<TParent>>();
 
   private readonly model = viewChild.required(NgModel);
+
+  protected readonly labelPosition = computed(
+    () => this.state().labelPosition?.() ?? 'after',
+  );
 
   constructor() {
     effect(() => {

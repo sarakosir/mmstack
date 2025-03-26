@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   input,
@@ -60,8 +61,8 @@ import { AutocompleteState, SignalErrorValidator } from './adapters';
     >
       <mat-label>{{ state().label() }}</mat-label>
 
-      @if (state().prefixIcon()) {
-        <mat-icon matPrefix>{{ state().prefixIcon() }}</mat-icon>
+      @if (prefixIcon()) {
+        <mat-icon matPrefix>{{ prefixIcon() }}</mat-icon>
       }
 
       <input
@@ -77,7 +78,7 @@ import { AutocompleteState, SignalErrorValidator } from './adapters';
         (blur)="state().markAsTouched()"
       />
 
-      <mat-autocomplete #auto [panelWidth]="state().panelWidth()">
+      <mat-autocomplete #auto [panelWidth]="panelWidth()">
         @for (opt of state().options(); track opt.value) {
           <mat-option [value]="opt.value">{{ opt.label() }}</mat-option>
         }
@@ -123,6 +124,14 @@ export class AutocompleteFieldComponent<TParent = undefined> {
   );
 
   private readonly model = viewChild.required(NgModel);
+
+  protected readonly prefixIcon = computed(
+    () => this.state().prefixIcon?.() ?? '',
+  );
+
+  protected readonly panelWidth = computed(
+    () => this.state().panelWidth?.() ?? 'auto',
+  );
 
   constructor() {
     effect(() => {

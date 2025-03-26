@@ -17,7 +17,7 @@ export type SearchState<T, TParent = undefined> = GenericSearchState<
   TParent
 > &
   MaterialSelectStateExtension & {
-    searchPlaceholder: Signal<string>;
+    searchPlaceholder?: Signal<string>;
   };
 
 export type SearchStateOptions<T> = GenericSearchStateOptions<T> &

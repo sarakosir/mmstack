@@ -88,8 +88,8 @@ export function injectSearchResourceOptions(): QueryResourceOptions<any> {
     >
       <mat-label>{{ state().label() }}</mat-label>
 
-      @if (state().prefixIcon()) {
-        <mat-icon matPrefix>{{ state().prefixIcon() }}</mat-icon>
+      @if (prefixIcon()) {
+        <mat-icon matPrefix>{{ prefixIcon() }}</mat-icon>
       }
 
       <mat-select
@@ -97,12 +97,12 @@ export function injectSearchResourceOptions(): QueryResourceOptions<any> {
         [(ngModel)]="state().value"
         [required]="state().required()"
         [mmSignalError]="state().error()"
-        [panelWidth]="state().panelWidth()"
+        [panelWidth]="panelWidth()"
         [disabled]="state().disabled()"
         [compareWith]="state().equal"
         [placeholder]="state().placeholder()"
-        [disableOptionCentering]="state().disableOptionCentering()"
-        [hideSingleSelectionIndicator]="state().hideSingleSelectionIndicator()"
+        [disableOptionCentering]="disableOptionCentering()"
+        [hideSingleSelectionIndicator]="hideSingleSelectionIndicator()"
         (blur)="state().markAsTouched()"
         (closed)="state().markAsTouched(); cancelFocus()"
         (opened)="focus(searchInput)"
@@ -120,7 +120,7 @@ export function injectSearchResourceOptions(): QueryResourceOptions<any> {
               matInput
               [disabled]="state().disabled() || state().readonly()"
               [(ngModel)]="state().query"
-              [placeholder]="state().searchPlaceholder()"
+              [placeholder]="searchPlaceholder()"
               (input)="$event.stopPropagation()"
             />
             <mat-progress-spinner
@@ -214,6 +214,26 @@ export class SearchFieldComponent<T, TParent = undefined> {
   readonly hideRequiredMarker = input<boolean>(
     inject(MAT_FORM_FIELD_DEFAULT_OPTIONS, { optional: true })
       ?.hideRequiredMarker ?? false,
+  );
+
+  protected readonly searchPlaceholder = computed(
+    () => this.state().searchPlaceholder?.() ?? '',
+  );
+
+  protected readonly prefixIcon = computed(
+    () => this.state().prefixIcon?.() ?? '',
+  );
+
+  protected readonly panelWidth = computed(
+    () => this.state().panelWidth?.() ?? 'auto',
+  );
+
+  protected readonly disableOptionCentering = computed(
+    () => this.state().disableOptionCentering?.() ?? false,
+  );
+
+  protected readonly hideSingleSelectionIndicator = computed(
+    () => this.state().hideSingleSelectionIndicator?.() ?? false,
   );
 
   private readonly model = viewChild.required(NgModel);

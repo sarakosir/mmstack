@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
+import { injectCreateStringState, StringState } from '@mmstack/form-adapters';
 import {
   BooleanFieldComponent,
   BooleanState,
@@ -20,11 +21,9 @@ import {
   injectCreateBooleanState,
   injectCreateDateState,
   injectCreateSearchState,
-  injectCreateStringState,
   SearchFieldComponent,
   SearchState,
   StringFieldComponent,
-  StringState,
 } from '@mmstack/form-material';
 
 type Todo = {
@@ -126,6 +125,7 @@ function injectCreateTodoState() {
         <mat-card-title>Todo</mat-card-title>
       </mat-card-header>
       <mat-card-content>
+        <mm-string-field [state]="state().children().title" />
         <mm-date-field [state]="state().children().createdOn" />
       </mat-card-content>
 

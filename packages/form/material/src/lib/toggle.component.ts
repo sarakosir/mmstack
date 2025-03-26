@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   input,
   viewChild,
@@ -24,6 +25,7 @@ import { SignalErrorValidator, ToggleState } from './adapters';
         class="mm-toggle"
         [class.readonly]="state().readonly()"
         [class.error]="!!state().error()"
+        [labelPosition]="labelPosition()"
         [disabled]="state().disabled()"
         [required]="state().required()"
         [(ngModel)]="state().value"
@@ -105,6 +107,10 @@ export class ToggleFieldComponent<TParent = undefined> {
   readonly state = input.required<ToggleState<TParent>>();
 
   private readonly model = viewChild.required(NgModel);
+
+  protected readonly labelPosition = computed(
+    () => this.state().labelPosition?.() ?? 'after',
+  );
 
   constructor() {
     effect(() => {

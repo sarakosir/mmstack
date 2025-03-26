@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   input,
@@ -66,8 +67,8 @@ import { DateState, SignalErrorValidator } from './adapters';
         [required]="state().required()"
         [placeholder]="state().placeholder()"
         [matDatepicker]="picker"
-        [min]="state().min()"
-        [max]="state().max()"
+        [min]="min()"
+        [max]="max()"
         [mmSignalError]="state().error()"
         (blur)="state().markAsTouched()"
       />
@@ -119,6 +120,9 @@ export class DateFieldComponent<TParent = undefined, TDate = Date> {
   );
 
   private readonly model = viewChild.required(NgModel);
+
+  protected readonly min = computed(() => this.state().min?.() ?? null);
+  protected readonly max = computed(() => this.state().max?.() ?? null);
 
   constructor() {
     effect(() => {

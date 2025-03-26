@@ -2,6 +2,7 @@ import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   input,
@@ -31,9 +32,9 @@ import { ButtonGroupState } from './adapters';
     <mat-button-toggle-group
       [appearance]="appearance()"
       [disabledInteractive]="disabledInteractive()"
-      [hideSingleSelectionIndicator]="state().hideSingleSelectionIndicator()"
+      [hideSingleSelectionIndicator]="hideSingleSelectionIndicator()"
       [disabled]="state().disabled()"
-      [vertical]="state().vertical()"
+      [vertical]="vertical()"
       [matTooltip]="state().hint()"
       [(ngModel)]="state().value"
       (ngModelChange)="state().markAsTouched()"
@@ -69,6 +70,14 @@ export class ReactiveButtonGroupComponent<T, TParent = undefined> {
   readonly state = input.required<ButtonGroupState<T, TParent>>();
 
   private readonly model = viewChild.required(NgModel);
+
+  protected readonly hideSingleSelectionIndicator = computed(
+    () => this.state().hideSingleSelectionIndicator?.() ?? false,
+  );
+
+  protected readonly vertical = computed(
+    () => this.state().vertical?.() ?? false,
+  );
 
   constructor() {
     effect(() => {

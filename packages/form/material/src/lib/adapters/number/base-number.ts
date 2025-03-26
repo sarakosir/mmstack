@@ -9,7 +9,7 @@ import { type DerivedSignal } from '@mmstack/form-core';
 import { type NumberValidatorOptions } from '@mmstack/form-validation';
 
 export type MaterialNumberStateExtension = {
-  prefixIcon: Signal<string>;
+  prefixIcon?: Signal<string>;
 };
 
 export type MaterialNumberStateOptionsExtension = {

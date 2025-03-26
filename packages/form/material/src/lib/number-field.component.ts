@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   input,
@@ -52,8 +53,8 @@ import { NumberState, SignalErrorValidator } from './adapters';
     >
       <mat-label>{{ state().label() }}</mat-label>
 
-      @if (state().prefixIcon()) {
-        <mat-icon matPrefix>{{ state().prefixIcon() }}</mat-icon>
+      @if (prefixIcon()) {
+        <mat-icon matPrefix>{{ prefixIcon() }}</mat-icon>
       }
 
       <input
@@ -108,6 +109,10 @@ export class NumberFieldComponent<TParent = undefined> {
   );
 
   private readonly model = viewChild.required(NgModel);
+
+  protected readonly prefixIcon = computed(
+    () => this.state().prefixIcon?.() ?? '',
+  );
 
   constructor() {
     effect(() => {

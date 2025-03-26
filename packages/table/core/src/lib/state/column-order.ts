@@ -1,0 +1,1 @@
+export type ColumnOrderValue = string[];

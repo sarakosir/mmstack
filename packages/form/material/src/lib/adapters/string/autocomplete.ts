@@ -16,7 +16,7 @@ import {
 export type AutocompleteState<TParent = undefined> =
   GenericAutocompleteState<TParent> &
     MaterialStringStateExtension & {
-      panelWidth: Signal<string | number>;
+      panelWidth?: Signal<string | number>;
     };
 
 export type AutocompleteStateOptions = GenericAutocompleteStateOptions &

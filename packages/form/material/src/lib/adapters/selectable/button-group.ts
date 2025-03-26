@@ -11,8 +11,8 @@ export type ButtonGroupState<T, TParent = undefined> = GenericButtonGroupState<
   T,
   TParent
 > & {
-  hideSingleSelectionIndicator: Signal<boolean>;
-  vertical: Signal<boolean>;
+  hideSingleSelectionIndicator?: Signal<boolean>;
+  vertical?: Signal<boolean>;
 };
 
 export type ButtonGroupStateOptions<T> = GenericButtonGroupStateOptions<T> & {
