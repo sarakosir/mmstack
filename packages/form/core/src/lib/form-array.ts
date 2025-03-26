@@ -13,41 +13,6 @@ import {
 } from './form-control';
 import { type SignalValue } from './signal-value.type';
 
-function minArrayLengthMsg(min: number, elementLabel: string) {
-  return `Min ${min} ${elementLabel}`;
-}
-
-function maxArrayLengthMsg(max: number, elementLabel: string) {
-  return `Max ${max} ${elementLabel}`;
-}
-
-function minArrayLengthValidator(min: number, elementLabel: string) {
-  const msg = minArrayLengthMsg(min, elementLabel);
-  return (val: any[]) => (val.length >= min ? '' : msg);
-}
-
-function maxArrayLengthValidator(max: number, elementLabel: string) {
-  const msg = maxArrayLengthMsg(max, elementLabel);
-  return (val: any[]) => (val.length <= max ? '' : msg);
-}
-
-type ArrayValidatorOpt = {
-  min?: number;
-  max?: number;
-  elementLabel?: string;
-};
-
-export function arrayValidator<T extends any[]>(opt: ArrayValidatorOpt = {}) {
-  const min = opt.min ?? 0;
-  const max = opt.max ?? Number.MAX_SAFE_INTEGER;
-  const elementLabel = opt.elementLabel ?? 'items';
-
-  const minVal = minArrayLengthValidator(min, elementLabel);
-  const maxVal = maxArrayLengthValidator(max, elementLabel);
-
-  return (val: T) => minVal(val) || maxVal(val);
-}
-
 export type FormArraySignal<
   T,
   TIndividualState extends FormControlSignal<
@@ -77,10 +42,10 @@ export type FormArraySignal<
 export type CreateFormArraySignalOptions<
   T,
   TIndividualState extends FormControlSignal<T, any, any, any>,
-> = CreateFormControlOptions<T> & {
+> = Omit<CreateFormControlOptions<T[]>, 'equal'> & {
   min?: () => number;
   max?: () => number;
-  elementLabel?: () => string;
+  equal?: (a: T, b: T) => boolean;
   toPartialValue?: (
     v: T,
   ) => Exclude<SignalValue<TIndividualState['partialValue']>, null | undefined>;
@@ -90,12 +55,8 @@ function createReconcileChildren<
   T,
   TIndividualState extends FormControlSignal<T, any, any, any>,
 >(
-  factory: (
-    val: DerivedSignal<T[], T>,
-    idx: number,
-    opt?: CreateFormControlOptions<T>,
-  ) => TIndividualState,
-  opt?: CreateFormControlOptions<T>,
+  factory: (val: DerivedSignal<T[], T>, idx: number) => TIndividualState,
+  opt: { equal: (a: T, b: T) => boolean },
 ) {
   return (
     length: number,
@@ -107,7 +68,7 @@ function createReconcileChildren<
 
       for (let i = 0; i < length; i++) {
         nextControls.push(
-          factory(derived(source, i, { equal: opt?.equal }), i, opt),
+          factory(derived(source, i, { equal: opt?.equal }), i),
         );
       }
 
@@ -120,7 +81,7 @@ function createReconcileChildren<
       next.splice(length);
     } else if (length > prev.length) {
       for (let i = prev.length; i < length; i++) {
-        next.push(factory(derived(source, i, { equal: opt?.equal }), i, opt));
+        next.push(factory(derived(source, i, { equal: opt?.equal }), i));
       }
     }
 
@@ -139,11 +100,7 @@ export function formArray<
   TParent = undefined,
 >(
   initial: T[] | DerivedSignal<TParent, T[]>,
-  factory: (
-    val: DerivedSignal<T[], T>,
-    idx: number,
-    opt?: CreateFormControlOptions<T>,
-  ) => TIndividualState,
+  factory: (val: DerivedSignal<T[], T>, idx: number) => TIndividualState,
   opt?: CreateFormArraySignalOptions<T, TIndividualState>,
 ): FormArraySignal<T, TIndividualState, TParent> {
   const eq = opt?.equal ?? Object.is;
@@ -157,19 +114,10 @@ export function formArray<
 
   const min = computed(() => opt?.min?.() ?? 0);
   const max = computed(() => opt?.max?.() ?? Number.MAX_SAFE_INTEGER);
-  const elementLabel = computed(() => opt?.elementLabel?.() ?? 'items');
-
-  const validator = () =>
-    arrayValidator<T[]>({
-      min: min(),
-      max: max(),
-      elementLabel: elementLabel(),
-    });
 
   const arrayOptions: CreateFormControlOptions<T[], 'array'> = {
     ...opt,
     equal: arrayEqual,
-    validator,
     dirtyEquality: (a, b) => a.length === b.length,
     controlType: 'array',
   };
@@ -183,7 +131,7 @@ export function formArray<
 
   const reconcileChildren = createReconcileChildren<T, TIndividualState>(
     factory,
-    opt,
+    { equal: eq },
   );
 
   // linkedSignal used to re-use previous value so that only length changes are affected and existing controls are kept, but updated
@@ -192,7 +140,7 @@ export function formArray<
     computation: (len, prev) => reconcileChildren(len, ctrl.value, prev?.value),
   });
 
-  const ownError = computed(() => validator()(ctrl.value()));
+  const ownError = computed(() => ctrl.error());
 
   const error = computed((): string => {
     const own = ownError();
