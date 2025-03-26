@@ -12,6 +12,7 @@ export type MaterialSelectStateExtension = {
   hideSingleSelectionIndicator: Signal<boolean>;
   overlayPanelClass: Signal<string>;
   panelWidth: Signal<string | number | null>;
+  prefixIcon: Signal<string>;
 };
 
 export type SelectState<T, TParent = undefined> = GenericSelectState<
@@ -25,6 +26,7 @@ export type MaterialSelectStateOptionsExtension = {
   hideSingleSelectionIndicator?: () => boolean;
   overlayPanelClass?: () => string;
   panelWidth?: () => string | number | null;
+  prefixIcon?: () => string;
 };
 
 export type SelectStateOptions<T> = GenericSelectStateOptions<T> &
@@ -48,6 +50,7 @@ export function toMaterialSelectSpecifics<T>(
     hideSingleSelectionIndicator: computed(
       () => opt.hideSingleSelectionIndicator?.() ?? false,
     ),
+    prefixIcon: computed(() => opt.prefixIcon?.() ?? ''),
   };
 }
 

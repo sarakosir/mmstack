@@ -16,8 +16,10 @@ import {
   MatFormFieldAppearance,
   MatHint,
   MatLabel,
+  MatPrefix,
   SubscriptSizing,
 } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
 import {
   MatOption,
   MatSelect,
@@ -36,6 +38,8 @@ import { MultiSelectState, SignalErrorValidator } from './adapters';
     MatLabel,
     MatHint,
     MatError,
+    MatPrefix,
+    MatIcon,
     MatSelect,
     MatOption,
     MatSelectTrigger,
@@ -53,6 +57,10 @@ import { MultiSelectState, SignalErrorValidator } from './adapters';
       [hideRequiredMarker]="hideRequiredMarker()"
     >
       <mat-label>{{ state().label() }}</mat-label>
+
+      @if (state().prefixIcon()) {
+        <mat-icon matPrefix>{{ state().prefixIcon() }}</mat-icon>
+      }
 
       <mat-select
         multiple

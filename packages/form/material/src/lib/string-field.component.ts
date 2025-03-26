@@ -16,8 +16,10 @@ import {
   MatFormFieldAppearance,
   MatHint,
   MatLabel,
+  MatPrefix,
   SubscriptSizing,
 } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { MatTooltip } from '@angular/material/tooltip';
 import { SignalErrorValidator, StringState } from './adapters';
@@ -32,6 +34,8 @@ import { SignalErrorValidator, StringState } from './adapters';
     MatLabel,
     MatHint,
     MatError,
+    MatPrefix,
+    MatIcon,
     MatInput,
     MatTooltip,
     SignalErrorValidator,
@@ -47,6 +51,10 @@ import { SignalErrorValidator, StringState } from './adapters';
       [hideRequiredMarker]="hideRequiredMarker()"
     >
       <mat-label>{{ state().label() }}</mat-label>
+
+      @if (state().prefixIcon()) {
+        <mat-icon matPrefix>{{ state().prefixIcon() }}</mat-icon>
+      }
 
       <input
         matInput

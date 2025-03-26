@@ -7,22 +7,29 @@ import {
 } from '@mmstack/form-adapters';
 import { type DerivedSignal } from '@mmstack/form-core';
 import { type StringValidatorOptions } from '@mmstack/form-validation';
+import {
+  MaterialStringStateExtension,
+  MaterialStringStateOptionsExtension,
+  toMaterialStringSpecifics,
+} from './base-string';
 
 export type AutocompleteState<TParent = undefined> =
-  GenericAutocompleteState<TParent> & {
-    panelWidth: Signal<string | number>;
-  };
+  GenericAutocompleteState<TParent> &
+    MaterialStringStateExtension & {
+      panelWidth: Signal<string | number>;
+    };
 
-export type AutocompleteStateOptions = GenericAutocompleteStateOptions & {
-  panelWidth?: () => string | number;
-};
+export type AutocompleteStateOptions = GenericAutocompleteStateOptions &
+  MaterialStringStateOptionsExtension & {
+    panelWidth?: () => string | number;
+  };
 
 function toMaterialSpecifics<TParent = undefined>(
   state: GenericAutocompleteState<TParent>,
   opt?: AutocompleteStateOptions,
 ): AutocompleteState<TParent> {
   return {
-    ...state,
+    ...toMaterialStringSpecifics(state, opt),
     panelWidth: computed(() => opt?.panelWidth?.() ?? 'auto'),
   };
 }

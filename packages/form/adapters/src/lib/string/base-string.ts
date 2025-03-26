@@ -51,7 +51,7 @@ export function injectCreateStringState() {
     opt?: Omit<StringStateOptions, 'required' | 'validator'> & {
       validation?: () => StringValidatorOptions;
     },
-  ) => {
+  ): StringState<TParent> => {
     const mergedValidator = computed(() =>
       validators.string.all(opt?.validation?.() ?? {}),
     );

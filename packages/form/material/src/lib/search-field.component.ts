@@ -21,8 +21,10 @@ import {
   MatFormFieldAppearance,
   MatHint,
   MatLabel,
+  MatPrefix,
   SubscriptSizing,
 } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import {
@@ -68,6 +70,8 @@ export function injectSearchResourceOptions(): QueryResourceOptions<any> {
     MatSelect,
     MatOption,
     MatSelectTrigger,
+    MatIcon,
+    MatPrefix,
     MatInput,
     MatProgressSpinner,
     SignalErrorValidator,
@@ -83,6 +87,10 @@ export function injectSearchResourceOptions(): QueryResourceOptions<any> {
       [hideRequiredMarker]="hideRequiredMarker()"
     >
       <mat-label>{{ state().label() }}</mat-label>
+
+      @if (state().prefixIcon()) {
+        <mat-icon matPrefix>{{ state().prefixIcon() }}</mat-icon>
+      }
 
       <mat-select
         [class.readonly]="state().readonly()"
