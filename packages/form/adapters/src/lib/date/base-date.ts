@@ -27,8 +27,8 @@ export type DateStateOptions<TDate = Date> = CreateFormControlOptions<
 > & {
   locale: string;
   placeholder?: () => string;
-  min?: () => Date | null;
-  max?: () => Date | null;
+  min?: () => string | Date | null;
+  max?: () => string | Date | null;
 };
 
 export function createDateState<TParent = undefined, TDate = Date>(
@@ -39,8 +39,16 @@ export function createDateState<TParent = undefined, TDate = Date>(
 
   return {
     ...state,
-    min: computed(() => opt.min?.() ?? null),
-    max: computed(() => opt.max?.() ?? null),
+    min: computed(() => {
+      const min = opt.min?.();
+      if (!min) return null;
+      return typeof min === 'string' ? new Date(min) : min;
+    }),
+    max: computed(() => {
+      const max = opt.max?.();
+      if (!max) return null;
+      return typeof max === 'string' ? new Date(max) : max;
+    }),
     placeholder: computed(() => opt.placeholder?.() ?? ''),
     errorTooltip: computed(() => ''),
     type: 'date',
@@ -53,13 +61,16 @@ export function injectCreateDateState() {
 
   return <TDate = Date, TParent = undefined>(
     value: TDate | null | DerivedSignal<TParent, TDate | null>,
-    opt?: Omit<DateStateOptions<TDate>, 'required' | 'validator' | 'locale'> & {
+    opt?: Omit<
+      DateStateOptions<TDate>,
+      'required' | 'validator' | 'locale' | 'min' | 'max'
+    > & {
       validation?: () => DateValidatorOptions;
     },
   ) => {
-    const mergedValidator = computed(() =>
-      validators.date.all(opt?.validation?.() ?? {}),
-    );
+    const validation = computed(() => opt?.validation?.() ?? {});
+
+    const mergedValidator = computed(() => validators.date.all(validation()));
 
     const validator = computed(() => {
       const merged = mergedValidator();
@@ -74,6 +85,8 @@ export function injectCreateDateState() {
       locale,
       required: computed(() => opt?.validation?.()?.required ?? false),
       validator,
+      min: computed(() => validation().min ?? null),
+      max: computed(() => validation().max ?? null),
     });
 
     const resolvedError = computed(() => {

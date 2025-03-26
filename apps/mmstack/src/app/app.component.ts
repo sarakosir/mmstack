@@ -11,11 +11,14 @@ import { MatCardModule } from '@angular/material/card';
 import {
   BooleanFieldComponent,
   BooleanState,
+  DateFieldComponent,
+  DateState,
   derived,
   DerivedSignal,
   formGroup,
   FormGroupSignal,
   injectCreateBooleanState,
+  injectCreateDateState,
   injectCreateSearchState,
   injectCreateStringState,
   SearchFieldComponent,
@@ -29,6 +32,7 @@ type Todo = {
   id: number;
   title: string;
   completed: boolean;
+  createdOn?: Date;
   child: Todo | null;
 };
 
@@ -36,6 +40,7 @@ type TodoStateChildren = {
   title: StringState<Todo>;
   completed: BooleanState<Todo>;
   child: SearchState<Todo | null, Todo>;
+  createdOn: DateState<Todo>;
 };
 
 type TodoState<TParent = undefined> = FormGroupSignal<
@@ -48,6 +53,7 @@ function injectCreateTodoState() {
   const stringFactory = injectCreateStringState();
   const booleanFactory = injectCreateBooleanState();
   const searchFactory = injectCreateSearchState();
+  const dateFactory = injectCreateDateState();
 
   return <TParent = undefined>(
     value: Todo | DerivedSignal<TParent, Todo>,
@@ -81,6 +87,23 @@ function injectCreateTodoState() {
           };
         },
       }),
+      createdOn: dateFactory(
+        derived(valueSig, {
+          from: (v) => v.createdOn ?? null,
+          onChange: (next) =>
+            valueSig.update((cur) => ({
+              ...cur,
+              createdOn: next ?? undefined,
+            })),
+        }),
+        {
+          validation: () => ({
+            required: true,
+            min: new Date(),
+          }),
+          label: () => 'Created On',
+        },
+      ),
     });
   };
 }
@@ -94,6 +117,7 @@ function injectCreateTodoState() {
     StringFieldComponent,
     BooleanFieldComponent,
     SearchFieldComponent,
+    DateFieldComponent,
     JsonPipe,
   ],
   template: `
@@ -102,9 +126,7 @@ function injectCreateTodoState() {
         <mat-card-title>Todo</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <mm-string-field [state]="state().children().title" />
-        <mm-boolean-field [state]="state().children().completed" />
-        <mm-search-field [state]="state().children().child" />
+        <mm-date-field [state]="state().children().createdOn" />
       </mat-card-content>
 
       <mat-card-footer>
@@ -125,7 +147,7 @@ export class TodoComponent<TParent = undefined> {
 @Component({
   selector: 'app-root',
   imports: [TodoComponent],
-  template: ` <app-todo [state]="state" /> `,
+  template: ` <app-todo ngSkipHydration [state]="state" /> `,
   styles: `
     :host {
       width: 100%;
@@ -142,6 +164,7 @@ export class AppComponent {
     userId: 1,
     title: 'delectus aut autem',
     completed: false,
+    createdOn: new Date(),
     child: null,
   });
 }

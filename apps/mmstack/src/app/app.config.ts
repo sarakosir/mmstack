@@ -8,6 +8,7 @@ import {
   ApplicationConfig,
   provideExperimentalZonelessChangeDetection,
 } from '@angular/core';
+import { provideLuxonDateAdapter } from '@angular/material-luxon-adapter';
 import {
   provideClientHydration,
   withEventReplay,
@@ -20,6 +21,7 @@ import {
   createDedupeRequestsInterceptor,
   provideQueryCache,
 } from '@mmstack/resource';
+import { DateTime } from 'luxon';
 import { delay } from 'rxjs';
 import { appRoutes } from './app.routes';
 
@@ -42,6 +44,15 @@ export const appConfig: ApplicationConfig = {
         ],
       }),
     ),
+    provideValidatorConfig<DateTime>(
+      () => ({}),
+      (d) => {
+        if (typeof d === 'string') return DateTime.fromISO(d).toJSDate();
+        return d.toJSDate();
+      },
+    ),
+
+    provideLuxonDateAdapter(),
     provideExperimentalZonelessChangeDetection(),
     provideQueryCache(),
     provideHttpClient(
