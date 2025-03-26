@@ -17,7 +17,7 @@ export type BooleanState<TParent = undefined> = FormControlSignal<
 export type BooleanStateOptions = Omit<
   CreateFormControlOptions<boolean, 'control'>,
   'required'
-> & {};
+>;
 
 export function createBooleanState<TParent = undefined>(
   value: boolean | DerivedSignal<TParent, boolean>,

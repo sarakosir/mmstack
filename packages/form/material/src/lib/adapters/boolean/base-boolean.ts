@@ -7,18 +7,24 @@ import {
 } from '@mmstack/form-adapters';
 import { type DerivedSignal } from '@mmstack/form-core';
 
-export type BooleanState<TParent = undefined> = GenericBooleanState<TParent> & {
+export type MaterialBooleanStateExtension = {
   labelPosition: Signal<'before' | 'after'>;
 };
 
-export type BooleanStateOptions = GenericBooleanStateOptions & {
+export type BooleanState<TParent = undefined> = GenericBooleanState<TParent> &
+  MaterialBooleanStateExtension;
+
+export type MaterialBooleanStateOptionsExtension = {
   labelPosition?: () => 'before' | 'after';
 };
 
-function addMaterialSpecifics<TParent>(
-  state: GenericBooleanState<TParent>,
-  opt?: BooleanStateOptions,
-): BooleanState<TParent> {
+export type BooleanStateOptions = GenericBooleanStateOptions &
+  MaterialBooleanStateOptionsExtension;
+
+export function toMaterialBooleanSpecifics<T>(
+  state: T,
+  opt?: MaterialBooleanStateOptionsExtension,
+): T & MaterialBooleanStateExtension {
   return {
     ...state,
     labelPosition: computed(() => opt?.labelPosition?.() ?? 'after'),
@@ -29,7 +35,7 @@ export function createBooleanState<TParent = undefined>(
   value: boolean | DerivedSignal<TParent, boolean>,
   opt?: BooleanStateOptions,
 ): BooleanState<TParent> {
-  return addMaterialSpecifics(genericCreateBooleanState(value, opt));
+  return toMaterialBooleanSpecifics(genericCreateBooleanState(value, opt));
 }
 
 export function injectCreateBooleanState() {
@@ -43,6 +49,6 @@ export function injectCreateBooleanState() {
       };
     },
   ): BooleanState<TParent> => {
-    return addMaterialSpecifics(factory(value, opt), opt);
+    return toMaterialBooleanSpecifics(factory(value, opt), opt);
   };
 }

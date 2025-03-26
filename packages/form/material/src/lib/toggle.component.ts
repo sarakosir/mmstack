@@ -7,21 +7,21 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { FormsModule, NgModel } from '@angular/forms';
-import { MatCheckbox } from '@angular/material/checkbox';
-import { BooleanState, SignalErrorValidator } from './adapters';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { SignalErrorValidator, ToggleState } from './adapters';
 
 @Component({
-  selector: 'mm-boolean-field',
+  selector: 'mm-toggle',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  imports: [FormsModule, MatCheckbox, SignalErrorValidator],
+  imports: [FormsModule, MatSlideToggle, SignalErrorValidator],
   host: {
-    class: 'mm-boolean-field',
+    class: 'mm-toggle',
   },
   template: `
-    <div class="mm-checkbox-field-container">
-      <mat-checkbox
-        class="mm-checkbox-field"
+    <div class="mm-toggle-container">
+      <mat-slide-toggle
+        class="mm-toggle"
         [class.readonly]="state().readonly()"
         [class.error]="!!state().error()"
         [disabled]="state().disabled()"
@@ -31,35 +31,35 @@ import { BooleanState, SignalErrorValidator } from './adapters';
         [mmSignalError]="state().error()"
       >
         {{ state().label() }}
-      </mat-checkbox>
+      </mat-slide-toggle>
 
       @let showError = state().error() && state().touched();
 
       @if (state().hint() && !showError) {
-        <span class="mm-checkbox-field-hint">{{ state().hint() }}</span>
+        <span class="mm-toggle-hint">{{ state().hint() }}</span>
       }
 
       @if (showError) {
-        <span class="mm-checkbox-field-error">{{ state().error() }}</span>
+        <span class="mm-toggle-error">{{ state().error() }}</span>
       }
     </div>
   `,
   styles: `
-    .mm-boolean-field {
+    .mm-toggle {
       display: contents;
 
-      .mm-checkbox-field-container {
+      .mm-toggle-container {
         display: contents;
 
-        &:has(span.mm-checkbox-field-hint),
-        &:has(span.mm-checkbox-field-error) {
+        &:has(span.mm-toggle-hint),
+        &:has(span.mm-toggle-error) {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
         }
 
-        span.mm-checkbox-field-error,
-        span.mm-checkbox-field-hint {
+        span.mm-toggle-error,
+        span.mm-toggle-hint {
           font-family: var(
             --mat-form-field-subscript-text-font,
             var(--mat-sys-body-small-font)
@@ -82,26 +82,27 @@ import { BooleanState, SignalErrorValidator } from './adapters';
           );
         }
 
-        span.mm-checkbox-field-error {
+        span.mm-toggle-error {
           color: var(--mat-sys-error);
         }
 
-        .mm-checkbox-field {
+        .mm-toggle {
           &.readonly {
             pointer-events: none;
             user-select: none;
             touch-action: none;
           }
           &.error {
-            --mdc-checkbox-selected-icon-color: var(--mat-sys-error);
+            --mat-slide-toggle-bar-error-color: var(--mat-sys-error);
+            --mat-slide-toggle-thumb-error-color: var(--mat-sys-error);
           }
         }
       }
     }
   `,
 })
-export class BooleanFieldComponent<TParent = undefined> {
-  readonly state = input.required<BooleanState<TParent>>();
+export class ToggleFieldComponent<TParent = undefined> {
+  readonly state = input.required<ToggleState<TParent>>();
 
   private readonly model = viewChild.required(NgModel);
 

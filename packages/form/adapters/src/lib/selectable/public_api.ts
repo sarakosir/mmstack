@@ -1,4 +1,10 @@
 export {
+  ButtonGroupState,
+  ButtonGroupStateOptions,
+  createButtonGroupState,
+  injectCreateButtonGroupState,
+} from './button-group';
+export {
   createMultiSelectState,
   injectCreateMultiSelectState,
   MultiSelectState,

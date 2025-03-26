@@ -195,6 +195,7 @@ Here's a summary of the core form state adapters provided by `@mmstack/form-adap
 | Adapter Type              | State Type                        | Value Type           | Key UI Properties/Signals                                                                  | Creation Functions                                         |
 | :------------------------ | :-------------------------------- | :------------------- | :----------------------------------------------------------------------------------------- | :--------------------------------------------------------- |
 | **Boolean**               | `BooleanState`                    | `boolean`            | `labelPosition`                                                                            | `createBooleanState`, `injectCreateBooleanState`           |
+| **Toggle** (Boolean)      | `ToggleState`                     | `boolean`            | `labelPosition` (inherits from Boolean)                                                    | `createToggleState`, `injectCreateToggleState`             |
 | **Date**                  | `DateState<TDate = Date>`         | `TDate \| null`      | `min`, `max`, `placeholder`                                                                | `createDateState`, `injectCreateDateState`                 |
 | **Number**                | `NumberState`                     | `number \| null`     | `placeholder`, `step`                                                                      | `createNumberState`, `injectCreateNumberState`             |
 | **String**                | `StringState`                     | `string \| null`     | `placeholder`, `autocomplete` (HTML attr)                                                  | `createStringState`, `injectCreateStringState`             |
@@ -202,6 +203,7 @@ Here's a summary of the core form state adapters provided by `@mmstack/form-adap
 | **Textarea** (String)     | `TextareaState`                   | `string \| null`     | `placeholder`, `rows`, `minRows`, `maxRows`, `autosize`                                    | `createTextareaState`, `injectCreateTextareaState`         |
 | **Select** (Single)       | `SelectState<T>`                  | `T`                  | `placeholder`, `options`, `valueLabel`, `identify`, `display`, `equal`                     | `createSelectState`, `injectCreateSelectState`             |
 | **Multi-Select**          | `MultiSelectState<T extends any>` | `T` (e.g., `string`) | `placeholder`, `options`, `identify`, `display`, `equal` (for items)                       | `createMultiSelectState`, `injectCreateMultiSelectState`   |
+| **Button Group** (Select) | `ButtonGroupState<T>`             | `T`                  | `options`, `identify`, `display`, `equal`, `hideSingleSelectionIndicator`, `vertical`      | `createButtonGroupState`, `injectCreateButtonGroupState`   |
 | **Search** (Async Select) | `SearchState<T>`                  | `T`                  | `placeholder`, `searchPlaceholder`, `query`, `request`, `identify`, `displayWith`, `equal` | `createSearchState`, `injectCreateSearchState`             |
 
 ## Simple example
@@ -313,8 +315,10 @@ Here's a simple table show casing all components. They are 1-1 matched with the 
 | `<mm-textarea-field>`     | `TextareaState`                  | `textarea[matInput]`, `cdkTextareaAutosize` | Text area input field, supports auto-sizing.                                              |
 | `<mm-number-field>`       | `NumberState`                    | `input[type=number][matInput]`              | Input field specifically for numeric values.                                              |
 | `<mm-boolean-field>`      | `BooleanState`                   | `matCheckbox`                               | Checkbox for boolean values. (Uses custom layout for hint/error).                         |
+| `<mm-toggle>`             | `ToggleState`                    | `MatSlideToggle`                            | Toggle switch for boolean values. (Uses custom layout for hint/error).                    |
 | `<mm-date-field>`         | `DateState`                      | `matInput`, `matDatepicker`                 | Input field with a date picker integration.                                               |
 | `<mm-select-field>`       | `SelectState<T>`                 | `matSelect`, `matOption`                    | Dropdown select for choosing a single option from a static list.                          |
 | `<mm-multi-select-field>` | `MultiSelectState<T>`            | `matSelect[multiple]`, `matOption`          | Dropdown select for choosing multiple options from a static list.                         |
+| `<mm-button-group>`       | `ButtonGroupState<T>`            | `MatButtonToggleGroup`, `MatButtonToggle`   | Group of toggle buttons for selecting a single option from a static list.                 |
 | `<mm-autocomplete-field>` | `AutocompleteState`              | `matInput`, `matAutocomplete`, `matOption`  | Text input with typeahead suggestions based on a static list of options.                  |
 | `<mm-search-field>`       | `SearchState<T>`                 | `matSelect`, `matOption`, `matInput`        | Dropdown select populated via an asynchronous request, with built-in search/filter input. |
