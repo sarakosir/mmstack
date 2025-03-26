@@ -67,8 +67,6 @@ import { NumberState, SignalErrorValidator } from '@mmstack/form-adapters';
       @if (state().hint()) {
         <mat-hint>{{ state().hint() }}</mat-hint>
       }
-
-      <ng-content />
     </mat-form-field>
   `,
   styles: `

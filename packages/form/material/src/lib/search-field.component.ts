@@ -1,3 +1,4 @@
+import { isPlatformServer } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -6,6 +7,7 @@ import {
   inject,
   InjectionToken,
   input,
+  PLATFORM_ID,
   Provider,
   viewChild,
   ViewEncapsulation,
@@ -94,7 +96,8 @@ export function injectSearchResourceOptions(): QueryResourceOptions<any> {
         [disableOptionCentering]="state().disableOptionCentering()"
         [hideSingleSelectionIndicator]="state().hideSingleSelectionIndicator()"
         (blur)="state().markAsTouched()"
-        (closed)="state().markAsTouched()"
+        (closed)="state().markAsTouched(); cancelFocus()"
+        (opened)="focus(searchInput)"
       >
         <mat-select-trigger>
           {{ state().valueLabel() }}
@@ -149,40 +152,38 @@ export function injectSearchResourceOptions(): QueryResourceOptions<any> {
 
       mat-form-field {
         width: 100%;
+      }
+    }
 
-        input.mm-search-select-input {
-          padding-top: 10px;
+    .mat-mdc-option[aria-disabled='true']:has(input.mm-search-select-input) {
+      position: sticky;
+      top: -8px;
+      z-index: 1;
+      opacity: 1;
+      margin-top: -8px;
+      pointer-events: all;
+      background: inherit;
+      border-bottom: 1px solid var(--mat-sys-outline);
+      span.mdc-list-item__primary-text {
+        width: 100%;
+      }
 
-          &::placeholder {
-            opacity: 0.8;
-          }
-        }
+      div {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+      }
 
-        .mat-mdc-option[aria-disabled='true']:has(
-            input.mm-search-select-input
-          ) {
-          position: sticky;
-          top: -8px;
-          z-index: 1;
-          opacity: 1;
-          margin-top: -8px;
-          pointer-events: all;
-          background: inherit;
-          border-bottom: 1px solid var(--mat-sys-outline);
-          span.mdc-list-item__primary-text {
-            width: 100%;
-          }
+      .mdc-list-item__primary-text {
+        opacity: 1;
+      }
+    }
 
-          div {
-            display: flex;
-            align-items: baseline;
-            justify-content: space-between;
-          }
+    input.mm-search-select-input {
+      padding-top: 10px;
 
-          .mdc-list-item__primary-text {
-            opacity: 1;
-          }
-        }
+      &::placeholder {
+        opacity: 0.8;
       }
     }
   `,
@@ -243,17 +244,18 @@ export class SearchFieldComponent<T, TParent = undefined> {
   protected readonly options = computed(() => {
     const curId = this.state().valueId();
     const opt = this.allOptions();
+    if (!curId) return opt;
 
     if (opt.length && opt.some((o) => o.id === curId)) return opt;
 
     return [
+      ...opt,
       {
         id: curId,
         value: this.state().value(),
         label: computed(() => this.state().valueLabel()),
         disabled: computed(() => false),
       },
-      ...opt,
     ];
   });
 
@@ -262,5 +264,18 @@ export class SearchFieldComponent<T, TParent = undefined> {
       if (this.state().touched()) this.model().control.markAsTouched();
       else this.model().control.markAsUntouched();
     });
+  }
+
+  private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
+  private focusTimeout: ReturnType<typeof setTimeout> | undefined;
+  protected focus(el?: HTMLInputElement) {
+    if (this.isServer) return;
+    if (this.focusTimeout) clearTimeout(this.focusTimeout);
+    this.focusTimeout = setTimeout(() => el?.focus());
+  }
+
+  protected cancelFocus() {
+    if (this.isServer) return;
+    if (this.focusTimeout) clearTimeout(this.focusTimeout);
   }
 }

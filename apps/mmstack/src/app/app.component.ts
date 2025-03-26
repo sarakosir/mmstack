@@ -1,131 +1,147 @@
+import { JsonPipe } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
-  computed,
-  effect,
-  Injectable,
-  isDevMode,
-  Signal,
+  input,
+  isSignal,
   signal,
-  untracked,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
 import {
+  BooleanFieldComponent,
+  BooleanState,
   derived,
-  formControl,
-  FormControlSignal,
+  DerivedSignal,
   formGroup,
   FormGroupSignal,
-} from '@mmstack/form-core';
-import { debounced } from '@mmstack/primitives';
-import { mutationResource, queryResource } from '@mmstack/resource';
+  injectCreateBooleanState,
+  injectCreateSearchState,
+  injectCreateStringState,
+  SearchFieldComponent,
+  SearchState,
+  StringFieldComponent,
+  StringState,
+} from '@mmstack/form-material';
 
-type Post = {
+type Todo = {
+  userId: number;
   id: number;
-  title?: string;
-  body?: string;
+  title: string;
+  completed: boolean;
+  child: Todo | null;
 };
 
-@Injectable({
-  providedIn: 'root',
-})
-export class PostsService {
-  private readonly endpoint = 'https://jsonplaceholder.typicode.com/posts';
+type TodoStateChildren = {
+  title: StringState<Todo>;
+  completed: BooleanState<Todo>;
+  child: SearchState<Todo | null, Todo>;
+};
 
-  readonly id = signal(1);
-
-  readonly post = queryResource<Post>(
-    () => ({
-      url: `${this.endpoint}/${this.id()}`,
-    }),
-    {
-      keepPrevious: true,
-      cache: true,
-    },
-  );
-
-  next() {
-    this.id.update((id) => id + 1);
-  }
-
-  prev() {
-    this.id.update((id) => id - 1);
-  }
-
-  private readonly createPostResource = mutationResource(
-    () => ({
-      url: this.endpoint,
-      method: 'POST',
-    }),
-    {
-      onMutate: (post: Post) => {
-        const prev = untracked(this.post.value);
-        this.post.set({ ...prev, ...post });
-        return prev;
-      },
-      onError: (err, prev) => {
-        if (isDevMode()) console.error(err);
-        this.post.set(prev); // rollback on error
-      },
-      onSuccess: (next) => {
-        this.post.set(next);
-      },
-    },
-  );
-
-  readonly loading = computed(
-    () => this.createPostResource.isLoading() || this.post.isLoading(),
-  );
-
-  createPost(post: Post) {
-    this.createPostResource.mutate({
-      body: post,
-    }); // send the request
-  }
-
-  updatePost(id: number, post: Partial<Post>) {
-    this.createPostResource.mutate({
-      body: { id, ...post },
-      url: `${this.endpoint}/${id}`,
-      method: 'PATCH',
-    }); // send the request
-  }
-}
-
-type PostState = FormGroupSignal<
-  Post,
-  {
-    title: FormControlSignal<string | undefined, Post>;
-    body: FormControlSignal<string | undefined, Post>;
-  }
+type TodoState<TParent = undefined> = FormGroupSignal<
+  Todo,
+  TodoStateChildren,
+  TParent
 >;
 
-function createPostState(post: Post, loading: Signal<boolean>): PostState {
-  const value = signal<Post>(post);
+function injectCreateTodoState() {
+  const stringFactory = injectCreateStringState();
+  const booleanFactory = injectCreateBooleanState();
+  const searchFactory = injectCreateSearchState();
 
-  return formGroup(value, {
-    title: formControl(derived(value, 'title'), {
-      label: () => 'Title',
-      readonly: loading,
-      validator: () => (value) => (value ? '' : 'Title is required'),
-    }),
-    body: formControl(derived(value, 'body'), {
-      label: () => 'Body',
-      readonly: loading,
-      validator: () => (value) => {
-        if (value && value.length > 255) return 'Body is too long';
-        return '';
-      },
-    }),
-  });
+  return <TParent = undefined>(
+    value: Todo | DerivedSignal<TParent, Todo>,
+  ): TodoState<TParent> => {
+    const valueSig = isSignal(value) ? value : signal(value);
+
+    return formGroup<Todo, TodoStateChildren, TParent>(valueSig, {
+      title: stringFactory(derived(valueSig, 'title'), {
+        label: () => 'Title',
+      }),
+      completed: booleanFactory(derived(valueSig, 'completed'), {
+        label: () => 'Completed',
+      }),
+      child: searchFactory(derived(valueSig, 'child'), {
+        label: () => 'Child',
+        identify: () => (todo) => todo?.id.toString() ?? '',
+        searchPlaceholder: () => 'Search',
+        displayWith: () => (todo) => todo?.title ?? '',
+        toRequest: () => (query) => {
+          const params: Record<string, string | number> = {
+            limit: 5,
+          };
+
+          if (query) {
+            params['id'] = query;
+          }
+
+          return {
+            url: 'https://jsonplaceholder.typicode.com/posts',
+            params,
+          };
+        },
+      }),
+    });
+  };
+}
+
+@Component({
+  selector: 'app-todo',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    FormsModule,
+    MatCardModule,
+    StringFieldComponent,
+    BooleanFieldComponent,
+    SearchFieldComponent,
+    JsonPipe,
+  ],
+  template: `
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Todo</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mm-string-field [state]="state().children().title" />
+        <mm-boolean-field [state]="state().children().completed" />
+        <mm-search-field [state]="state().children().child" />
+      </mat-card-content>
+
+      <mat-card-footer>
+        {{ state().partialValue() | json }}
+      </mat-card-footer>
+    </mat-card>
+  `,
+  styles: `
+    mat-card-content {
+      padding-top: 8px;
+    }
+  `,
+})
+export class TodoComponent<TParent = undefined> {
+  readonly state = input.required<TodoState<TParent>>();
 }
 
 @Component({
   selector: 'app-root',
-  imports: [FormsModule],
-  template: ` <input [(ngModel)]="value" /> `,
+  imports: [TodoComponent],
+  template: ` <app-todo [state]="state" /> `,
+  styles: `
+    :host {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  `,
 })
 export class AppComponent {
-  protected readonly value = debounced('yay');
-
-  e = effect(() => console.log(this.value()));
+  state = injectCreateTodoState()({
+    id: 1,
+    userId: 1,
+    title: 'delectus aut autem',
+    completed: false,
+    child: null,
+  });
 }
