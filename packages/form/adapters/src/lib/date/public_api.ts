@@ -1,1 +1,6 @@
-export { createDateState, DateState, injectCreateDateState } from './base-date';
+export {
+  createDateState,
+  DateState,
+  DateStateOptions,
+  injectCreateDateState,
+} from './base-date';

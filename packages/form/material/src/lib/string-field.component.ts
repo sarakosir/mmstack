@@ -20,7 +20,7 @@ import {
 } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatTooltip } from '@angular/material/tooltip';
-import { SignalErrorValidator, StringState } from '@mmstack/form-adapters';
+import { SignalErrorValidator, StringState } from './adapters';
 
 @Component({
   selector: 'mm-string-field',

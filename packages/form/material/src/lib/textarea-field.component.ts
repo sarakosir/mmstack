@@ -21,7 +21,7 @@ import {
 } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatTooltip } from '@angular/material/tooltip';
-import { SignalErrorValidator, TextareaState } from '@mmstack/form-adapters';
+import { SignalErrorValidator, TextareaState } from './adapters';
 
 @Component({
   selector: 'mm-textarea-field',

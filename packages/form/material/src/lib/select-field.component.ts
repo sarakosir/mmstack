@@ -23,7 +23,7 @@ import {
   MatSelect,
   MatSelectTrigger,
 } from '@angular/material/select';
-import { SelectState, SignalErrorValidator } from '@mmstack/form-adapters';
+import { SelectState, SignalErrorValidator } from './adapters';
 
 @Component({
   selector: 'mm-select-field',

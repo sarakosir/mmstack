@@ -14,8 +14,6 @@ export type DateState<TParent = undefined, TDate = Date> = FormControlSignal<
   TDate | null,
   TParent
 > & {
-  min: Signal<Date | null>;
-  max: Signal<Date | null>;
   placeholder: Signal<string>;
   errorTooltip: Signal<string>;
   type: 'date';
@@ -27,8 +25,6 @@ export type DateStateOptions<TDate = Date> = CreateFormControlOptions<
 > & {
   locale: string;
   placeholder?: () => string;
-  min?: () => string | Date | null;
-  max?: () => string | Date | null;
 };
 
 export function createDateState<TParent = undefined, TDate = Date>(
@@ -39,16 +35,6 @@ export function createDateState<TParent = undefined, TDate = Date>(
 
   return {
     ...state,
-    min: computed(() => {
-      const min = opt.min?.();
-      if (!min) return null;
-      return typeof min === 'string' ? new Date(min) : min;
-    }),
-    max: computed(() => {
-      const max = opt.max?.();
-      if (!max) return null;
-      return typeof max === 'string' ? new Date(max) : max;
-    }),
     placeholder: computed(() => opt.placeholder?.() ?? ''),
     errorTooltip: computed(() => ''),
     type: 'date',
@@ -85,8 +71,6 @@ export function injectCreateDateState() {
       locale,
       required: computed(() => opt?.validation?.()?.required ?? false),
       validator,
-      min: computed(() => validation().min ?? null),
-      max: computed(() => validation().max ?? null),
     });
 
     const resolvedError = computed(() => {

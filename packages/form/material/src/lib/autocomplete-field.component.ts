@@ -25,10 +25,7 @@ import {
 } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatTooltip } from '@angular/material/tooltip';
-import {
-  AutocompleteState,
-  SignalErrorValidator,
-} from '@mmstack/form-adapters';
+import { AutocompleteState, SignalErrorValidator } from './adapters';
 
 @Component({
   selector: 'mm-autocomplete-field',

@@ -15,7 +15,7 @@ import {
   MatFormFieldAppearance,
   SubscriptSizing,
 } from '@angular/material/form-field';
-import { BooleanState, SignalErrorValidator } from '@mmstack/form-adapters';
+import { BooleanState, SignalErrorValidator } from './adapters';
 
 @Component({
   selector: 'mm-boolean-field',

@@ -30,8 +30,8 @@ import {
   MatSelect,
   MatSelectTrigger,
 } from '@angular/material/select';
-import { SearchState, SignalErrorValidator } from '@mmstack/form-adapters';
 import { queryResource, QueryResourceOptions } from '@mmstack/resource';
+import { SearchState, SignalErrorValidator } from './adapters';
 
 const SEARCH_QUERY_RESOURCE_OPTIONS = new InjectionToken<
   QueryResourceOptions<any>

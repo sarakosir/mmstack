@@ -1,5 +1,6 @@
-export * from '@mmstack/form-adapters';
 export * from '@mmstack/form-core';
+export * from '@mmstack/form-validation';
+export * from './lib/adapters/public_api';
 export * from './lib/autocomplete-field.component';
 export * from './lib/boolean-field.component';
 export * from './lib/date-field.component';

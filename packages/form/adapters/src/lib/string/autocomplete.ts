@@ -13,14 +13,12 @@ export type AutocompleteState<TParent = undefined> = Omit<
   'type'
 > & {
   options: Signal<{ value: string; label: Signal<string> }[]>;
-  panelWidth: Signal<string | number>;
   type: 'autocomplete';
 };
 
 export type AutocompleteStateOptions = StringStateOptions & {
   options?: () => string[];
   displayWith?: () => (value: string) => string;
-  panelWidth?: () => string | number;
 };
 
 function toAutocompleteState<TParent = undefined>(
@@ -49,7 +47,6 @@ function toAutocompleteState<TParent = undefined>(
   return {
     ...state,
     options: computed(() => options().filter((o) => o.show())),
-    panelWidth: computed(() => opt?.panelWidth?.() ?? 'auto'),
     type: 'autocomplete',
   };
 }

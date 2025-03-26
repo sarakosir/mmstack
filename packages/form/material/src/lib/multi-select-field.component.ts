@@ -24,7 +24,7 @@ import {
   MatSelectTrigger,
 } from '@angular/material/select';
 import { MatTooltip } from '@angular/material/tooltip';
-import { MultiSelectState, SignalErrorValidator } from '@mmstack/form-adapters';
+import { MultiSelectState, SignalErrorValidator } from './adapters';
 
 @Component({
   selector: 'mm-multi-select-field',

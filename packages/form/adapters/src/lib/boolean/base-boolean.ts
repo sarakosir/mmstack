@@ -1,4 +1,4 @@
-import { computed, type Signal } from '@angular/core';
+import { computed } from '@angular/core';
 import {
   formControl,
   type CreateFormControlOptions,
@@ -11,16 +11,13 @@ export type BooleanState<TParent = undefined> = FormControlSignal<
   boolean,
   TParent
 > & {
-  labelPosition: Signal<'before' | 'after'>;
   type: 'boolean';
 };
 
 export type BooleanStateOptions = Omit<
   CreateFormControlOptions<boolean, 'control'>,
   'required'
-> & {
-  labelPosition?: () => 'before' | 'after';
-};
+> & {};
 
 export function createBooleanState<TParent = undefined>(
   value: boolean | DerivedSignal<TParent, boolean>,
@@ -28,7 +25,6 @@ export function createBooleanState<TParent = undefined>(
 ): BooleanState<TParent> {
   return {
     ...formControl(value, opt),
-    labelPosition: computed(() => opt?.labelPosition?.() ?? 'after'),
     type: 'boolean',
   };
 }

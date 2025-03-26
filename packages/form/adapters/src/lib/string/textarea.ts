@@ -15,7 +15,6 @@ export type TextareaState<TParent = undefined> = Omit<
   rows: Signal<number>;
   minRows: Signal<number>;
   maxRows: Signal<number>;
-  autosize: Signal<boolean>;
   type: 'textarea';
 };
 
@@ -23,7 +22,6 @@ export type TextareaStateOptions = StringStateOptions & {
   rows?: () => number;
   minRows?: () => number;
   maxRows?: () => number;
-  autosize?: () => boolean;
 };
 
 function toTextareaState<TParent = undefined>(
@@ -43,7 +41,6 @@ function toTextareaState<TParent = undefined>(
     rows,
     minRows,
     maxRows,
-    autosize: computed(() => opt?.autosize?.() ?? true),
     type: 'textarea',
   };
 }

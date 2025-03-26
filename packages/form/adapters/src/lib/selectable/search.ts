@@ -14,16 +14,11 @@ export type SearchState<T, TParent = undefined> = FormControlSignal<
   TParent
 > & {
   placeholder: Signal<string>;
-  searchPlaceholder: Signal<string>;
   identify: Signal<(item: NoInfer<T>) => string>;
   displayWith: Signal<(item: NoInfer<T>) => string>;
   disableOption: Signal<(item: NoInfer<T>) => boolean>;
   query: WritableSignal<string>;
   request: Signal<HttpResourceRequest | undefined>;
-  panelWidth: Signal<string | number | null>;
-  disableOptionCentering: Signal<boolean>;
-  hideSingleSelectionIndicator: Signal<boolean>;
-  overlayPanelClass: Signal<string>;
   type: 'search';
   valueLabel: Signal<string>;
   valueId: Signal<string>;
@@ -32,16 +27,11 @@ export type SearchState<T, TParent = undefined> = FormControlSignal<
 
 export type SearchStateOptions<T> = CreateFormControlOptions<T, 'control'> & {
   placeholder?: () => string;
-  searchPlaceholder?: () => string;
   identify?: () => (item: NoInfer<T>) => string;
   displayWith?: () => (item: NoInfer<T>) => string;
   disableOption?: () => (item: NoInfer<T>) => boolean;
   toRequest: () => (query: string) => HttpResourceRequest | undefined;
-  panelWidth?: () => string | number | null;
   onSelected?: (value: T) => void;
-  disableOptionCentering?: () => boolean;
-  hideSingleSelectionIndicator?: () => boolean;
-  overlayPanelClass?: () => string;
   debounce?: number;
 };
 
@@ -77,7 +67,6 @@ export function createSearchState<T, TParent = undefined>(
   return {
     ...state,
     placeholder: computed(() => opt.placeholder?.() ?? ''),
-    searchPlaceholder: computed(() => opt.searchPlaceholder?.() ?? ''),
     identify,
     displayWith,
     disableOption,
@@ -87,18 +76,6 @@ export function createSearchState<T, TParent = undefined>(
 
       return toRequest()(query());
     }),
-    panelWidth: computed(() => {
-      const pw = opt.panelWidth?.();
-      if (!pw || pw === 'auto') return null;
-      return pw;
-    }),
-    disableOptionCentering: computed(
-      () => opt.disableOptionCentering?.() ?? false,
-    ),
-    overlayPanelClass: computed(() => opt.overlayPanelClass?.() ?? ''),
-    hideSingleSelectionIndicator: computed(
-      () => opt.hideSingleSelectionIndicator?.() ?? false,
-    ),
     valueLabel: computed(() => displayWith()(state.value())),
     valueId: computed(() => identify()(state.value())),
     onSelected,

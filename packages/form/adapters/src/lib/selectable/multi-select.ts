@@ -86,21 +86,9 @@ export function createMultiSelectState<T extends any[], TParent = undefined>(
     ...state,
     valueLabel,
     options,
-    panelWidth: computed(() => {
-      const pw = opt.panelWidth?.();
-      if (!pw || pw === 'auto') return null;
-      return pw;
-    }),
     equal,
     placeholder: computed(() => opt.placeholder?.() ?? ''),
     errorTooltip: computed(() => ''),
-    disableOptionCentering: computed(
-      () => opt.disableOptionCentering?.() ?? false,
-    ),
-    overlayPanelClass: computed(() => opt.overlayPanelClass?.() ?? ''),
-    hideSingleSelectionIndicator: computed(
-      () => opt.hideSingleSelectionIndicator?.() ?? false,
-    ),
     type: 'multi-select',
   };
 }
