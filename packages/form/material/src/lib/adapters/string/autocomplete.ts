@@ -5,8 +5,8 @@ import {
   createAutocompleteState as genericCreateAutocompleteState,
   injectCreateAutocompleteState as genericInjectCreateAutocompleteState,
 } from '@mmstack/form-adapters';
+import { type DerivedSignal } from '@mmstack/form-core';
 import { type StringValidatorOptions } from '@mmstack/form-validation';
-import { type DerivedSignal } from '@mmstack/primitives';
 
 export type AutocompleteState<TParent = undefined> =
   GenericAutocompleteState<TParent> & {

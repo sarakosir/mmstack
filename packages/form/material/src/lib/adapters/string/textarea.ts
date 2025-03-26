@@ -5,8 +5,8 @@ import {
   type TextareaState as GenericTextareaState,
   type TextareaStateOptions as GenericTextareaStateOptions,
 } from '@mmstack/form-adapters';
+import { DerivedSignal } from '@mmstack/form-core';
 import { StringValidatorOptions } from '@mmstack/form-validation';
-import { DerivedSignal } from '@mmstack/primitives';
 
 export type TextareaState<TParent = undefined> =
   GenericTextareaState<TParent> & {

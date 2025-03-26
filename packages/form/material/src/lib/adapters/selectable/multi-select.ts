@@ -4,8 +4,8 @@ import {
   createMultiSelectState as genericCreateMultiSelectState,
   injectCreateMultiSelectState as genericInjectCreateMultiSelectState,
 } from '@mmstack/form-adapters';
+import { DerivedSignal } from '@mmstack/form-core';
 import { ArrayValidatorOptions } from '@mmstack/form-validation';
-import { DerivedSignal } from '@mmstack/primitives';
 import {
   MaterialSelectStateExtension,
   MaterialSelectStateOptionsExtension,
