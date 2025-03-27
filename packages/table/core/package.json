@@ -6,7 +6,8 @@
     "@angular/core": "~19.2.3",
     "@mmstack/primitives": "~19.0.2",
     "@mmstack/form-core": "~19.0.6",
-    "@mmstack/form-adapters": "~19.0.7"
+    "@mmstack/form-adapters": "~19.0.7",
+    "uuid": "~11.1.0"
   },
   "sideEffects": false
 }
