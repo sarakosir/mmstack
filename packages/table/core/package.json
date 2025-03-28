@@ -1,12 +1,12 @@
 {
   "name": "@mmstack/table-core",
-  "version": "0.0.1",
+  "version": "19.0.0",
   "peerDependencies": {
     "@angular/common": "~19.2.3",
     "@angular/core": "~19.2.3",
-    "@mmstack/primitives": "~19.0.2",
-    "@mmstack/form-core": "~19.0.6",
-    "@mmstack/form-adapters": "~19.0.7",
+    "@mmstack/primitives": "~19.0.3",
+    "@mmstack/form-core": "~19.0.7",
+    "@mmstack/form-adapters": "~19.0.8",
     "uuid": "~11.1.0"
   },
   "sideEffects": false

@@ -109,14 +109,26 @@ export function derived<T, U>(
   optOrKey: CreateDerivedOptions<T, U> | keyof T,
   opt?: CreateSignalOptions<U>,
 ): DerivedSignal<T, U> {
+  const isArray =
+    Array.isArray(untracked(source)) && typeof optOrKey === 'number';
+
   const from =
     typeof optOrKey === 'object' ? optOrKey.from : (v: T) => v[optOrKey] as U;
   const onChange =
     typeof optOrKey === 'object'
       ? optOrKey.onChange
-      : (next: U) => {
-          source.update((cur) => ({ ...cur, [optOrKey]: next }));
-        };
+      : isArray
+        ? (next: U) => {
+            source.update(
+              (cur) =>
+                (cur as unknown as any[]).map((v, i) =>
+                  i === optOrKey ? next : v,
+                ) as T,
+            );
+          }
+        : (next: U) => {
+            source.update((cur) => ({ ...cur, [optOrKey]: next }));
+          };
 
   const rest = typeof optOrKey === 'object' ? optOrKey : opt;
 

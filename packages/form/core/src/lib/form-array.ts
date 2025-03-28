@@ -75,6 +75,8 @@ function createReconcileChildren<
       return nextControls;
     }
 
+    if (length === prev.length) return prev;
+
     const next = [...prev];
 
     if (length < prev.length) {

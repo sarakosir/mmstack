@@ -2,9 +2,12 @@ import { JsonPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
+  effect,
   input,
   isSignal,
   signal,
+  WritableSignal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -16,6 +19,7 @@ import {
   DateState,
   derived,
   DerivedSignal,
+  formArray,
   formGroup,
   FormGroupSignal,
   injectCreateBooleanState,
@@ -56,15 +60,19 @@ function injectCreateTodoState() {
 
   return <TParent = undefined>(
     value: Todo | DerivedSignal<TParent, Todo>,
+    disable?: () => boolean,
   ): TodoState<TParent> => {
     const valueSig = isSignal(value) ? value : signal(value);
 
+    console.log('construct group');
     return formGroup<Todo, TodoStateChildren, TParent>(valueSig, {
       title: stringFactory(derived(valueSig, 'title'), {
         label: () => 'Title',
+        disable,
       }),
       completed: booleanFactory(derived(valueSig, 'completed'), {
         label: () => 'Completed',
+        disable,
       }),
       child: searchFactory(derived(valueSig, 'child'), {
         label: () => 'Child',
@@ -85,6 +93,7 @@ function injectCreateTodoState() {
             params,
           };
         },
+        disable,
       }),
       createdOn: dateFactory(
         derived(valueSig, {
@@ -101,9 +110,18 @@ function injectCreateTodoState() {
             min: new Date(),
           }),
           label: () => 'Created On',
+          disable,
         },
       ),
     });
+  };
+}
+
+export function injectCreateTodosState() {
+  const factory = injectCreateTodoState();
+
+  return (todos: Todo[], disable?: () => boolean) => {
+    return formArray(todos, (value) => factory(value, disable));
   };
 }
 
@@ -144,27 +162,58 @@ export class TodoComponent<TParent = undefined> {
   readonly state = input.required<TodoState<TParent>>();
 }
 
+function nestedTest(source: WritableSignal<number[]>) {
+  const length = computed(() => source().length);
+
+  const unstable = computed(() =>
+    Array.from({ length: length() }).map((_, i) => computed(() => source()[i])),
+  );
+
+  effect(() => {
+    console.log('unstable', unstable()); // triggers once (first time) & every time data changes, underlying signals also trigger
+  });
+
+  const stable = computed(() =>
+    Array.from({ length: length() }).map((_, i) => ({
+      value: computed(() => source()[i]),
+    })),
+  );
+
+  effect(() => {
+    console.log('stable', stable()); // triggers once (first time), but does not when data changes. underlying signals still trigger
+  });
+
+  return {
+    trigger: () => {
+      source.update((cur) => cur.map((v, i) => (i === 1 ? v + 1 : v))); // update the second element
+    },
+  };
+}
+
 @Component({
   selector: 'app-root',
   imports: [TodoComponent],
-  template: ` <app-todo ngSkipHydration [state]="state" /> `,
-  styles: `
-    :host {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+  template: `
+    @for (child of state.children(); track child.id) {
+      <app-todo [state]="child" />
     }
+    <button (click)="disable.set(!disable())">Toggle</button>
   `,
+  styles: ``,
 })
 export class AppComponent {
-  state = injectCreateTodoState()({
-    id: 1,
-    userId: 1,
-    title: 'delectus aut autem',
-    completed: false,
-    createdOn: new Date(),
-    child: null,
-  });
+  readonly disable = signal(false);
+  state = injectCreateTodosState()(
+    [
+      {
+        id: 1,
+        userId: 1,
+        title: 'delectus aut autem',
+        createdOn: new Date(),
+        completed: false,
+        child: null,
+      },
+    ],
+    this.disable,
+  );
 }

@@ -1,6 +1,6 @@
 {
   "name": "@mmstack/form-core",
-  "version": "19.0.6",
+  "version": "19.0.7",
   "keywords": ["angular", "signals", "form", "validation", "formControl", "formGroup", "formArray", "formBuilder", "formState"],
   "repository": {
     "type": "git",
@@ -9,7 +9,7 @@
   "homepage": "https://github.com/mihajm/mmstack/blob/master/packages/form/core",
   "peerDependencies": {
     "@angular/core": "~19.2.3",
-    "@mmstack/primitives": "~19.0.2",
+    "@mmstack/primitives": "~19.0.3",
     "@mmstack/object": "~19.0.0",
     "uuid": "~11.1.0"
   },

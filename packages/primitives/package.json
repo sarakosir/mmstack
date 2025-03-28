@@ -1,6 +1,6 @@
 {
   "name": "@mmstack/primitives",
-  "version": "19.0.2",
+  "version": "19.0.3",
   "peerDependencies": {
     "@angular/core": "~19.2.3",
     "@mmstack/object": "~19.0.0"
