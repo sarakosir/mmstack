@@ -170,6 +170,7 @@ function nestedTest(source: WritableSignal<number[]>) {
   );
 
   effect(() => {
+    unstable();
     console.log('unstable', unstable()); // triggers once (first time) & every time data changes, underlying signals also trigger
   });
 
@@ -180,7 +181,8 @@ function nestedTest(source: WritableSignal<number[]>) {
   );
 
   effect(() => {
-    console.log('stable', stable()); // triggers once (first time), but does not when data changes. underlying signals still trigger
+    stable();
+    console.log('stable'); // triggers once (first time), but does not when data changes. underlying signals still trigger
   });
 
   return {
@@ -192,28 +194,10 @@ function nestedTest(source: WritableSignal<number[]>) {
 
 @Component({
   selector: 'app-root',
-  imports: [TodoComponent],
-  template: `
-    @for (child of state.children(); track child.id) {
-      <app-todo [state]="child" />
-    }
-    <button (click)="disable.set(!disable())">Toggle</button>
-  `,
+  imports: [],
+  template: ` <button (click)="state.trigger()">Toggle</button> `,
   styles: ``,
 })
 export class AppComponent {
-  readonly disable = signal(false);
-  state = injectCreateTodosState()(
-    [
-      {
-        id: 1,
-        userId: 1,
-        title: 'delectus aut autem',
-        createdOn: new Date(),
-        completed: false,
-        child: null,
-      },
-    ],
-    this.disable,
-  );
+  state = nestedTest(signal([1, 2, 3]));
 }
