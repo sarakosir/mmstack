@@ -1,6 +1,7 @@
 import {
   computed,
   type CreateSignalOptions,
+  type Signal,
   signal,
   type WritableSignal,
 } from '@angular/core';
@@ -34,7 +35,7 @@ export type DebouncedSignal<T> = WritableSignal<T> & {
    * on the parent `DebouncedSignal`. Useful for accessing the latest value
    * without the debounce delay.
    */
-  original: WritableSignal<T>;
+  original: Signal<T>;
 };
 
 /**

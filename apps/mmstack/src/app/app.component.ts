@@ -1,17 +1,25 @@
 import { Component, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { debounced } from '@mmstack/primitives';
+import { derived, stored } from '@mmstack/primitives';
 
 @Component({
   selector: 'app-root',
   imports: [FormsModule],
-  template: ` <input [(ngModel)]="state" />`,
+  template: ` <input [(ngModel)]="t" />`,
   styles: ``,
 })
 export class AppComponent {
-  state = debounced('123', { ms: 300 });
+  state = stored(
+    { user: 'test' },
+    {
+      key: 'yay',
+      syncTabs: true,
+    },
+  );
 
-  e1 = effect(() => console.log(this.state()));
+  t = derived(this.state, 'user');
 
-  e2 = effect(() => console.log(this.state.original(), 'orign'));
+  e = effect(() => {
+    console.log(this.state());
+  });
 }
