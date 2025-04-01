@@ -7,110 +7,95 @@ import {
 } from '@angular/core';
 
 /**
- * Options for the mapArray function.
- * @template T The type of elements in the array.
- * @extends CreateSignalOptions<T> Inherits options for creating individual signals.
- */
-export type MapArrayOptions<T> = CreateSignalOptions<T> & {
-  /**
-   * An optional function to transform each element from the source array.
-   * If not provided, the original element is used.
-   * @param source The current value of the source array signal.
-   * @param index The index of the element being mapped.
-   * @returns The transformed element for the corresponding signal.
-   */
-  map?: (source: T[], index: number) => T;
-};
-
-function createReconciler<T>(source: Signal<T[]>, opt?: MapArrayOptions<T>) {
-  const map = opt?.map ?? ((source, index) => source[index]);
-
-  return (
-    length: number,
-    prev?: {
-      value: Signal<T>[];
-      source: number;
-    },
-  ): Signal<T>[] => {
-    if (!prev)
-      return Array.from({ length }, (_, i) =>
-        computed(() => map(source(), i), opt),
-      );
-
-    if (length === prev.source) return prev.value;
-
-    if (length < prev.source) {
-      return prev.value.slice(0, length);
-    } else {
-      const next = [...prev.value];
-      for (let i = prev.source; i < length; i++) {
-        next.push(computed(() => map(source(), i), opt));
-      }
-
-      return next;
-    }
-  };
-}
-
-/**
- * Creates a reactive array of signals from a source array signal (or a function returning one),
- * applying an optional mapping function to each element.
+ * Reactively maps items from a source array (or signal of an array) using a provided mapping function.
  *
- * This is useful for scenarios like rendering lists where each item
- * needs its own reactive state derived from the source array. It efficiently
- * handles changes in the source array's length by reusing existing signals
- * for elements that remain, adding signals for new elements, and removing signals
- * for deleted elements.
+ * This function serves a similar purpose to SolidJS's `mapArray` by providing stability
+ * for mapped items. It receives a source function returning an array (or a Signal<T[]>)
+ * and a mapping function.
  *
- * @template T The type of elements in the source array.
- * @param source A function that returns the source array (or readonly array).
- * This function will be tracked for changes.
- * @param opt Optional configuration including a `map` function to transform elements
- * and options (`CreateSignalOptions`) for the created signals.
- * @returns A signal (`Signal<Signal<T | undefined>[]>`) where the outer signal updates
- * when the array length changes, and the inner array contains signals
- * representing each element (potentially mapped).
+ * For each item in the source array, it creates a stable `computed` signal representing
+ * that item's value at its current index. This stable signal (`Signal<T>`) is passed
+ * to the mapping function. This ensures that downstream computations or components
+ * depending on the mapped result only re-render or re-calculate for the specific items
+ * that have changed, or when items are added/removed, rather than re-evaluating everything
+ * when the source array reference changes but items remain the same.
+ *
+ * It efficiently handles changes in the source array's length by reusing existing mapped
+ * results when possible, slicing when the array shrinks, and appending new mapped items
+ * when it grows.
+ *
+ * @template T The type of items in the source array.
+ * @template U The type of items in the resulting mapped array.
+ *
+ * @param source A function returning the source array `T[]`, or a `Signal<T[]>` itself.
+ * The `mapArray` function will reactively update based on changes to this source.
+ * @param map The mapping function. It is called for each item in the source array.
+ * It receives:
+ * - `value`: A stable `Signal<T>` representing the item at the current index.
+ * Use this signal within your mapping logic if you need reactivity
+ * tied to the specific item's value changes.
+ * - `index`: The number index of the item in the array.
+ * It should return the mapped value `U`.
+ * @param [opt] Optional `CreateSignalOptions<T>`. These options are passed directly
+ * to the `computed` signal created for each individual item (`Signal<T>`).
+ * This allows specifying options like a custom `equal` function for item comparison.
+ *
+ * @returns A `Signal<U[]>` containing the mapped array. This signal updates whenever
+ * the source array changes (either length or the values of its items).
+ *
+ * @example
+ * ```ts
+ * const sourceItems = signal([
+ * { id: 1, name: 'Apple' },
+ * { id: 2, name: 'Banana' }
+ * ]);
+ *
+ * const mappedItems = mapArray(
+ * sourceItems,
+ * (itemSignal, index) => {
+ * // itemSignal is stable for a given item based on its index.
+ * // We create a computed here to react to changes in the item's name.
+ *  return computed(() => `${index}: ${itemSignal().name.toUpperCase()}`);
+ * },
+ * // Example optional options (e.g., custom equality for item signals)
+ * { equal: (a, b) => a.id === b.id && a.name === b.name }
+ * );
+ * ```
  */
-export function mapArray<T>(
+export function mapArray<T, U>(
   source: () => T[],
-  opt?: MapArrayOptions<T | undefined>,
-): Signal<Signal<T | undefined>[]>;
-
-/**
- * Creates a reactive array of signals from a source readonly array (or a function returning one),
- * applying an optional mapping function to each element.
- *
- * This is useful for scenarios like rendering lists where each item
- * needs its own reactive state derived from the source array. It efficiently
- * handles changes in the source array's length by reusing existing signals
- * for elements that remain, adding signals for new elements, and removing signals
- * for deleted elements.
- *
- * @template T The type of elements in the source array.
- * @param source A function that returns the source readonly array.
- * This function will be tracked for changes.
- * @param opt Optional configuration including a `map` function to transform elements
- * and options (`CreateSignalOptions`) for the created signals.
- * @returns A signal (`Signal<Signal<T>[]>`) where the outer signal updates
- * when the array length changes, and the inner array contains signals
- * representing each element (potentially mapped).
- */
-export function mapArray<T>(
-  source: () => readonly T[],
-  opt?: MapArrayOptions<T>,
-): Signal<Signal<T>[]>;
-
-export function mapArray<T>(
-  source: (() => T[]) | (() => readonly T[]),
-  opt?: MapArrayOptions<T>,
-): Signal<Signal<T | undefined>[]> {
+  map: (value: Signal<T>, index: number) => U,
+  opt?: CreateSignalOptions<T>,
+): Signal<U[]> {
   const data = isSignal(source) ? source : computed(source);
-  const length = computed(() => data().length);
+  const len = computed(() => data().length);
 
-  const reconciler = createReconciler<T>(data as Signal<T[]>, opt);
+  return linkedSignal<number, U[]>({
+    source: () => len(),
+    computation: (len, prev) => {
+      if (!prev)
+        return Array.from({ length: len }, (_, i) =>
+          map(
+            computed(() => source()[i], opt),
+            i,
+          ),
+        );
 
-  return linkedSignal<number, Signal<T>[]>({
-    source: () => length(),
-    computation: (len, prev) => reconciler(len, prev),
+      if (len === prev.value.length) return prev.value;
+
+      if (len < prev.value.length) {
+        return prev.value.slice(0, len);
+      } else {
+        const next = [...prev.value];
+        for (let i = prev.value.length; i < len; i++) {
+          next[i] = map(
+            computed(() => source()[i], opt),
+            i,
+          );
+        }
+        return next;
+      }
+    },
+    equal: (a, b) => a.length === b.length,
   });
 }

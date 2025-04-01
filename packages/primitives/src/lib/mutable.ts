@@ -40,7 +40,7 @@ export type MutableSignal<T> = WritableSignal<T> & {
    * const myObject = mutable({ a: 1, b: 2 });
    * myObject.inline((obj) => (obj.a = 3)); // myObject() now returns { a: 3, b: 2 }
    */
-  inline: (updater: Parameters<WritableSignal<T>['update']>[0]) => void;
+  inline: (updater: (value: T) => void) => void;
 };
 
 /**

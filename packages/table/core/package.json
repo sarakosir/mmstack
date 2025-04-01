@@ -4,7 +4,7 @@
   "peerDependencies": {
     "@angular/common": "~19.2.3",
     "@angular/core": "~19.2.3",
-    "@mmstack/primitives": "~19.0.3",
+    "@mmstack/primitives": "~19.0.4",
     "@mmstack/form-core": "~19.0.7",
     "@mmstack/form-adapters": "~19.0.8",
     "uuid": "~11.1.0"

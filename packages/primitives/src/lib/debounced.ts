@@ -2,139 +2,139 @@ import {
   computed,
   type CreateSignalOptions,
   signal,
-  untracked,
   type WritableSignal,
 } from '@angular/core';
 import { toWritable } from './to-writable';
 
 /**
- * A `DebouncedSignal` is a special type of `WritableSignal` that delays updates
- * to its value.  This is useful for scenarios where you want to avoid
- * frequent updates, such as responding to user input in a search field.
- * It keeps a reference to the original `WritableSignal` via the `original` property.
+ * Options for creating a debounced writable signal.
+ * Extends Angular's `CreateSignalOptions` with a debounce time setting.
  *
- * @typeParam T - The type of value held by the signal.
- */
-export type DebouncedSignal<T> = WritableSignal<T> & {
-  /**
-   * A reference to the original, un-debounced `WritableSignal`. This allows
-   * you to access the immediate value (without the debounce delay) if needed,
-   * and also ensures that any direct modifications to the original signal
-   * are reflected in the debounced signal after the debounce period.
-   */
-  original: WritableSignal<T>;
-};
-
-/**
- * Options for creating a debounced signal.
- *
- * @typeParam T - The type of value held by the signal.
+ * @template T The type of value held by the signal.
  */
 export type CreateDebouncedOptions<T> = CreateSignalOptions<T> & {
   /**
-   * The debounce delay in milliseconds. Defaults to 300.
+   * The debounce delay in milliseconds. Specifies how long to wait after the
+   * last `set` or `update` call before the debounced signal reflects the new value.
    */
   ms?: number;
 };
 
 /**
- * Creates a debounced signal. The signal's value will only be propagated to
- * subscribers after a specified delay (debounce time) has passed since the last
- * time it was set or updated.  Crucially, updates to the *original* signal
- * are also debounced.
+ * A specialized `WritableSignal` whose publicly readable value updates are debounced.
  *
- * @see {@link DebouncedSignal}
- * @see {@link CreateDebouncedOptions}
+ * It provides access to the underlying, non-debounced signal via the `original` property.
+ *
+ * @template T The type of value held by the signal.
+ */
+export type DebouncedSignal<T> = WritableSignal<T> & {
+  /**
+   * A reference to the original, inner `WritableSignal`.
+   * This signal's value is updated *immediately* upon calls to `set` or `update`
+   * on the parent `DebouncedSignal`. Useful for accessing the latest value
+   * without the debounce delay.
+   */
+  original: WritableSignal<T>;
+};
+
+/**
+ * Creates a `WritableSignal` whose publicly readable value is updated only after
+ * a specified debounce period (`ms`) has passed since the last call to its
+ * `.set()` or `.update()` method.
+ *
+ * This implementation avoids using `effect` by leveraging intermediate `computed`
+ * signals and a custom `equal` function to delay value propagation based on a timer.
+ *
+ * @template T The type of value the signal holds.
+ * @param initial The initial value of the signal.
+ * @param opt Options for signal creation, including:
+ * - `ms`: The debounce time in milliseconds. Defaults to 0 if omitted (no debounce).
+ * - Other `CreateSignalOptions` (like `equal`) are passed to underlying signals.
+ * @returns A `DebouncedSignal<T>` instance. Its readable value updates are debounced,
+ * and it includes an `.original` property providing immediate access to the latest set value.
  *
  * @example
- * ```typescript
- * // Create a debounced signal with an initial value and a custom delay.
- * const searchTerm = debounced('initial value', { ms: 500 });
+ * ```ts
+ * import { effect } from '@angular/core';
  *
- * // Update the debounced signal. The actual update will be delayed by 500ms.
- * searchTerm.set('new value');
+ * // Create a debounced signal with a 500ms delay
+ * const query = debounced('', { ms: 500 });
  *
- * // Access the original, un-debounced signal.
- * console.log(searchTerm.original()); // Outputs 'new value' (immediately)
- * // ... after 500ms ...
- * console.log(searchTerm()); // Outputs 'new value' (debounced)
+ * effect(() => {
+ * // This effect runs 500ms after the last change to 'query'
+ * console.log('Debounced Query:', query());
+ * });
  *
- * // Directly update the *original* signal.
- * searchTerm.original.set('direct update');
- * console.log(searchTerm.original()); // Outputs 'direct update' (immediately)
- * console.log(searchTerm()); // Outputs 'new value' (still debounced from the previous set)
- * // ... after 500ms ...
- * console.log(searchTerm()); // Outputs 'direct update' (now reflects the original signal)
+ * effect(() => {
+ * // This effect runs immediately when 'query.original' changes
+ * console.log('Original Query:', query.original());
+ * });
  *
- * // Create a debounced signal with undefined initial value and default delay
- * const anotherSignal = debounced();
+ * console.log('Setting query to "a"');
+ * query.set('a');
+ * // Output: Original Query: a
+ *
+ * setTimeout(() => {
+ * console.log('Setting query to "ab"');
+ * query.set('ab');
+ * // Output: Original Query: ab
+ * }, 200); // Before debounce timeout
+ *
+ * setTimeout(() => {
+ * console.log('Setting query to "abc"');
+ * query.set('abc');
+ * // Output: Original Query: abc
+ * }, 400); // Before debounce timeout
+ *
+ * // ~500ms after the *last* set (at 400ms), the debounced effect runs:
+ * // Output (at ~900ms): Debounced Query: abc
  * ```
- * @typeParam T - The type of the signal's value.
- * @param initial The initial value of the signal. Optional; defaults to `undefined`.
- * @param opt Configuration options for the signal, including the debounce delay (`ms`).
- * @returns A `DebouncedSignal` instance.
- */
-export function debounced<T>(): DebouncedSignal<T | undefined>;
-/**
- * Creates a debounced signal with a defined initial value.
- *
- * @typeParam T - The type of the signal's value.
- * @param initial The initial value of the signal.
- * @param opt Configuration options for the signal, including the debounce delay (`ms`).
- * @returns A `DebouncedSignal` instance.
  */
 export function debounced<T>(
   initial: T,
-  opt?: CreateDebouncedOptions<T>,
-): DebouncedSignal<T>;
-export function debounced<T>(
-  value?: T,
-  opt?: CreateDebouncedOptions<T | undefined>,
-): DebouncedSignal<T | undefined> {
-  const sig = signal<T | undefined>(value, opt) as DebouncedSignal<
-    T | undefined
-  >;
-  const ms = opt?.ms ?? 300;
-
-  let timeout: ReturnType<typeof setTimeout> | undefined;
-
-  const originalSet = sig.set;
-  const originalUpdate = sig.update;
+  opt: CreateDebouncedOptions<T>,
+): DebouncedSignal<T> {
+  const internal = signal(initial, opt);
+  const ms = opt.ms ?? 0;
 
   const trigger = signal(false);
 
-  // Set on the original signal, then trigger the debounced update
-  const set = (value: T | undefined) => {
-    originalSet(value); // Update the *original* signal immediately
+  let timeout: ReturnType<typeof setTimeout> | undefined;
 
+  const set = (value: T) => {
     if (timeout) clearTimeout(timeout);
+    internal.set(value);
+
     timeout = setTimeout(() => {
-      trigger.update((cur) => !cur); // Trigger the computed signal
+      trigger.update((c) => !c);
     }, ms);
   };
 
-  // Update on the original signal, then trigger the debounced update
-  const update = (fn: (prev: T | undefined) => T | undefined) => {
-    originalUpdate(fn); // Update the *original* signal immediately
-
+  const update = (fn: (prev: T) => T) => {
     if (timeout) clearTimeout(timeout);
+    internal.update(fn);
+
     timeout = setTimeout(() => {
-      trigger.update((cur) => !cur); // Trigger the computed signal
+      trigger.update((c) => !c);
     }, ms);
   };
 
-  // Create a computed signal that depends on the trigger.
-  // This computed signal is what provides the debounced behavior.
-  const writable = toWritable(
-    computed(() => {
-      trigger();
-      return untracked(sig);
+  const stable = computed(
+    () => ({
+      trigger: trigger(),
+      value: internal(),
     }),
+    {
+      equal: (a, b) => a.trigger === b.trigger,
+    },
+  );
+
+  const writable = toWritable(
+    computed(() => stable().value, opt),
     set,
     update,
-  ) as DebouncedSignal<T | undefined>;
-
-  writable.original = sig;
+  ) as DebouncedSignal<T>;
+  writable.original = internal;
 
   return writable;
 }

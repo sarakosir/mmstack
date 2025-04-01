@@ -21,3 +21,11 @@ export function createRowState<T>(
     }),
   };
 }
+
+export function createRows<T>(
+  defs: Signal<Signal<ColumnDef<T, any>>[]>,
+  data: Signal<Signal<T>[]>,
+) {
+
+  return computed(() => data().map((src)))
+}
