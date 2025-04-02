@@ -1,30 +1,31 @@
-import { computed, type Signal } from '@angular/core';
+import { computed, Signal } from '@angular/core';
+import { ColumnDef } from './column';
 
-export type CellDef<T, U> = {
+export type Cell<U> = {
   name: string;
-  accessor: (row: T) => U;
-  equal?: (a: U, b: U) => boolean;
+  value: Signal<U>;
 };
 
-export type CellState<T, U> = {
-  name: string; // unique name used for @for loop tracking
-  value: Signal<U>; // the resolved value of the cell
-};
-
-export function createCellState<T, U>(
-  def: Signal<CellDef<T, U>>,
+export function createCell<T, U>(
   source: Signal<T>,
-): Signal<CellState<T, U>> {
-  return computed(
-    () => {
-      const d = def();
-      return {
-        name: d.name,
-        value: computed(() => d.accessor(source()), { equal: d.equal }),
-      };
-    },
-    {
-      equal: (a, b) => a.name === b.name,
-    },
-  );
+  def: ColumnDef<T, U>,
+): Cell<U> {
+  return {
+    name: def.name,
+    value: computed(() => def.accessor(source()), def),
+  };
+}
+
+export function createHeaderCell<T, U>(def: ColumnDef<T, U>): Cell<string> {
+  return {
+    name: def.name,
+    value: computed(() => def.header?.() ?? ''),
+  };
+}
+
+export function createFooterCell<T, U>(def: ColumnDef<T, U>): Cell<string> {
+  return {
+    name: def.name,
+    value: computed(() => def.footer?.() ?? ''),
+  };
 }

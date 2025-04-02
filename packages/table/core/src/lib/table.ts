@@ -1,42 +1,98 @@
-import { ValueEqualityFn } from '@angular/core';
-import { mapArray } from '@mmstack/primitives';
+import {
+  computed,
+  isSignal,
+  signal,
+  Signal,
+  WritableSignal,
+} from '@angular/core';
+import { derived, mapArray } from '@mmstack/primitives';
 import { ColumnDef } from './column';
-import { createRows } from './row';
+import {
+  createPaginationFeature,
+  mergePaginationState,
+  PaginationFeature,
+  PaginationOptions,
+  PaginationState,
+} from './features';
+import { createHeaderRow, createRow, FooterRow, HeaderRow, Row } from './row';
 
-export type CreateTableOptions<T> = {
-  data: () =>  T[];
-  columns: () =>  ColumnDef<T, any>[];
-  equal?: ValueEqualityFn<T>;
+type TableState = {
+  pagination: PaginationState;
 };
 
-export function createTableState<T>(opt: CreateTableOptions<T>) {
-  const eq = opt.equal ?? Object.is;
+type TableOptions = {
+  pagination?: PaginationOptions;
+};
 
-  const columns = mapArray(opt.columns, {
-    equal: (a, b) => a.name === b.name,
-  });
+export type CreateTableOptions<T> = {
+  data: () => T[];
+  columns: ColumnDef<T, any>[];
+  state: WritableSignal<TableState>;
+  opt: TableOptions;
+};
 
-  const data = mapArray<T, number, typeof columns>(opt.data, {
-    ctx: columns,
-    mapper: (source, index, columns) => {
-      return 1;
-    },
-    equal: eq,
-  });
+export type Table<T> = {
+  header: {
+    rows: Signal<HeaderRow[]>;
+  };
+  body: {
+    rows: Signal<Row<T>[]>;
+  };
+  footer: {
+    rows: Signal<FooterRow[]>;
+  };
+  features: {
+    pagination: PaginationFeature;
+  };
+};
 
-  // const columns = createColumnDefSignals<T>(
-  //   isSignal(opt.columns) ? opt.columns : computed(() => opt.columns()),
-  // );
+type DeepPartial<T> = T extends any[]
+  ? T
+  : T extends object
+    ? T extends null
+      ? null
+      : {
+          [K in keyof T]?: DeepPartial<T[K]>;
+        }
+    : T;
 
-  // const data = createDataSignals<T>(
-  //   isSignal(opt.data) ? opt.data : computed(() => opt.data()),
-  //   eq,
-  // );
-
-  const rows = createRows(columns, data);
+function mergeState(state?: DeepPartial<TableState>): TableState {
   return {
-    rows,
+    pagination: mergePaginationState(state?.pagination),
   };
 }
 
-export type TableState<T> = ReturnType<typeof createTableState<T>>;
+export function createTableState(
+  initial?: DeepPartial<TableState>,
+): WritableSignal<TableState> {
+  return signal(mergeState(initial));
+}
+
+export function createTable<T>(opt: CreateTableOptions<T>): Table<T> {
+  const data = isSignal(opt.data) ? opt.data : computed(opt.data);
+
+  const bodyRows = mapArray<T, Row<T>>(data, (source) =>
+    createRow(source, opt.columns),
+  );
+
+  const headerRows = computed(() => [createHeaderRow(opt.columns)]);
+  const footerRows = computed(() => [createHeaderRow(opt.columns)]);
+
+  return {
+    header: {
+      rows: headerRows,
+    },
+    body: {
+      rows: bodyRows,
+    },
+    footer: {
+      rows: footerRows,
+    },
+    features: {
+      pagination: createPaginationFeature(derived(opt.state, 'pagination'), {
+        total: () => data().length,
+        ...opt.opt.pagination,
+      }),
+    },
+  };
+}

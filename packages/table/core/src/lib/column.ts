@@ -1,15 +1,9 @@
-import { Signal } from '@angular/core';
-import { CellDef } from './cell';
+import { ValueEqualityFn } from '@angular/core';
 
-export type ColumnDef<T, U> = CellDef<T, U>;
-
-export type ComparableColumnDef<T, U> = ColumnDef<T, U> & {
-  identity: string;
-};
-
-export type ColumnState = {
-  align: Signal<'left' | 'right'>;
+export type ColumnDef<T, U> = {
   name: string;
-  show: Signal<boolean>;
-  toggleVisibility: () => void;
+  accessor: (row: T) => U;
+  header?: () => string;
+  footer?: () => string;
+  equal?: ValueEqualityFn<U>;
 };

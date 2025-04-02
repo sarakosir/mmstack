@@ -1,31 +1,42 @@
 import { computed, Signal } from '@angular/core';
 import { v7 } from 'uuid';
-import { CellState, createCellState } from './cell';
+import { Cell, createCell, createHeaderCell } from './cell';
 import { ColumnDef } from './column';
 
-export type RowState<T> = {
+export type Row<T> = {
   id: string;
   source: Signal<T>;
-  columns: Signal<Signal<CellState<T, any>>[]>;
+  cells: Signal<Cell<any>[]>;
 };
 
-export function createRowState<T>(
-  defs: Signal<Signal<ColumnDef<T, any>>[]>,
+export type FooterRow = {
+  id: string;
+  cells: Signal<Cell<string>[]>;
+};
+
+export type HeaderRow = FooterRow;
+
+export function createRow<T>(
   source: Signal<T>,
-): RowState<T> {
+  defs: ColumnDef<T, any>[],
+): Row<T> {
   return {
     id: v7(),
     source,
-    columns: computed(() => defs().map((def) => createCellState(def, source)), {
-      equal: (a, b) => a.length === b.length,
-    }),
+    cells: computed(() => defs.map((d) => createCell(source, d))),
   };
 }
 
-export function createRows<T>(
-  defs: Signal<Signal<ColumnDef<T, any>>[]>,
-  data: Signal<Signal<T>[]>,
-) {
+export function createHeaderRow<T>(defs: ColumnDef<T, any>[]): HeaderRow {
+  return {
+    id: v7(),
+    cells: computed(() => defs.map((d) => createHeaderCell(d))),
+  };
+}
 
-  return computed(() => data().map((src)))
+export function createFooterRow<T>(defs: ColumnDef<T, any>[]): FooterRow {
+  return {
+    id: v7(),
+    cells: computed(() => defs.map((d) => createHeaderCell(d))),
+  };
 }
