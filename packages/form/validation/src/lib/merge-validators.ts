@@ -22,7 +22,7 @@ export function defaultMergeMessage(errors: string[]): {
   }
 
   return {
-    error: `${first}, & +${errors.length} issues`,
+    error: `${first}, +${errors.length} issues`,
     tooltip: errors.join('\n'),
   };
 }

@@ -2,13 +2,13 @@ import { Validator } from '../validator.type';
 
 export function defaultMinLengthMessageFactory(
   min: number,
-  elementsLabel: string,
+  elementsLabel?: string,
 ) {
   return `Min ${min} ${elementsLabel}`;
 }
 
 export function createMinLengthValidator(
-  createMsg: (min: number, elementsLabel: string) => string,
+  createMsg: (min: number, elementsLabel?: string) => string,
 ): <T extends string | any[] | null>(
   min: number,
   elementsLabel?: string,

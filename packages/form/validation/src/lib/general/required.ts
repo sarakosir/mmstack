@@ -9,7 +9,7 @@ function requiredNumber(value: number) {
 }
 
 export function createRequiredValidator(
-  createMsg: (label: string) => string,
+  createMsg: (label?: string) => string,
 ): <T>(label?: string) => Validator<T> {
   return (label = 'Field') => {
     const msg = createMsg(label);

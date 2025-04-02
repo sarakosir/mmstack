@@ -51,34 +51,34 @@ function createDefaultValidators() {
 }
 
 function createValidators<TDate = Date>(
-  msg: Partial<MessageFactories>,
+  msg: Partial<MessageFactories> | void,
   toDate: (date: TDate | string) => Date,
   formatDate: (date: Date, locale: string) => string,
   locale: string,
 ): Validators<TDate> {
-  const general = createGeneralValidators(msg.general);
+  const general = createGeneralValidators(msg?.general);
 
-  const merger = createMergeValidators(msg.merge);
+  const merger = createMergeValidators(msg?.merge);
 
   return {
     general,
-    string: createStringValidators(msg.string, general, merger),
-    number: createNumberValidators(msg.number, general, merger),
+    string: createStringValidators(msg?.string, general, merger),
+    number: createNumberValidators(msg?.number, general, merger),
     date: createDateValidators<TDate>(
-      msg.date,
+      msg?.date,
       toDate,
       formatDate,
       locale,
       general,
       merger,
     ),
-    array: createArrayValidators(msg.array, merger),
-    boolean: createBooleanValidators(msg.boolean),
+    array: createArrayValidators(msg?.array, merger),
+    boolean: createBooleanValidators(msg?.boolean),
   };
 }
 
 export function provideValidatorConfig<TDate = Date>(
-  factory: (locale: string) => Partial<MessageFactories>,
+  factory: (locale: string) => Partial<MessageFactories> | void | undefined,
   toDate: (date: TDate | string) => Date = defaultToDate<TDate>,
   formatDate: (date: Date, locale: string) => string = defaultFormatDate,
 ): Provider {
