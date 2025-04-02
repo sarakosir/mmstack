@@ -2,6 +2,25 @@ import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { withHistory } from '@mmstack/primitives';
 
+import { lens } from '@mmstack/primitives';
+
+type User = {
+  name?: {
+    first?: string;
+    last?: string;
+  };
+};
+
+const user = signal<User>({});
+
+const name = lens(user, 'name');
+
+const firstName = lens(name, {
+  from: (v) => v?.first,
+  onChange: (next) =>
+    name.update((prev) => (prev ? { ...prev, first: next } : { first: next })),
+});
+
 @Component({
   selector: 'app-root',
   imports: [FormsModule],

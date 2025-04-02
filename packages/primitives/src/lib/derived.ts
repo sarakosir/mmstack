@@ -192,3 +192,8 @@ export function isDerivation<T, U>(
 ): sig is DerivedSignal<T, U> {
   return 'from' in sig;
 }
+
+export const lens = derived;
+export const isLens = isDerivation;
+export const toFakeLens = toFakeDerivation;
+export const toFakeSignalLens = toFakeSignalDerivation;
