@@ -41,6 +41,7 @@ export const appConfig: ApplicationConfig = {
           'Cache-Control',
           'ETag',
           'Last-Modified',
+          'Content-Range',
         ],
       }),
     ),

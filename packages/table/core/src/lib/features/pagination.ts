@@ -18,6 +18,8 @@ export type PaginationFeature = {
   canNext: Signal<boolean>;
   canPrevious: Signal<boolean>;
   fromTo: Signal<string>;
+  showFirstLast: Signal<boolean>;
+  perPage: Signal<string>;
 };
 
 function defaultCreateTotalMessage(
@@ -34,10 +36,11 @@ export type PaginationState = {
 };
 
 export type PaginationOptions = {
-  pageSizeLabel?: string;
   pageSizeOptions?: number[];
+  perPageLabel?: () => string;
   total: () => number;
   createTotalMessage?: (start: number, end: number, total: number) => string;
+  showFirstLast?: () => boolean;
 };
 
 export function mergePaginationState(
@@ -56,10 +59,11 @@ export function createPaginationFeature(
 ): PaginationFeature {
   const page = derived(pagination, 'page');
   const pageSize = createSelectState(derived(pagination, 'pageSize', {}), {
-    label: () => opt?.pageSizeLabel ?? 'Page size',
     options: () => opt?.pageSizeOptions ?? [10, 25, 50],
-    readonly: () => (opt?.pageSizeOptions?.length ?? 0) <= 1,
+    readonly: () => (opt?.pageSizeOptions?.length ?? 0) === 1,
   });
+
+  const perPageFn = opt.perPageLabel ?? (() => 'Items per page:');
 
   const currentLast = computed(() => (page() + 1) * pageSize.value());
 
@@ -94,5 +98,7 @@ export function createPaginationFeature(
     fromTo: computed(() =>
       createFromTo(page() * pageSize.value() + 1, currentLast(), total()),
     ),
+    showFirstLast: computed(() => opt.showFirstLast?.() ?? true),
+    perPage: computed(perPageFn),
   };
 }

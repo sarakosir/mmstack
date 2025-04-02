@@ -55,8 +55,9 @@ import { SelectState, SignalErrorValidator } from './adapters';
       [subscriptSizing]="subscriptSizing()"
       [hideRequiredMarker]="hideRequiredMarker()"
     >
-      <mat-label>{{ state().label() }}</mat-label>
-
+      @if (state().label()) {
+        <mat-label>{{ state().label() }}</mat-label>
+      }
       @if (prefixIcon()) {
         <mat-icon matPrefix>{{ prefixIcon() }}</mat-icon>
       }

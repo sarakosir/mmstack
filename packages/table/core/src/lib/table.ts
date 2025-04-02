@@ -14,7 +14,14 @@ import {
   PaginationOptions,
   PaginationState,
 } from './features';
-import { createHeaderRow, createRow, FooterRow, HeaderRow, Row } from './row';
+import {
+  createFooterRow,
+  createHeaderRow,
+  createRow,
+  FooterRow,
+  HeaderRow,
+  Row,
+} from './row';
 
 type TableState = {
   pagination: PaginationState;
@@ -28,7 +35,7 @@ export type CreateTableOptions<T> = {
   data: () => T[];
   columns: ColumnDef<T, any>[];
   state: WritableSignal<TableState>;
-  opt: TableOptions;
+  opt?: TableOptions;
 };
 
 export type Table<T> = {
@@ -76,7 +83,7 @@ export function createTable<T>(opt: CreateTableOptions<T>): Table<T> {
   );
 
   const headerRows = computed(() => [createHeaderRow(opt.columns)]);
-  const footerRows = computed(() => [createHeaderRow(opt.columns)]);
+  const footerRows = computed(() => [createFooterRow(opt.columns)]);
 
   return {
     header: {
@@ -91,7 +98,7 @@ export function createTable<T>(opt: CreateTableOptions<T>): Table<T> {
     features: {
       pagination: createPaginationFeature(derived(opt.state, 'pagination'), {
         total: () => data().length,
-        ...opt.opt.pagination,
+        ...opt.opt?.pagination,
       }),
     },
   };

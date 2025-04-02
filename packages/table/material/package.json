@@ -4,7 +4,9 @@
   "peerDependencies": {
     "@angular/common": "~19.2.3",
     "@angular/core": "~19.2.3",
-    "@mmstack/table-core": "~19.0.0"
+    "@angular/material": "~19.2.3",
+    "@mmstack/table-core": "~19.0.0",
+    "@mmstack/form-material": "^19.0.7"
   },
   "sideEffects": false
 }

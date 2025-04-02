@@ -1,6 +1,6 @@
 import { computed, Signal } from '@angular/core';
 import { v7 } from 'uuid';
-import { Cell, createCell, createHeaderCell } from './cell';
+import { Cell, createCell, createFooterCell, createHeaderCell } from './cell';
 import { ColumnDef } from './column';
 
 export type Row<T> = {
@@ -37,6 +37,6 @@ export function createHeaderRow<T>(defs: ColumnDef<T, any>[]): HeaderRow {
 export function createFooterRow<T>(defs: ColumnDef<T, any>[]): FooterRow {
   return {
     id: v7(),
-    cells: computed(() => defs.map((d) => createHeaderCell(d))),
+    cells: computed(() => defs.map((d) => createFooterCell(d))),
   };
 }

@@ -1,0 +1,1 @@
+export { PaginationFeature } from './pagination';
