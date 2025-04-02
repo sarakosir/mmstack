@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { withHistory } from '@mmstack/primitives';
 
-import { lens } from '@mmstack/primitives';
+import { derived } from '@mmstack/primitives';
 
 type User = {
   name?: {
@@ -13,9 +13,9 @@ type User = {
 
 const user = signal<User>({});
 
-const name = lens(user, 'name');
+const name = derived(user, 'name');
 
-const firstName = lens(name, {
+const firstName = derived(name, {
   from: (v) => v?.first,
   onChange: (next) =>
     name.update((prev) => (prev ? { ...prev, first: next } : { first: next })),
