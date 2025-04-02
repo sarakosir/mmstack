@@ -1,40 +1,26 @@
 import { Component, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { RouterOutlet } from '@angular/router';
 import { withHistory } from '@mmstack/primitives';
-
-import { derived } from '@mmstack/primitives';
-
-type User = {
-  name?: {
-    first?: string;
-    last?: string;
-  };
-};
-
-const user = signal<User>({});
-
-const name = derived(user, 'name');
-
-const firstName = derived(name, {
-  from: (v) => v?.first,
-  onChange: (next) =>
-    name.update((prev) => (prev ? { ...prev, first: next } : { first: next })),
-});
+import { Link } from '@mmstack/router-core';
 
 @Component({
   selector: 'app-root',
-  imports: [FormsModule],
+  imports: [RouterOutlet, Link],
   template: `
-    <input [(ngModel)]="state" />
-
-    <button (click)="state.undo()" [disabled]="!state.canUndo()">undo</button>
-    <button (click)="state.redo()" [disabled]="!state.canRedo()">redo</button>
-
-    <button (click)="state.clear()" [disabled]="!state.canClear()">
-      clear
-    </button>
+    <router-outlet />
+    <br />
+    <nav>
+      <a mmLink="/">Home</a>
+      <a mmLink="/other">Other</a>
+    </nav>
   `,
-  styles: ``,
+  styles: `
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  `,
 })
 export class AppComponent {
   state = withHistory(signal('yay'));
