@@ -90,8 +90,7 @@ export function createPaginationFeature(
     },
     last: () => {
       if (!untracked(canNext)) return;
-      const lastPage = Math.floor(untracked(total) / untracked(pageSize.value));
-      page.set(lastPage);
+      page.set(Math.ceil(untracked(total) / untracked(pageSize.value)) - 1);
     },
     canNext,
     canPrevious,
