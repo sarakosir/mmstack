@@ -4,3 +4,4 @@ export * from './lib/map-array';
 export * from './lib/mutable';
 export * from './lib/stored';
 export * from './lib/to-writable';
+export * from './lib/with-history';
