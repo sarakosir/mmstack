@@ -34,11 +34,14 @@ const todoColumns: ColumnDef<Todo, string | number>[] = [
     name: 'id',
     header: () => 'ID',
     accessor: (row) => row.id,
+    footer: () => "yay"
   },
   {
     name: 'title',
     header: () => 'Title',
     accessor: (row) => row.title,
+    footer: () => "zaz"
+
   },
 ];
 
