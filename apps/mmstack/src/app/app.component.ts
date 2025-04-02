@@ -54,7 +54,7 @@ const todoColumns: ColumnDef<Todo, string | number>[] = [
       [style.visibility]="events.isLoading() ? 'visible' : 'hidden'"
     />
     <mat-card>
-      <mm-table [state]="table" />
+      <mm-table [state]="todoTable" />
     </mat-card>
   `,
   styles: `
@@ -93,7 +93,7 @@ export class AppComponent {
   readonly todoState = createTableState();
 
   readonly todoTable = createTable<Todo>({
-    data: clientRowModel(this.todos.value, this.todoState),
+    data: clientRowModel(this.todos.value, this.todoState, (row) => row.title),
     columns: todoColumns,
     state: this.todoState,
     opt: {
