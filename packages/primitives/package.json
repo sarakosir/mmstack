@@ -1,6 +1,6 @@
 {
   "name": "@mmstack/primitives",
-  "version": "19.0.6",
+  "version": "19.0.5",
   "keywords": ["angular", "signals", "debounce", "mapArray", "primitives"],
   "license": "MIT",
   "repository": {

@@ -212,9 +212,9 @@ const name = toWritable(
 ); // WritableSignal<string> bound to user signal
 ```
 
-### derived/lens
+### derived
 
-Creates a WritableSignal that represents a part of another source WritableSignal (e.g., an object property or an array element), enabling two-way data binding. Changes to the source update the derived signal, and changes to the derived signal (via .set() or .update()) update the source signal accordingly. `derived` is also re-exported as `lens` so use whichever you prefer :)
+Creates a WritableSignal that represents a part of another source WritableSignal (e.g., an object property or an array element), enabling two-way data binding. Changes to the source update the derived signal, and changes to the derived signal (via .set() or .update()) update the source signal accordingly.
 
 ```typescript
 const user = signal({ name: 'John' });
