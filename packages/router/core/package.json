@@ -1,6 +1,6 @@
 {
   "name": "@mmstack/router-core",
-  "version": "19.0.0",
+  "version": "19.0.1",
   "keywords": ["angular", "signals", "router", "url", "query", "params"],
   "license": "MIT",
   "repository": {
