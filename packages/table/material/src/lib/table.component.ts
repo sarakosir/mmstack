@@ -4,6 +4,7 @@ import { FooterRowComponent } from './footer-row.component';
 import { HeaderRowComponent } from './header-row.component';
 import { PaginatorComponent } from './paginator.component';
 import { RowComponent } from './row.component';
+import { ToolbarComponent } from './toolbar.component';
 
 @Component({
   selector: 'mm-table',
@@ -13,9 +14,12 @@ import { RowComponent } from './row.component';
     RowComponent,
     FooterRowComponent,
     PaginatorComponent,
+    ToolbarComponent,
   ],
   template: `
-    <header></header>
+    <header>
+      <mm-toolbar  [globalFilterState]="state().features.globalFilter"/>
+    </header>
     <div class="table-container">
       <div class="table">
         <div class="thead">

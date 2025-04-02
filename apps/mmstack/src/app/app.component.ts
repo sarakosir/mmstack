@@ -75,6 +75,7 @@ export class AppComponent {
           this.tableState().pagination.page *
           this.tableState().pagination.pageSize,
         limit: this.tableState().pagination.pageSize,
+        'search': this.tableState().globalFilter
       },
     }),
     {
