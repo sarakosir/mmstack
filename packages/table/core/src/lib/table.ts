@@ -23,7 +23,7 @@ import {
   Row,
 } from './row';
 
-type TableState = {
+export type TableState = {
   pagination: PaginationState;
 };
 
