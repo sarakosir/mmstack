@@ -13,6 +13,9 @@ import {
   PaginationFeature,
   PaginationOptions,
   PaginationState,
+  GlobalFilteringState,
+  GlobalFilteringOptions,
+  GlobalFilteringFeature, createGlobalFilter
 } from './features';
 import {
   createFooterRow,
@@ -25,10 +28,12 @@ import {
 
 export type TableState = {
   pagination: PaginationState;
+  globalFilter: GlobalFilteringState;
 };
 
 type TableOptions = {
   pagination?: PaginationOptions;
+  globalFilter?: GlobalFilteringOptions;
 };
 
 export type CreateTableOptions<T> = {
@@ -50,6 +55,7 @@ export type Table<T> = {
   };
   features: {
     pagination: PaginationFeature;
+    globalFilter: GlobalFilteringFeature;
   };
 };
 
@@ -66,6 +72,7 @@ type DeepPartial<T> = T extends any[]
 function mergeState(state?: DeepPartial<TableState>): TableState {
   return {
     pagination: mergePaginationState(state?.pagination),
+    globalFilter: state?.globalFilter ?? '',
   };
 }
 
@@ -100,6 +107,7 @@ export function createTable<T>(opt: CreateTableOptions<T>): Table<T> {
         total: () => data().length,
         ...opt.opt?.pagination,
       }),
+      globalFilter: createGlobalFilter(opt.state, opt.opt?.globalFilter),
     },
   };
 }

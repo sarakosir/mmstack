@@ -26,7 +26,7 @@ import {
     },
   ],
 })
-export class Link {
+export class LinkDirective {
   readonly target = input<string>();
   readonly queryParams = input<Params>();
   readonly fragment = input<string>();

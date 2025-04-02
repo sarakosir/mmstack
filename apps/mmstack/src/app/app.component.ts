@@ -75,6 +75,7 @@ export class AppComponent {
           this.tableState().pagination.page *
           this.tableState().pagination.pageSize,
         limit: this.tableState().pagination.pageSize,
+        'search': this.tableState().globalFilter
       },
     }),
     {
@@ -92,7 +93,7 @@ export class AppComponent {
   readonly todoState = createTableState();
 
   readonly todoTable = createTable<Todo>({
-    data: clientRowModel(this.todos.value, this.todoState),
+    data: clientRowModel(this.todos.value, this.todoState, (row) => row.title),
     columns: todoColumns,
     state: this.todoState,
     opt: {
