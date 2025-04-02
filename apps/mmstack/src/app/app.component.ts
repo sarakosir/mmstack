@@ -54,7 +54,7 @@ const todoColumns: ColumnDef<Todo, string | number>[] = [
       [style.visibility]="events.isLoading() ? 'visible' : 'hidden'"
     />
     <mat-card>
-      <mm-table [state]="todoTable" />
+      <mm-table [state]="table" />
     </mat-card>
   `,
   styles: `
