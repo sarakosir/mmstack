@@ -115,7 +115,7 @@ export type QueryResourceRef<TResult> = HttpResourceRef<TResult> & {
 };
 
 export function queryResource<TResult, TRaw = TResult>(
-  request: () => HttpResourceRequest | undefined,
+  request: () => HttpResourceRequest | undefined | void,
   options: QueryResourceOptions<TResult, TRaw> & {
     defaultValue: NoInfer<TResult>;
   },
@@ -134,12 +134,12 @@ export function queryResource<TResult, TRaw = TResult>(
  * @returns An `QueryResourceRef` instance, which extends the basic `HttpResourceRef` with additional features.
  */
 export function queryResource<TResult, TRaw = TResult>(
-  request: () => HttpResourceRequest | undefined,
+  request: () => HttpResourceRequest | undefined | void,
   options?: QueryResourceOptions<TResult, TRaw>,
 ): QueryResourceRef<TResult | undefined>;
 
 export function queryResource<TResult, TRaw = TResult>(
-  request: () => HttpResourceRequest | undefined,
+  request: () => HttpResourceRequest | undefined | void,
   options?: QueryResourceOptions<TResult, TRaw>,
 ): QueryResourceRef<TResult | undefined> {
   const cache = injectQueryCache(options?.injector);
@@ -157,7 +157,7 @@ export function queryResource<TResult, TRaw = TResult>(
   const stableRequest = computed(
     () => {
       if (cb.isClosed()) return undefined;
-      return request();
+      return request() ?? undefined;
     },
     {
       equal: createEqualRequest(options?.equal),

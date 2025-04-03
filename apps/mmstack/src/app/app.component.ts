@@ -2,7 +2,9 @@ import { httpResource } from '@angular/common/http';
 import { Component, computed } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBar } from '@angular/material/progress-bar';
+import { RouterOutlet } from '@angular/router';
 import { queryResource } from '@mmstack/resource';
+import { LinkDirective } from '@mmstack/router-core';
 import { clientRowModel } from '@mmstack/table-client';
 import { ColumnDef, createTable, createTableState } from '@mmstack/table-core';
 import { TableComponent } from '@mmstack/table-material';
@@ -34,28 +36,36 @@ const todoColumns: ColumnDef<Todo, string | number>[] = [
     name: 'id',
     header: () => 'ID',
     accessor: (row) => row.id,
-    footer: () => "yay"
+    footer: () => 'yay',
   },
   {
     name: 'title',
     header: () => 'Title',
     accessor: (row) => row.title,
-    footer: () => "zaz"
-
+    footer: () => 'zaz',
   },
 ];
 
 @Component({
   selector: 'app-root',
-  imports: [MatProgressBar, TableComponent, MatCardModule],
+  imports: [
+    MatProgressBar,
+    TableComponent,
+    MatCardModule,
+    LinkDirective,
+    RouterOutlet,
+  ],
   template: `
-    <mat-progress-bar
+    <!-- <mat-progress-bar
       mode="indeterminate"
       [style.visibility]="events.isLoading() ? 'visible' : 'hidden'"
     />
     <mat-card>
       <mm-table [state]="todoTable" />
-    </mat-card>
+    </mat-card> -->
+    <router-outlet />
+    <a mmLink="/">Home</a>
+    <a mmLink="/other" preloadOn="hover">Other</a>
   `,
   styles: `
     mat-card {
@@ -75,7 +85,7 @@ export class AppComponent {
           this.tableState().pagination.page *
           this.tableState().pagination.pageSize,
         limit: this.tableState().pagination.pageSize,
-        'search': this.tableState().globalFilter
+        search: this.tableState().globalFilter,
       },
     }),
     {

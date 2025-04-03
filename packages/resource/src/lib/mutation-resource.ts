@@ -41,6 +41,7 @@ export type MutationResourceOptions<
   TResult,
   TRaw = TResult,
   TCTX = void,
+  TICTX = TCTX,
 > = Omit<
   QueryResourceOptions<TResult, TRaw>,
   'onError' | 'keepPrevious' | 'refresh' | 'cache' // we can't keep previous values, refresh or cache mutations as they are meant to be one-off operations
@@ -51,7 +52,7 @@ export type MutationResourceOptions<
    * @returns An optional context value that will be passed to the `onError`, `onSuccess`, and `onSettled` callbacks. This is useful for storing
    *  information needed during the mutation lifecycle, such as previous values for optimistic updates or rollback.
    */
-  onMutate?: (value: TResult) => TCTX;
+  onMutate?: (value: TResult, initialCTX?: TICTX) => TCTX;
   /**
    * A callback function that is called if the mutation request fails.
    * @param error The error that occurred.
@@ -77,7 +78,7 @@ export type MutationResourceOptions<
  *
  * @typeParam TResult - The type of the expected result from the mutation.
  */
-export type MutationResourceRef<TResult> = Omit<
+export type MutationResourceRef<TResult, TICTX = void> = Omit<
   QueryResourceRef<TResult>,
   'prefetch' | 'value' | 'hasValue' | 'set' | 'update' // we don't allow manually viewing the returned data or updating it manually, prefetching a mutation also doesn't make any sense
 > & {
@@ -88,6 +89,7 @@ export type MutationResourceRef<TResult> = Omit<
    */
   mutate: (
     value: Omit<Partial<HttpResourceRequest>, 'body'> & { body: TResult },
+    ctx?: TICTX,
   ) => void;
   /**
    * A signal that holds the current mutation request, or `null` if no mutation is in progress.
@@ -118,13 +120,18 @@ export type MutationResourceRef<TResult> = Omit<
  * @returns A `MutationResourceRef` instance, which provides methods for triggering the mutation
  *          and observing its status.
  */
-export function mutationResource<TResult, TRaw = TResult, TCTX = void>(
-  request: () => Omit<Partial<HttpResourceRequest>, 'body'> | undefined,
-  options: MutationResourceOptions<TResult, TRaw, TCTX> = {},
-): MutationResourceRef<TResult> {
+export function mutationResource<
+  TResult,
+  TRaw = TResult,
+  TCTX = void,
+  TICTX = TCTX,
+>(
+  request: () => Omit<Partial<HttpResourceRequest>, 'body'> | undefined | void,
+  options: MutationResourceOptions<TResult, TRaw, TCTX, TICTX> = {},
+): MutationResourceRef<TResult, TICTX> {
   const equal = createEqualRequest(options?.equal);
 
-  const baseRequest = computed(() => request(), {
+  const baseRequest = computed(() => request() ?? undefined, {
     equal,
   });
 
@@ -208,8 +215,8 @@ export function mutationResource<TResult, TRaw = TResult, TCTX = void>(
       statusSub.unsubscribe();
       resource.destroy();
     },
-    mutate: (value) => {
-      ctx = onMutate?.(value.body as TResult) as TCTX;
+    mutate: (value, ictx) => {
+      ctx = onMutate?.(value.body as TResult, ictx) as TCTX;
       nextRequest.set(value);
     },
     current: nextRequest,
