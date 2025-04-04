@@ -95,6 +95,10 @@ import { DateState, SignalErrorValidator } from './adapters';
 
       mat-form-field {
         width: 100%;
+
+        .mat-mdc-notch-piece.mdc-notched-outline__notch:has(mat-label:empty) {
+          display: none;
+        }
       }
     }
   `,

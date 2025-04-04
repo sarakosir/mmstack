@@ -1,13 +1,17 @@
 import { httpResource } from '@angular/common/http';
-import { Component, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { RouterOutlet } from '@angular/router';
+import { createSelectState } from '@mmstack/form-adapters';
+import { SelectFieldComponent } from '@mmstack/form-material';
 import { queryResource } from '@mmstack/resource';
 import { LinkDirective } from '@mmstack/router-core';
 import { clientRowModel } from '@mmstack/table-client';
 import { ColumnDef, createTable, createTableState } from '@mmstack/table-core';
 import { TableComponent } from '@mmstack/table-material';
+import { delay, of } from 'rxjs';
 type EventDef = {
   id: string;
   name: string;
@@ -46,6 +50,8 @@ const todoColumns: ColumnDef<Todo, string | number>[] = [
   },
 ];
 
+const label = of('label test').pipe(delay(1000));
+
 @Component({
   selector: 'app-root',
   imports: [
@@ -54,7 +60,9 @@ const todoColumns: ColumnDef<Todo, string | number>[] = [
     MatCardModule,
     LinkDirective,
     RouterOutlet,
+    SelectFieldComponent,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <!-- <mat-progress-bar
       mode="indeterminate"
@@ -66,6 +74,8 @@ const todoColumns: ColumnDef<Todo, string | number>[] = [
     <router-outlet />
     <a mmLink="/">Home</a>
     <a mmLink="/other" preloadOn="hover">Other</a>
+
+    <mm-select-field appearance="outline" [state]="select" />
   `,
   styles: `
     mat-card {
@@ -75,6 +85,15 @@ const todoColumns: ColumnDef<Todo, string | number>[] = [
   `,
 })
 export class AppComponent {
+  readonly title = toSignal(label, {
+    initialValue: '',
+  });
+
+  readonly select = createSelectState<string>('', {
+    label: this.title,
+    options: () => ['yay'],
+  });
+
   readonly tableState = createTableState();
 
   readonly events = queryResource<EventDef[]>(

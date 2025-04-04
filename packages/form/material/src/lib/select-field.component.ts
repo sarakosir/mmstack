@@ -55,9 +55,8 @@ import { SelectState, SignalErrorValidator } from './adapters';
       [subscriptSizing]="subscriptSizing()"
       [hideRequiredMarker]="hideRequiredMarker()"
     >
-      @if (state().label()) {
-        <mat-label>{{ state().label() }}</mat-label>
-      }
+      <mat-label>{{ state().label() }}</mat-label>
+
       @if (prefixIcon()) {
         <mat-icon matPrefix>{{ prefixIcon() }}</mat-icon>
       }
@@ -100,6 +99,10 @@ import { SelectState, SignalErrorValidator } from './adapters';
 
       mat-form-field {
         width: 100%;
+
+        .mat-mdc-notch-piece.mdc-notched-outline__notch:has(mat-label:empty) {
+          display: none;
+        }
       }
     }
   `,
