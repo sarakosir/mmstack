@@ -1,6 +1,6 @@
 {
   "name": "@mmstack/resource",
-  "version": "19.0.7",
+  "version": "19.0.8",
   "keywords": ["angular", "signals", "http", "resource", "cache", "mutation", "rxjs"],
   "repository": {
     "type": "git",

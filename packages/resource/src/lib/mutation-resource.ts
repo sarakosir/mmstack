@@ -6,6 +6,7 @@ import {
   ResourceStatus,
   Signal,
   signal,
+  ValueEqualityFn,
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { combineLatestWith, filter, map } from 'rxjs';
@@ -40,11 +41,12 @@ type StatusResult<TResult> =
 export type MutationResourceOptions<
   TResult,
   TRaw = TResult,
+  TMutation = TResult,
   TCTX = void,
   TICTX = TCTX,
 > = Omit<
   QueryResourceOptions<TResult, TRaw>,
-  'onError' | 'keepPrevious' | 'refresh' | 'cache' // we can't keep previous values, refresh or cache mutations as they are meant to be one-off operations
+  'equal' | 'onError' | 'keepPrevious' | 'refresh' | 'cache' // we can't keep previous values, refresh or cache mutations as they are meant to be one-off operations
 > & {
   /**
    * A callback function that is called before the mutation request is made.
@@ -52,7 +54,7 @@ export type MutationResourceOptions<
    * @returns An optional context value that will be passed to the `onError`, `onSuccess`, and `onSettled` callbacks. This is useful for storing
    *  information needed during the mutation lifecycle, such as previous values for optimistic updates or rollback.
    */
-  onMutate?: (value: TResult, initialCTX?: TICTX) => TCTX;
+  onMutate?: (value: TMutation, initialCTX?: TICTX) => TCTX;
   /**
    * A callback function that is called if the mutation request fails.
    * @param error The error that occurred.
@@ -70,6 +72,7 @@ export type MutationResourceOptions<
    * @param ctx The context value returned by the `onMutate` callback (or `undefined` if `onMutate` was not provided or returned `undefined`).
    */
   onSettled?: (ctx: NoInfer<TCTX>) => void;
+  equal?: ValueEqualityFn<TMutation>;
 };
 
 /**
@@ -78,7 +81,11 @@ export type MutationResourceOptions<
  *
  * @typeParam TResult - The type of the expected result from the mutation.
  */
-export type MutationResourceRef<TResult, TICTX = void> = Omit<
+export type MutationResourceRef<
+  TResult,
+  TMutation = TResult,
+  TICTX = void,
+> = Omit<
   QueryResourceRef<TResult>,
   'prefetch' | 'value' | 'hasValue' | 'set' | 'update' // we don't allow manually viewing the returned data or updating it manually, prefetching a mutation also doesn't make any sense
 > & {
@@ -88,7 +95,7 @@ export type MutationResourceRef<TResult, TICTX = void> = Omit<
    * @param value The request body and any other request parameters to use for the mutation.  The `body` property is *required*.
    */
   mutate: (
-    value: Omit<Partial<HttpResourceRequest>, 'body'> & { body: TResult },
+    value: Omit<Partial<HttpResourceRequest>, 'body'> & { body: TMutation },
     ctx?: TICTX,
   ) => void;
   /**
@@ -96,7 +103,7 @@ export type MutationResourceRef<TResult, TICTX = void> = Omit<
    * This can be useful for tracking the state of the mutation or for displaying loading indicators.
    */
   current: Signal<
-    (Omit<Partial<HttpResourceRequest>, 'body'> & { body: TResult }) | null
+    (Omit<Partial<HttpResourceRequest>, 'body'> & { body: TMutation }) | null
   >;
 };
 
@@ -123,25 +130,28 @@ export type MutationResourceRef<TResult, TICTX = void> = Omit<
 export function mutationResource<
   TResult,
   TRaw = TResult,
+  TMutation = TResult,
   TCTX = void,
   TICTX = TCTX,
 >(
   request: () => Omit<Partial<HttpResourceRequest>, 'body'> | undefined | void,
-  options: MutationResourceOptions<TResult, TRaw, TCTX, TICTX> = {},
-): MutationResourceRef<TResult, TICTX> {
-  const equal = createEqualRequest(options?.equal);
+  options: MutationResourceOptions<TResult, TRaw, TMutation, TCTX, TICTX> = {},
+): MutationResourceRef<TResult, TMutation, TICTX> {
+  const { onMutate, onError, onSuccess, onSettled, equal, ...rest } = options;
+
+  const requestEqual = createEqualRequest(equal);
 
   const baseRequest = computed(() => request() ?? undefined, {
-    equal,
+    equal: requestEqual,
   });
 
   const nextRequest = signal<
-    (Omit<Partial<HttpResourceRequest>, 'body'> & { body: TResult }) | null
+    (Omit<Partial<HttpResourceRequest>, 'body'> & { body: TMutation }) | null
   >(null, {
     equal: (a, b) => {
       if (!a && !b) return true;
       if (!a || !b) return false;
-      return equal(a, b);
+      return requestEqual(a, b);
     },
   });
 
@@ -161,11 +171,9 @@ export function mutationResource<
     };
   });
 
-  const { onMutate, onError, onSuccess, onSettled, ...rest } = options;
-
   const resource = queryResource<TResult, TRaw>(req, {
     ...rest,
-    defaultValue: null as TResult, // doesnt matter since .value is not accessible
+    defaultValue: null as unknown as TResult, // doesnt matter since .value is not accessible
   });
 
   let ctx: TCTX = undefined as TCTX;
@@ -216,7 +224,7 @@ export function mutationResource<
       resource.destroy();
     },
     mutate: (value, ictx) => {
-      ctx = onMutate?.(value.body as TResult, ictx) as TCTX;
+      ctx = onMutate?.(value.body as TMutation, ictx) as TCTX;
       nextRequest.set(value);
     },
     current: nextRequest,
