@@ -39,7 +39,14 @@ export function createSearchState<T, TParent = undefined>(
   value: T | DerivedSignal<TParent, T>,
   opt: SearchStateOptions<T>,
 ): SearchState<T, TParent> {
-  const identify = computed(() => opt.identify?.() ?? ((v: T) => `${v}`));
+  const identify = computed(
+    () =>
+      opt.identify?.() ??
+      ((v: T) => {
+        if (v === null || v === undefined) return '';
+        return `${v}`;
+      }),
+  );
 
   const equal = (a: T, b: T) => {
     return identify()(a) === identify()(b);

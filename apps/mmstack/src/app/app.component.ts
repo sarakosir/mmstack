@@ -89,7 +89,7 @@ export class AppComponent {
     initialValue: '',
   });
 
-  readonly select = createSelectState<string>('', {
+  readonly select = createSelectState<string | null>(null, {
     label: this.title,
     options: () => ['yay'],
   });
