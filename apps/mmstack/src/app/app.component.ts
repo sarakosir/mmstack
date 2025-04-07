@@ -4,7 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { queryResource } from '@mmstack/resource';
 import { clientRowModel } from '@mmstack/table-client';
-import { ColumnDef, createTable, createTableState } from '@mmstack/table-core';
+import { ColumnDef, createTable, createTableState, TableState } from '@mmstack/table-core';
 import { TableComponent } from '@mmstack/table-material';
 type EventDef = {
   id: string;
@@ -45,6 +45,13 @@ const todoColumns: ColumnDef<Todo, string | number>[] = [
   },
 ];
 
+
+function resolveSort({ sort }: TableState): string | null {
+  if (!sort) return null;
+
+  return sort.direction === "desc" ? `-${sort.name}` : sort.name;
+}
+
 @Component({
   selector: 'app-root',
   imports: [MatProgressBar, TableComponent, MatCardModule],
@@ -54,7 +61,7 @@ const todoColumns: ColumnDef<Todo, string | number>[] = [
       [style.visibility]="events.isLoading() ? 'visible' : 'hidden'"
     />
     <mat-card>
-      <mm-table [state]="todoTable" />
+      <mm-table [state]="table" />
     </mat-card>
   `,
   styles: `
@@ -68,16 +75,25 @@ export class AppComponent {
   readonly tableState = createTableState();
 
   readonly events = queryResource<EventDef[]>(
-    () => ({
-      url: 'http://localhost:3000/api/event-definition',
-      params: {
+    () => {
+
+      const sortParam = resolveSort(this.tableState());
+
+      const baseState = {
         offset:
           this.tableState().pagination.page *
           this.tableState().pagination.pageSize,
         limit: this.tableState().pagination.pageSize,
-        'search': this.tableState().globalFilter
-      },
-    }),
+        'search': this.tableState().globalFilter,
+      }
+
+      return {
+      url: 'http://localhost:3000/api/event-definition',
+      params: sortParam ? {
+        ...baseState,
+        sort: sortParam
+      } : baseState
+    }},
     {
       keepPrevious: true,
       defaultValue: [],
