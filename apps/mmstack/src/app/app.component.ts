@@ -1,17 +1,11 @@
 import { httpResource } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, computed } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { RouterOutlet } from '@angular/router';
-import { createSelectState } from '@mmstack/form-adapters';
-import { SelectFieldComponent } from '@mmstack/form-material';
 import { queryResource } from '@mmstack/resource';
-import { LinkDirective } from '@mmstack/router-core';
 import { clientRowModel } from '@mmstack/table-client';
-import { ColumnDef, createTable, createTableState } from '@mmstack/table-core';
+import { ColumnDef, createTable, createTableState, TableState } from '@mmstack/table-core';
 import { TableComponent } from '@mmstack/table-material';
-import { delay, of } from 'rxjs';
 type EventDef = {
   id: string;
   name: string;
@@ -40,42 +34,35 @@ const todoColumns: ColumnDef<Todo, string | number>[] = [
     name: 'id',
     header: () => 'ID',
     accessor: (row) => row.id,
-    footer: () => 'yay',
+    footer: () => "yay"
   },
   {
     name: 'title',
     header: () => 'Title',
     accessor: (row) => row.title,
-    footer: () => 'zaz',
+    footer: () => "zaz"
+
   },
 ];
 
-const label = of('label test').pipe(delay(1000));
+
+function resolveSort({ sort }: TableState): string | null {
+  if (!sort) return null;
+
+  return sort.direction === "desc" ? `-${sort.name}` : sort.name;
+}
 
 @Component({
   selector: 'app-root',
-  imports: [
-    MatProgressBar,
-    TableComponent,
-    MatCardModule,
-    LinkDirective,
-    RouterOutlet,
-    SelectFieldComponent,
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatProgressBar, TableComponent, MatCardModule],
   template: `
-    <!-- <mat-progress-bar
+    <mat-progress-bar
       mode="indeterminate"
       [style.visibility]="events.isLoading() ? 'visible' : 'hidden'"
     />
     <mat-card>
-      <mm-table [state]="todoTable" />
-    </mat-card> -->
-    <router-outlet />
-    <a mmLink="/">Home</a>
-    <a mmLink="/other" preloadOn="hover">Other</a>
-
-    <mm-select-field appearance="outline" [state]="select" />
+      <mm-table [state]="table" />
+    </mat-card>
   `,
   styles: `
     mat-card {
@@ -85,28 +72,28 @@ const label = of('label test').pipe(delay(1000));
   `,
 })
 export class AppComponent {
-  readonly title = toSignal(label, {
-    initialValue: '',
-  });
-
-  readonly select = createSelectState<string | null>(null, {
-    label: this.title,
-    options: () => ['yay'],
-  });
-
   readonly tableState = createTableState();
 
   readonly events = queryResource<EventDef[]>(
-    () => ({
-      url: 'http://localhost:3000/api/event-definition',
-      params: {
+    () => {
+
+      const sortParam = resolveSort(this.tableState());
+
+      const baseState = {
         offset:
           this.tableState().pagination.page *
           this.tableState().pagination.pageSize,
         limit: this.tableState().pagination.pageSize,
-        search: this.tableState().globalFilter,
-      },
-    }),
+        'search': this.tableState().globalFilter,
+      }
+
+      return {
+      url: 'http://localhost:3000/api/event-definition',
+      params: sortParam ? {
+        ...baseState,
+        sort: sortParam
+      } : baseState
+    }},
     {
       keepPrevious: true,
       defaultValue: [],
