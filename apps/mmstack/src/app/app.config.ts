@@ -14,13 +14,14 @@ import {
   withEventReplay,
   withHttpTransferCacheOptions,
 } from '@angular/platform-browser';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withPreloading } from '@angular/router';
 import { provideValidatorConfig } from '@mmstack/form-material';
 import {
   createCacheInterceptor,
   createDedupeRequestsInterceptor,
   provideQueryCache,
 } from '@mmstack/resource';
+import { PreloadLinkStrategy } from '@mmstack/router-core';
 import { DateTime } from 'luxon';
 import { delay } from 'rxjs';
 import { appRoutes } from './app.routes';
@@ -131,7 +132,7 @@ export const appConfig: ApplicationConfig = {
         createDelayInterceptor(),
       ]),
     ),
-    provideRouter(appRoutes),
+    provideRouter(appRoutes, withPreloading(PreloadLinkStrategy)),
     provideValidatorConfig(
       (locale) => {
         switch (locale) {

@@ -9,7 +9,6 @@ import { ArrayValidatorOptions } from '@mmstack/form-validation';
 import {
   MaterialSelectStateExtension,
   MaterialSelectStateOptionsExtension,
-  SelectStateOptions,
   toMaterialSelectSpecifics,
 } from './select';
 
@@ -36,7 +35,7 @@ export function injectCreateMultiSelectState() {
 
   return <T extends any[], TParent = undefined>(
     value: T | DerivedSignal<TParent, T>,
-    opt: Omit<SelectStateOptions<T>, 'required' | 'validator'> & {
+    opt: Omit<MultiSelectStateOptions<T>, 'required' | 'validator'> & {
       validation?: () => ArrayValidatorOptions;
     },
   ): MultiSelectState<T, TParent> => {
