@@ -1,10 +1,26 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { type Cell } from '@mmstack/table-core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+} from '@angular/core';
+import { HeaderCell } from '@mmstack/table-core';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'mm-header-cell',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<span>{{ state().value() }}</span>`,
+  imports: [MatIconButton, MatIcon],
+  template: ` <div class="container">
+    <span>{{ state().value() }}</span>
+    <div class="actions">
+      <button type="button" mat-icon-button (click)="state().features.sort.toggleSort()">
+        <mat-icon>{{ sortIcon() }}</mat-icon>
+      </button>
+
+    </div>
+  </div>`,
   styles: `
     :host {
       padding: 0 16px;
@@ -35,5 +51,20 @@ import { type Cell } from '@mmstack/table-core';
   `,
 })
 export class HeaderCellComponent {
-  readonly state = input.required<Cell<string>>();
+  readonly state = input.required<HeaderCell>();
+
+
+  protected readonly sortIcon = computed(() => {
+
+   switch(this.state().features.sort.direction()) {
+     case "asc":
+       return "chevron_left";
+     case "desc":
+       return "chevron_right";
+     default:
+       return "check";
+   }
+
+
+  })
 }

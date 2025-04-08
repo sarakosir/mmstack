@@ -15,7 +15,7 @@ import {
   PaginationState,
   GlobalFilteringState,
   GlobalFilteringOptions,
-  GlobalFilteringFeature, createGlobalFilter
+  GlobalFilteringFeature, createGlobalFilter, createSortState, SortFeature, mergeSortState, SortState
 } from './features';
 import {
   createFooterRow,
@@ -29,11 +29,13 @@ import {
 export type TableState = {
   pagination: PaginationState;
   globalFilter: GlobalFilteringState;
+  sort: SortState;
 };
 
 type TableOptions = {
   pagination?: PaginationOptions;
   globalFilter?: GlobalFilteringOptions;
+  sort?: SortState;
 };
 
 export type CreateTableOptions<T> = {
@@ -56,6 +58,7 @@ export type Table<T> = {
   features: {
     pagination: PaginationFeature;
     globalFilter: GlobalFilteringFeature;
+    sort: SortFeature;
   };
 };
 
@@ -73,6 +76,7 @@ function mergeState(state?: DeepPartial<TableState>): TableState {
   return {
     pagination: mergePaginationState(state?.pagination),
     globalFilter: state?.globalFilter ?? '',
+    sort: mergeSortState(state?.sort)
   };
 }
 
@@ -89,7 +93,18 @@ export function createTable<T>(opt: CreateTableOptions<T>): Table<T> {
     createRow(source, opt.columns),
   );
 
-  const headerRows = computed(() => [createHeaderRow(opt.columns)]);
+  const features = {
+      pagination: createPaginationFeature(derived(opt.state, 'pagination'), {
+        total: () => data().length,
+        ...opt.opt?.pagination,
+      }),
+      globalFilter: createGlobalFilter(opt.state, opt.opt?.globalFilter),
+      sort: createSortState(derived(opt.state, 'sort', {
+        equal: (a, b) => a?.name === b?.name && a?.direction === b?.direction,
+      }))
+    };
+
+  const headerRows = computed(() => [createHeaderRow(opt.columns, features)]);
   const footerRows = computed(() => [createFooterRow(opt.columns)]);
 
   return {
@@ -102,12 +117,6 @@ export function createTable<T>(opt: CreateTableOptions<T>): Table<T> {
     footer: {
       rows: footerRows,
     },
-    features: {
-      pagination: createPaginationFeature(derived(opt.state, 'pagination'), {
-        total: () => data().length,
-        ...opt.opt?.pagination,
-      }),
-      globalFilter: createGlobalFilter(opt.state, opt.opt?.globalFilter),
-    },
+    features
   };
 }
