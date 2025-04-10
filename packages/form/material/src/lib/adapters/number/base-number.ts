@@ -44,8 +44,9 @@ export function injectCreateNumberState() {
 
   return <TParent = undefined>(
     value: number | null | DerivedSignal<TParent, number | null>,
-    opt?: Omit<NumberStateOptions, 'required' | 'validator'> & {
+    opt?: Omit<NumberStateOptions, 'required' | 'validator' | 'decimal'> & {
       validation?: () => NumberValidatorOptions;
+      localizeDecimal?: () => boolean | string;
     },
   ): NumberState<TParent> => {
     return toMaterialNumberSpecifics(factory(value, opt), opt);

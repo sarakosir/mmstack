@@ -153,7 +153,6 @@ export class LinkDirective {
   readonly preloadOn = input<null | 'hover' | 'visible'>(null);
 
   protected onHover() {
-    console.log('hovering');
     if (untracked(this.preloadOn) !== 'hover') return;
     if (!this.preloader) {
       if (isDevMode())
@@ -163,14 +162,6 @@ export class LinkDirective {
       return;
     }
 
-    const t = requestIdleCallback(
-      () => {
-        console.log('yay');
-      },
-      {
-        timeout: 500,
-      },
-    );
     this.preloader?.preload().subscribe();
   }
 
