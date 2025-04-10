@@ -29,7 +29,7 @@ It offers a collection of reusable, standalone Angular components (e.g., `<mm-st
     "targets": {
       "build": {
         "styles": [
-          "@mmstack/form-material/styles/globals.css"
+          "node_modules/@mmstack/form-material/styles/globals.css"
         ]
       }
     }
