@@ -9,13 +9,14 @@ import {
 } from '@angular/core';
 import { FormsModule, NgModel } from '@angular/forms';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { MatTooltip } from '@angular/material/tooltip';
 import { BooleanState, SignalErrorValidator } from './adapters';
 
 @Component({
   selector: 'mm-boolean-field',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  imports: [FormsModule, MatCheckbox, SignalErrorValidator],
+  imports: [FormsModule, MatCheckbox, SignalErrorValidator, MatTooltip],
   host: {
     class: 'mm-boolean-field',
   },
@@ -31,9 +32,8 @@ import { BooleanState, SignalErrorValidator } from './adapters';
         [(ngModel)]="state().value"
         (ngModelChange)="state().markAsTouched()"
         [mmSignalError]="state().error()"
+        >{{ state().label() }}</mat-checkbox
       >
-        {{ state().label() }}
-      </mat-checkbox>
 
       @let showError = state().error() && state().touched();
 
@@ -42,7 +42,13 @@ import { BooleanState, SignalErrorValidator } from './adapters';
       }
 
       @if (showError) {
-        <span class="mm-checkbox-field-error">{{ state().error() }}</span>
+        <span
+          class="mm-checkbox-field-error"
+          [matTooltip]="state().errorTooltip()"
+          matTooltipPositionAtOrigin
+          matTooltipClass="mm-multiline-tooltip"
+          >{{ state().error() }}</span
+        >
       }
     </div>
   `,

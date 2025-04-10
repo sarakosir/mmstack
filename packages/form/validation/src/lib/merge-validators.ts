@@ -15,14 +15,28 @@ export function defaultMergeMessage(errors: string[]): {
     };
 
   if (errors.length === 1) {
+    if (first.length > 60) {
+      return {
+        error: `${first.slice(0, 60)}...`,
+        tooltip: first,
+      };
+    }
+
     return {
       error: first,
       tooltip: '',
     };
   }
 
+  if (first.length > 40) {
+    return {
+      error: `${first.slice(0, 40)}..., +${errors.length - 1} issues`,
+      tooltip: errors.join('\n'),
+    };
+  }
+
   return {
-    error: `${first}, +${errors.length} issues`,
+    error: `${first}, +${errors.length - 1} issues`,
     tooltip: errors.join('\n'),
   };
 }

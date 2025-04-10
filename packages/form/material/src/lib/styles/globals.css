@@ -1,0 +1,5 @@
+.mm-multiline-tooltip .mdc-tooltip__surface {
+  white-space: pre;
+  text-align: left;
+  max-width: 80vw;
+}

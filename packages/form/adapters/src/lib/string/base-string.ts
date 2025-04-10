@@ -52,8 +52,15 @@ export function injectCreateStringState() {
       validation?: () => StringValidatorOptions;
     },
   ): StringState<TParent> => {
+    const validationOptions = computed(() => ({
+      messageOptions: {
+        label: opt?.label?.(),
+      },
+      ...opt?.validation?.(),
+    }));
+
     const mergedValidator = computed(() =>
-      validators.string.all(opt?.validation?.() ?? {}),
+      validators.string.all(validationOptions()),
     );
 
     const validator = computed(() => {

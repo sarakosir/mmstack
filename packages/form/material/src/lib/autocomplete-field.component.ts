@@ -84,9 +84,12 @@ import { AutocompleteState, SignalErrorValidator } from './adapters';
         }
       </mat-autocomplete>
 
-      <mat-error [matTooltip]="state().errorTooltip()">
-        {{ state().error() }}
-      </mat-error>
+      <mat-error
+        [matTooltip]="state().errorTooltip()"
+        matTooltipPositionAtOrigin
+        matTooltipClass="mm-multiline-tooltip"
+        >{{ state().error() }}</mat-error
+      >
 
       @if (state().hint()) {
         <mat-hint>{{ state().hint() }}</mat-hint>

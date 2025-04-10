@@ -70,9 +70,12 @@ import { NumberState, SignalErrorValidator } from './adapters';
         (blur)="state().markAsTouched()"
       />
 
-      <mat-error [matTooltip]="state().errorTooltip()">
-        {{ state().error() }}
-      </mat-error>
+      <mat-error
+        [matTooltip]="state().errorTooltip()"
+        matTooltipPositionAtOrigin
+        matTooltipClass="mm-multiline-tooltip"
+        >{{ state().error() }}</mat-error
+      >
       @if (state().hint()) {
         <mat-hint>{{ state().hint() }}</mat-hint>
       }
@@ -103,6 +106,9 @@ export class NumberFieldComponent<TParent = undefined> {
     inject(MAT_FORM_FIELD_DEFAULT_OPTIONS, { optional: true })?.floatLabel ??
       'auto',
   );
+
+  e = effect(() => console.log(this.state().errorTooltip()));
+
   readonly subscriptSizing = input<SubscriptSizing>(
     inject(MAT_FORM_FIELD_DEFAULT_OPTIONS, { optional: true })
       ?.subscriptSizing ?? 'fixed',

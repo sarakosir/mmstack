@@ -11,6 +11,7 @@ export type SelectState<T, TParent = undefined> = FormControlSignal<
   T,
   TParent
 > & {
+  errorTooltip: Signal<string>;
   placeholder: Signal<string>;
   options: Signal<
     { id: string; value: T; label: Signal<string>; disabled: Signal<boolean> }[]
@@ -102,6 +103,7 @@ export function createSelectState<T, TParent = undefined>(
 
     equal,
     placeholder: computed(() => opt.placeholder?.() ?? ''),
+    errorTooltip: computed(() => ''),
     type: 'select',
   };
 }
@@ -117,21 +119,19 @@ export function injectCreateSelectState() {
       };
     },
   ): SelectState<T, TParent> => {
-    const validation = computed(() => ({
-      required: false,
-      ...opt.validation?.(),
-    }));
+    const label = computed(() => opt.label?.() ?? '');
+
+    const required = computed(() => opt.validation?.()?.required ?? false);
 
     const validator = computed(() =>
-      validation().required ? validators.general.required() : () => '',
+      required() ? validators.general.required(label()) : () => '',
     );
-
-    const required = computed(() => validation().required);
 
     return createSelectState(value, {
       ...opt,
       required,
       validator,
+      label,
     });
   };
 }

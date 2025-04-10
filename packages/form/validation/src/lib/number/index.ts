@@ -42,6 +42,9 @@ export type NumberValidatorOptions = {
   not?: number | null;
   oneOf?: (number | null)[];
   notOneOf?: (number | null)[];
+  messageOptions?: {
+    label?: string;
+  };
 };
 
 export function createNumberValidators(
@@ -64,7 +67,8 @@ export function createNumberValidators(
     all: (opt: NumberValidatorOptions) => {
       const validators: Validator<number | null>[] = [];
 
-      if (opt.required) validators.push(generalValidators.required());
+      if (opt.required)
+        validators.push(generalValidators.required(opt.messageOptions?.label));
 
       validators.push(base.isNumber());
 

@@ -52,7 +52,6 @@ function noPreload(route: Route) {
 export class PreloadLinkStrategy implements PreloadingStrategy {
   private readonly routeMap = flattenRoutes(inject(Router).config);
   preload(route: Route, fn: () => Observable<any>): Observable<any> {
-    console.log('preload', route.path);
     if (HAS_SLOW_CONNECTION || noPreload(route)) return EMPTY;
     return EMPTY;
   }

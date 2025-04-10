@@ -135,21 +135,21 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes, withPreloading(PreloadLinkStrategy)),
     provideValidatorConfig(
       (locale) => {
-        switch (locale) {
-          case 'sl-SI':
-            return {
-              general: {
-                required: () => 'To polje je obvezno',
-              },
-            };
-          default: {
-            return {
-              general: {
-                required: (label) => `This ${label} is required`,
-              },
-            };
-          }
-        }
+        // switch (locale) {
+        //   case 'sl-SI':
+        //     return {
+        //       general: {
+        //         required: () => 'To polje je obvezno',
+        //       },
+        //     };
+        //   default: {
+        //     return {
+        //       general: {
+        //         required: (label) => `${label} is required`,
+        //       },
+        //     };
+        //   }
+        // }
       },
       // provide a custom toDate function if you're using non-date objects like Luxon's DateTime or Moment
       (date) => new Date(date),

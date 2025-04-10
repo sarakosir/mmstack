@@ -54,9 +54,16 @@ export function injectCreateDateState() {
       validation?: () => DateValidatorOptions;
     },
   ) => {
-    const validation = computed(() => opt?.validation?.() ?? {});
+    const validationOptions = computed(() => ({
+      messageOptions: {
+        label: opt?.label?.(),
+      },
+      ...opt?.validation?.(),
+    }));
 
-    const mergedValidator = computed(() => validators.date.all(validation()));
+    const mergedValidator = computed(() =>
+      validators.date.all(validationOptions()),
+    );
 
     const validator = computed(() => {
       const merged = mergedValidator();

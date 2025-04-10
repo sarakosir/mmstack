@@ -13,6 +13,7 @@ export type SearchState<T, TParent = undefined> = FormControlSignal<
   T,
   TParent
 > & {
+  errorTooltip: Signal<string>;
   placeholder: Signal<string>;
   identify: Signal<(item: NoInfer<T>) => string>;
   displayWith: Signal<(item: NoInfer<T>) => string>;
@@ -86,6 +87,7 @@ export function createSearchState<T, TParent = undefined>(
     valueLabel: computed(() => displayWith()(state.value())),
     valueId: computed(() => identify()(state.value())),
     onSelected,
+    errorTooltip: computed(() => ''),
     type: 'search',
   };
 }
@@ -101,6 +103,7 @@ export function injectCreateSearchState() {
       };
     },
   ) => {
+    const label = computed(() => opt.label?.() ?? '');
     const validation = computed(() => ({
       required: false,
       ...opt.validation?.(),
@@ -109,9 +112,9 @@ export function injectCreateSearchState() {
     const required = computed(() => validation().required);
 
     const validator = computed(() =>
-      required() ? validators.general.required() : () => '',
+      required() ? validators.general.required(label()) : () => '',
     );
 
-    return createSearchState(value, { ...opt, required, validator });
+    return createSearchState(value, { ...opt, required, validator, label });
   };
 }

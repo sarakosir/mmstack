@@ -9,13 +9,14 @@ import {
 } from '@angular/core';
 import { FormsModule, NgModel } from '@angular/forms';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { MatTooltip } from '@angular/material/tooltip';
 import { SignalErrorValidator, ToggleState } from './adapters';
 
 @Component({
   selector: 'mm-toggle',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  imports: [FormsModule, MatSlideToggle, SignalErrorValidator],
+  imports: [FormsModule, MatSlideToggle, SignalErrorValidator, MatTooltip],
   host: {
     class: 'mm-toggle',
   },
@@ -31,9 +32,8 @@ import { SignalErrorValidator, ToggleState } from './adapters';
         [(ngModel)]="state().value"
         (ngModelChange)="state().markAsTouched()"
         [mmSignalError]="state().error()"
+        >{{ state().label() }}</mat-slide-toggle
       >
-        {{ state().label() }}
-      </mat-slide-toggle>
 
       @let showError = state().error() && state().touched();
 
@@ -42,7 +42,13 @@ import { SignalErrorValidator, ToggleState } from './adapters';
       }
 
       @if (showError) {
-        <span class="mm-toggle-error">{{ state().error() }}</span>
+        <span
+          class="mm-toggle-error"
+          [matTooltip]="state().errorTooltip()"
+          matTooltipPositionAtOrigin
+          matTooltipClass="mm-multiline-tooltip"
+          >{{ state().error() }}</span
+        >
       }
     </div>
   `,

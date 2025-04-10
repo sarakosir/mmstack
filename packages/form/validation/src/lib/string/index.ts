@@ -54,6 +54,9 @@ export type StringValidatorOptions = {
   not?: string | null;
   oneOf?: (string | null)[];
   notOneOf?: (string | null)[];
+  messageOptions?: {
+    label?: string;
+  };
 };
 
 export function createStringValidators(
@@ -78,7 +81,8 @@ export function createStringValidators(
     all: (opt: StringValidatorOptions) => {
       const validators: Validator<string | null>[] = [];
 
-      if (opt.required) validators.push(generalValidators.required());
+      if (opt.required)
+        validators.push(generalValidators.required(opt?.messageOptions?.label));
 
       validators.push(base.isString());
 
@@ -89,11 +93,6 @@ export function createStringValidators(
         validators.push(generalValidators.not(opt.not));
 
       if (opt.trimmed) validators.push(base.trimmed());
-
-      if (opt.oneOf) validators.push(generalValidators.oneOf(opt.oneOf));
-
-      if (opt.notOneOf)
-        validators.push(generalValidators.notOneOf(opt.notOneOf));
 
       if (opt.minLength !== undefined)
         validators.push(base.minLength(opt.minLength));
@@ -113,6 +112,11 @@ export function createStringValidators(
             break;
         }
       }
+
+      if (opt.oneOf) validators.push(generalValidators.oneOf(opt.oneOf));
+
+      if (opt.notOneOf)
+        validators.push(generalValidators.notOneOf(opt.notOneOf));
 
       return merger(validators);
     },

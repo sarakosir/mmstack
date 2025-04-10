@@ -15,6 +15,26 @@ It offers a collection of reusable, standalone Angular components (e.g., `<mm-st
 - **Material Styling:** Uses standard Angular Material components (`mat-form-field`, `matInput`, `matSelect`, etc.) ensuring theme consistency.
 - **Reduced Boilerplate:** Focus on your form logic, not the UI wiring.
 
+## Manual Installation
+
+1.  Install `@mmstack/form-core`.
+
+    ```bash
+    npm install @mmstack/form-core
+    ```
+
+2.  Add global styles to `styles` in `angular.json`
+
+    ```json
+    "targets": {
+      "build": {
+        "styles": [
+          "@mmstack/form-material/styles/globals.css"
+        ]
+      }
+    }
+    ```
+
 ## Core primitives
 
 This library utilizes & re-exports [@mmstack/form-core](https://www.npmjs.com/package/@mmstack/form-core). This core library provides fully signal-based & type-safe form primitives, which you can use to build your own forms or control components. You can read more about the philosophy of these primitives & why we created them here: [Fun-grained reactivity in Angular: Part 2 – Forms](https://dev.to/mihamulec/fun-grained-reactivity-in-angular-part-2-forms-e84)

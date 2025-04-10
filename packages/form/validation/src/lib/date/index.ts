@@ -32,6 +32,9 @@ export type DateValidatorOptions = {
   not?: Date | string | null;
   oneOf?: (Date | string | null)[];
   notOneOf?: (Date | string | null)[];
+  messageOptions?: {
+    label?: string;
+  };
 };
 
 export function createDateValidators<TDate = Date>(
@@ -57,7 +60,8 @@ export function createDateValidators<TDate = Date>(
     all: (opt: DateValidatorOptions) => {
       const validators: Validator<TDate | null>[] = [];
 
-      if (opt.required) validators.push(generalValidators.required());
+      if (opt.required)
+        validators.push(generalValidators.required(opt.messageOptions?.label));
 
       validators.push(base.isDate());
 

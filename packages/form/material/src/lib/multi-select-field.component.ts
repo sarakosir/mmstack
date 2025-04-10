@@ -78,9 +78,7 @@ import { MultiSelectState, SignalErrorValidator } from './adapters';
         (blur)="state().markAsTouched()"
         (closed)="state().markAsTouched()"
       >
-        <mat-select-trigger>
-          {{ state().valueLabel() }}
-        </mat-select-trigger>
+        <mat-select-trigger>{{ state().valueLabel() }}</mat-select-trigger>
 
         @for (opt of state().options(); track opt.id) {
           <mat-option [value]="opt.value" [disabled]="opt.disabled()">
@@ -89,9 +87,12 @@ import { MultiSelectState, SignalErrorValidator } from './adapters';
         }
       </mat-select>
 
-      <mat-error [matTooltip]="state().errorTooltip()">
-        {{ state().error() }}
-      </mat-error>
+      <mat-error
+        [matTooltip]="state().errorTooltip()"
+        matTooltipPositionAtOrigin
+        matTooltipClass="mm-multiline-tooltip"
+        >{{ state().error() }}</mat-error
+      >
 
       @if (state().hint()) {
         <mat-hint>{{ state().hint() }}</mat-hint>

@@ -3,5 +3,12 @@
   "dest": "../../../dist/packages/form/material",
   "lib": {
     "entryFile": "src/index.ts"
-  }
+  },
+  "assets": [
+    {
+      "input": "src/lib/styles",
+      "glob": "globals.css",
+      "output": "styles"
+    }
+  ]
 }

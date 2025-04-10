@@ -1,4 +1,4 @@
-import { computed } from '@angular/core';
+import { computed, Signal } from '@angular/core';
 import {
   formControl,
   type CreateFormControlOptions,
@@ -11,6 +11,7 @@ export type BooleanState<TParent = undefined> = FormControlSignal<
   boolean,
   TParent
 > & {
+  errorTooltip: Signal<string>;
   type: 'boolean';
 };
 
@@ -25,6 +26,7 @@ export function createBooleanState<TParent = undefined>(
 ): BooleanState<TParent> {
   return {
     ...formControl(value, opt),
+    errorTooltip: computed(() => ''),
     type: 'boolean',
   };
 }

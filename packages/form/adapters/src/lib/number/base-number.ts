@@ -50,8 +50,15 @@ export function injectCreateNumberState() {
       validation?: () => NumberValidatorOptions;
     },
   ): NumberState<TParent> => {
+    const validationOptions = computed(() => ({
+      messageOptions: {
+        label: opt?.label?.(),
+      },
+      ...opt?.validation?.(),
+    }));
+
     const mergedValidator = computed(() =>
-      validators.number.all(opt?.validation?.() ?? {}),
+      validators.number.all(validationOptions()),
     );
 
     const validator = computed(() => {
