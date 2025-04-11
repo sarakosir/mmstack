@@ -3,4 +3,5 @@ export {
   DateState,
   DateStateOptions,
   injectCreateDateState,
+  InjectedDateStateOptions,
 } from './base-date';
