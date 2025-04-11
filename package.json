@@ -2,6 +2,12 @@
   "name": "@mmstack/source",
   "version": "0.0.0",
   "license": "MIT",
+  "keywords": ["angular", "signals", "forms", "reource", "table", "router", "cache"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mihajm/mmstack"
+  },
+  "homepage": "https://github.com/mihajm/mmstack/blob/master",
   "scripts": {},
   "private": true,
   "dependencies": {

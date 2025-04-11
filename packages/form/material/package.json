@@ -2,6 +2,7 @@
   "name": "@mmstack/form-material",
   "version": "19.0.16",
   "keywords": ["angular", "signals", "form", "validation", "error"],
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/mihajm/mmstack"
