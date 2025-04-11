@@ -3,7 +3,7 @@
 A collection of lightweight, type-safe object and data structure utility functions written in TypeScript.
 
 [![npm version](https://badge.fury.io/js/%40mmstack%2Fobject.svg)](https://badge.fury.io/js/%40mmstack%2Fobject)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mihajm/mmstack/blob/master/packages/common/object/LICENSE)
 
 Originally extracted from internal utilities used across several `@mmstack` projects, this library is published primarily to avoid code duplication within those projects. However, it might be useful for others seeking specific, focused helpers for common object manipulations, stable hashing, or merging tasks, especially within a TypeScript environment.
 

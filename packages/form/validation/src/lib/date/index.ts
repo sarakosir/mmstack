@@ -24,15 +24,106 @@ const DEFAULT_MESSAGES: DateMessageFactories = {
   isDate: defaultIsDateMessageFactory,
 };
 
+/**
+ * Configuration options for creating a combined date validator using the `.all()`
+ * method returned by `createDateValidators` (accessed via `injectValidators().date.all`).
+ *
+ * Pass an object of this type to `validators.date.all({...})` to specify which
+ * date-related validations should be included in the resulting validator function.
+ * The `toDate` function provided via `provideValidatorConfig` will be used internally
+ * to handle comparisons if `string` or custom date object types are used for the options
+ * or the control's value.
+ *
+ * The validation function returned by `.all()` expects an input value of type `TDate | null`,
+ * where `TDate` matches the type configured via `provideValidatorConfig`.
+ */
 export type DateValidatorOptions = {
+  /**
+   * If `true`, the date value must not be `null` or `undefined`.
+   * Uses the configured 'required' validation message.
+   * @see Validators.general.required
+   * @example
+   * { required: true }
+   */
   required?: boolean;
-  min?: Date | string;
+
+  /**
+   * Specifies the minimum allowed date (inclusive).
+   * Validation fails if the input date is earlier than this date.
+   * Accepts a `Date` object or a date string parseable by the configured `toDate` function.
+   * Uses the configured 'min date' validation message.
+   * @example
+   * { min: new Date('2024-01-01') }
+   * { min: '2024-01-01T00:00:00.000Z' }
+   * @see Validators.date.min
+   */
+  min?: Date | string; // Accepts string or Date for config, internal `toDate` handles it
+
+  /**
+   * Specifies the maximum allowed date (inclusive).
+   * Validation fails if the input date is later than this date.
+   * Accepts a `Date` object or a date string parseable by the configured `toDate` function.
+   * Uses the configured 'max date' validation message.
+   * @example
+   * { max: '2025-12-31' }
+   * @see Validators.date.max
+   */
   max?: Date | string;
+
+  /**
+   * The date value must be exactly equal to the specified value (which can be `null`).
+   * Uses the configured `mustBe` validation message.
+   * Date comparison uses the configured `toDate` function internally.
+   * @example
+   * { mustBe: new Date('2024-07-04') } // Must be exactly July 4th, 2024
+   * { mustBe: null }                 // Must be exactly null
+   * @see Validators.general.mustBe
+   * @see Validators.general.mustBeNull
+   */
   mustBe?: Date | string | null;
+
+  /**
+   * The date value must *not* be equal to the specified value (which can be `null`).
+   * Uses the configured `not` validation message.
+   * Date comparison uses the configured `toDate` function internally.
+   * @example
+   * { not: new Date('2000-01-01') } // Cannot be the start of the millennium
+   * @see Validators.general.not
+   */
   not?: Date | string | null;
+
+  /**
+   * The date value must be one of the dates (or `null`) included in the specified array.
+   * Uses the configured `oneOf` validation message.
+   * Date comparison uses the configured `toDate` function internally.
+   * @example
+   * { oneOf: [new Date('2024-12-25'), null] } // Must be Christmas 2024 or null
+   * @see Validators.general.oneOf
+   */
   oneOf?: (Date | string | null)[];
+
+  /**
+   * The date value must *not* be any of the dates (or `null`) included in the specified array.
+   * Uses the configured `notOneOf` validation message.
+   * Date comparison uses the configured `toDate` function internally.
+   * @example
+   * { notOneOf: [new Date('2024-04-01')] } // Cannot be April Fool's Day 2024
+   * @see Validators.general.notOneOf
+   */
   notOneOf?: (Date | string | null)[];
+
+  /**
+   * Optional configuration passed down to specific message factories.
+   * Currently primarily used by the `required` validator's message factory.
+   */
   messageOptions?: {
+    /**
+     * An optional label for the field (e.g., 'Start Date', 'End Date').
+     * This can be incorporated into the 'required' error message by its factory
+     * (e.g., "Start Date is required" instead of just "Field is required").
+     * @example
+     * { required: true, messageOptions: { label: 'Start Date' } }
+     */
     label?: string;
   };
 };
