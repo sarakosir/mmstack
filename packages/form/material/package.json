@@ -15,7 +15,7 @@
   },
   "homepage": "https://github.com/mihajm/mmstack/blob/master/packages/form/material",
   "dependencies": {
-    "@mmstack/form-adapters": "^19.1.0",
+    "@mmstack/form-adapters": "^19.1.1",
     "@mmstack/form-core": "^19.1.0",
     "@mmstack/form-validation": "^19.1.0",
     "@mmstack/resource": "^19.1.0",
