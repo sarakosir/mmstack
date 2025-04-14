@@ -1,5 +1,9 @@
 name: CI
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -26,7 +30,7 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4
-      - run: pnpm exec nx affected -t lint
+      - run: pnpm exec nx affected -t lint --parallel=3
   test:
     runs-on: ubuntu-latest
     steps:
@@ -42,7 +46,7 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4
-      - run: pnpm exec nx affected -t test
+      - run: pnpm exec nx affected -t test --parallel=3
   build:
     runs-on: ubuntu-latest
     needs: [test, lint]
@@ -59,4 +63,4 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4
-      - run: pnpm nx affected -t build
+      - run: pnpm exec nx affected -t build --parallel=3
