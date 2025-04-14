@@ -98,10 +98,10 @@ The scopes we use are simply the name of the library your change affects, curren
 
 Please search through existing issues that have been reported before submitting a new bug report. If you find a related & open issue, just add a comment to it :) Please be as detailed as possible about library versions, environment & other variables when submitting a bug report. If possible a Stackblitz project or github repository is welcome.
 
-[open a new one](https://github.com/mihajm/mmstack/issues/new?template=bug_report.md)
+[open a new one](https://github.com/mihajm/mmstack/issues/new?template=bug_report.yml)
 
 ## Submitting new feature requests
 
 If you have a cool new idea, or a requirement the current libraries dont fulfill, please don't hesitate to either make a feature request or an RFC. Please prefix such issues with either `Feature:` or `RFC:` & we'll try to respond ASAP. :)
 
-[make a feature request or an RFC](https://github.com/mihajm/mmstack/issues/new?template=feature_request.md)
+[make a feature request or an RFC](https://github.com/mihajm/mmstack/issues/new?template=feature_request.yml)
