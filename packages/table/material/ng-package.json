@@ -3,5 +3,9 @@
   "dest": "../../../dist/packages/table/material",
   "lib": {
     "entryFile": "src/index.ts"
-  }
+  },
+  "allowedNonPeerDependencies": [
+    "@mmstack/table-core",
+    "@mmstack/form-material"
+  ]
 }
