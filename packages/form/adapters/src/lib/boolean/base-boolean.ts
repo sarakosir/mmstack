@@ -6,6 +6,7 @@ import {
   type FormControlSignal,
 } from '@mmstack/form-core';
 import { injectValidators } from '@mmstack/form-validation';
+import { tooltip } from '../util';
 
 /**
  * Represents the reactive state for a boolean form control (e.g., checkbox).
@@ -19,8 +20,10 @@ export type BooleanState<TParent = undefined> = FormControlSignal<
   boolean,
   TParent
 > & {
-  /** @internal Placeholder signal for potential future tooltip logic. */
+  /** signal for error tooltip, default is shortened when error is longer than 40 chars */
   errorTooltip: Signal<string>;
+  /** signal for hint tooltip, default is shortened when hint is longer than 40 chars */
+  hintTooltip: Signal<string>;
   /** Type discriminator for boolean controls. */
   type: 'boolean';
 };
@@ -38,7 +41,10 @@ export type BooleanState<TParent = undefined> = FormControlSignal<
 export type BooleanStateOptions = Omit<
   CreateFormControlOptions<boolean, 'control'>,
   'required'
->;
+> & {
+  /* shortens error/hint message & provides errorTooltip with full message, default 40 */
+  maxErrorHintLength?: () => number;
+};
 
 /**
  * Creates the reactive state object (`BooleanState`) for a boolean form control
@@ -60,9 +66,24 @@ export function createBooleanState<TParent = undefined>(
   value: boolean | DerivedSignal<TParent, boolean>,
   opt?: BooleanStateOptions,
 ): BooleanState<TParent> {
+  const state = formControl(value, opt);
+
+  const { shortened: error, tooltip: errorTooltip } = tooltip(
+    state.error,
+    opt?.maxErrorHintLength,
+  );
+
+  const { shortened: hint, tooltip: hintTooltip } = tooltip(
+    state.hint,
+    opt?.maxErrorHintLength,
+  );
+
   return {
-    ...formControl(value, opt),
-    errorTooltip: computed(() => ''),
+    ...state,
+    hint,
+    hintTooltip,
+    error,
+    errorTooltip,
     type: 'boolean',
   };
 }

@@ -6,6 +6,7 @@ import {
   type FormControlSignal,
 } from '@mmstack/form-core';
 import { injectValidators } from '@mmstack/form-validation';
+import { tooltip } from '../util';
 
 /**
  * Represents the reactive state for a single-selection form control, such as
@@ -28,12 +29,10 @@ export type SelectState<T, TParent = undefined> = FormControlSignal<
   T,
   TParent
 > & {
-  /**
-   * @internal Placeholder signal, potentially for future use. The primary error display
-   * should rely on the base `error` signal. Tooltip generation for multiple errors
-   * is not typically implemented for basic select 'required' validation.
-   */
+  /** signal for error tooltip, default is shortened when error is longer than 40 chars */
   errorTooltip: Signal<string>;
+  /** signal for hint tooltip, default is shortened when hint is longer than 40 chars */
+  hintTooltip: Signal<string>;
   /** Signal holding the placeholder text (e.g., "Select an option...", "Choose one"). */
   placeholder: Signal<string>;
   /**
@@ -107,6 +106,8 @@ export type SelectStateOptions<T> = CreateFormControlOptions<T, 'control'> & {
    * This function can return a dynamic list if needed, as it will be re-evaluated reactively.
    */
   options: () => T[];
+  /* shortens error/hint message & provides errorTooltip with full message, default 40 */
+  maxErrorHintLength?: () => number;
 };
 
 /**
@@ -225,6 +226,15 @@ export function createSelectState<T, TParent = undefined>(
     ];
   });
 
+  const { shortened: error, tooltip: errorTooltip } = tooltip(
+    state.error,
+    opt.maxErrorHintLength,
+  );
+  const { shortened: hint, tooltip: hintTooltip } = tooltip(
+    state.hint,
+    opt.maxErrorHintLength,
+  );
+
   return {
     ...state,
     valueLabel,
@@ -232,7 +242,10 @@ export function createSelectState<T, TParent = undefined>(
 
     equal,
     placeholder: computed(() => opt.placeholder?.() ?? ''),
-    errorTooltip: computed(() => ''),
+    error,
+    errorTooltip,
+    hint,
+    hintTooltip,
     type: 'select',
   };
 }

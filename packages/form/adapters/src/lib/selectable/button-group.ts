@@ -22,7 +22,7 @@ import {
  */
 export type ButtonGroupState<T, TParent = undefined> = Omit<
   SelectState<T, TParent>,
-  'type' | 'placeholder' // Omits placeholder, changes type discriminator
+  'type' | 'hintTooltip' | 'errorTooltip' | 'placeholder' // Omits placeholder, changes type discriminator
 > & {
   /** Type discriminator for button group controls. */
   type: 'button-group';
@@ -41,7 +41,7 @@ export type ButtonGroupState<T, TParent = undefined> = Omit<
  */
 export type ButtonGroupStateOptions<T> = Omit<
   SelectStateOptions<T>,
-  'placeholder'
+  'placeholder' | 'maxErrorHintLength'
 >;
 
 /**

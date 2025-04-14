@@ -8,6 +8,7 @@ import {
 } from '@mmstack/form-core';
 import { injectValidators } from '@mmstack/form-validation';
 import { debounced } from '@mmstack/primitives';
+import { tooltip } from '../util';
 
 /**
  * Represents the reactive state for an asynchronous search-and-select form control.
@@ -36,11 +37,10 @@ export type SearchState<T, TParent = undefined> = FormControlSignal<
   T, // Represents the currently selected item (type T)
   TParent
 > & {
-  /**
-   * @internal Placeholder signal. Error display typically relies on the base `error` signal
-   * for this adapter (e.g., for 'required' validation).
-   */
+  /** signal for error tooltip, default is shortened when error is longer than 40 chars */
   errorTooltip: Signal<string>;
+  /** signal for hint tooltip, default is shortened when hint is longer than 40 chars */
+  hintTooltip: Signal<string>;
   /** Signal holding the placeholder text for the search input field (e.g., "Search users..."). */
   placeholder: Signal<string>;
   /**
@@ -151,6 +151,8 @@ export type SearchStateOptions<T> = CreateFormControlOptions<T, 'control'> & {
    * @example debounce: 300 // Debounce for 300ms
    */
   debounce?: number;
+  /* shortens error/hint message & provides errorTooltip with full message, default 40 */
+  maxErrorHintLength?: () => number;
 };
 
 /**
@@ -234,6 +236,15 @@ export function createSearchState<T, TParent = undefined>(
       // noop
     });
 
+  const { shortened: error, tooltip: errorTooltip } = tooltip(
+    state.error,
+    opt.maxErrorHintLength,
+  );
+  const { shortened: hint, tooltip: hintTooltip } = tooltip(
+    state.hint,
+    opt.maxErrorHintLength,
+  );
+
   return {
     ...state,
     placeholder: computed(() => opt.placeholder?.() ?? ''),
@@ -249,7 +260,10 @@ export function createSearchState<T, TParent = undefined>(
     valueLabel: computed(() => displayWith()(state.value())),
     valueId: computed(() => identify()(state.value())),
     onSelected,
-    errorTooltip: computed(() => ''),
+    error,
+    errorTooltip,
+    hint,
+    hintTooltip,
     type: 'search',
   };
 }
