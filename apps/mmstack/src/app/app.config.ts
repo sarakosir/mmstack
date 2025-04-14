@@ -8,7 +8,8 @@ import {
   ApplicationConfig,
   provideExperimentalZonelessChangeDetection,
 } from '@angular/core';
-import { provideLuxonDateAdapter } from '@angular/material-luxon-adapter';
+import { provideDateFnsAdapter } from '@angular/material-date-fns-adapter';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 import {
   provideClientHydration,
   withEventReplay,
@@ -22,6 +23,7 @@ import {
   provideQueryCache,
 } from '@mmstack/resource';
 import { PreloadLinkStrategy } from '@mmstack/router-core';
+import { enUS } from 'date-fns/locale';
 import { DateTime } from 'luxon';
 import { delay } from 'rxjs';
 import { appRoutes } from './app.routes';
@@ -120,8 +122,11 @@ export const appConfig: ApplicationConfig = {
         return d.toJSDate();
       },
     ),
-
-    provideLuxonDateAdapter(),
+    provideDateFnsAdapter(),
+    {
+      provide: MAT_DATE_LOCALE,
+      useValue: enUS,
+    },
     provideExperimentalZonelessChangeDetection(),
     provideQueryCache(),
     provideHttpClient(

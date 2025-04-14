@@ -1,11 +1,10 @@
 import { httpResource } from '@angular/common/http';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import {
-  injectCreateNumberState,
-  injectCreateSearchState,
-  injectCreateStringState,
+  DateRangeFieldComponent,
+  injectCreateDateRangeState,
   NumberFieldComponent,
   SearchFieldComponent,
   StringFieldComponent,
@@ -72,6 +71,7 @@ function resolveSort({ sort }: TableState): string | null {
     NumberFieldComponent,
     StringFieldComponent,
     SearchFieldComponent,
+    DateRangeFieldComponent,
   ],
   template: `
     <!-- <mat-progress-bar
@@ -81,9 +81,7 @@ function resolveSort({ sort }: TableState): string | null {
     <mat-card>
       <mm-table [state]="table" />
     </mat-card> -->
-    <mm-number-field [state]="num" />
-    <mm-string-field [state]="str" />
-    <mm-search-field [state]="searcher" />
+    <mm-date-range-field appearance="outline" [state]="dr" />
   `,
   styles: `
     mat-card {
@@ -93,61 +91,26 @@ function resolveSort({ sort }: TableState): string | null {
   `,
 })
 export class AppComponent {
-  hint = signal('');
-  readonly num = injectCreateNumberState()(5, {
-    label: () => 'Number',
-    hint: this.hint,
-    validation: () => ({
-      required: true,
-      min: 5,
-      integer: true,
-    }),
-  });
-
-  readonly str = injectCreateStringState()('test', {
-    label: () => 'String',
-    validation: () => ({
-      required: true,
-      pattern: '^[0-9]+$',
-      oneOf: [
-        'foo',
-        'bar',
-        'baz',
-        'qux',
-        'quux',
-        'corge',
-        'grault',
-        'garply',
-        'waldo',
-        'fred',
-        'plugh',
-        'xyzzy',
-        'thud',
-        'foo bar',
-        'foo baz',
-        'foo qux',
-        'foo quux',
-        'foo corge',
-        'foo grault',
-        'foo garply',
-        'foo waldo',
-        'foo fred',
-        'foo plugh',
-        'foo xyzzy',
-        'foo thud',
-      ],
-    }),
-  });
-
-  readonly searcher = injectCreateSearchState()<Todo | null>(null, {
-    toRequest: () => () => ({
-      url: 'https://jsonplaceholder.typicode.com/todos',
-    }),
-    displayWith: () => (v) => v?.title ?? '',
-    identify: () => (v) => v?.id.toString() ?? '',
-  });
-
   readonly tableState = createTableState();
+
+  readonly dr = injectCreateDateRangeState()(
+    {
+      start: new Date(),
+      end: new Date(),
+    },
+    {
+      label: () => 'yay',
+      hint: () => 'A hint',
+      start: {
+        placeholder: () => 'Start',
+      },
+      validation: () => ({
+        required: true,
+        min: new Date('2025-01-01'),
+        max: new Date('2025-12-31'),
+      }),
+    },
+  );
 
   readonly events = queryResource<EventDef[]>(
     () => {

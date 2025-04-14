@@ -4,14 +4,16 @@ import {
   effect,
   inject,
   input,
-  viewChild,
+  viewChildren,
   ViewEncapsulation,
 } from '@angular/core';
 import { FormsModule, NgModel } from '@angular/forms';
 import {
-  MatDatepicker,
-  MatDatepickerInput,
   MatDatepickerToggle,
+  MatDateRangeInput,
+  MatDateRangePicker,
+  MatEndDate,
+  MatStartDate,
 } from '@angular/material/datepicker';
 import {
   FloatLabelType,
@@ -24,12 +26,11 @@ import {
   MatSuffix,
   SubscriptSizing,
 } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
 import { MatTooltip } from '@angular/material/tooltip';
-import { DateState, SignalErrorValidator } from './adapters';
+import { DateRangeState, SignalErrorValidator } from './adapters';
 
 @Component({
-  selector: 'mm-date-field',
+  selector: 'mm-date-range-field',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   imports: [
@@ -38,16 +39,17 @@ import { DateState, SignalErrorValidator } from './adapters';
     MatLabel,
     MatHint,
     MatError,
-    MatInput,
     MatSuffix,
-    MatDatepicker,
     MatDatepickerToggle,
-    MatDatepickerInput,
+    MatDateRangePicker,
+    MatDateRangeInput,
+    MatStartDate,
+    MatEndDate,
     MatTooltip,
     SignalErrorValidator,
   ],
   host: {
-    class: 'mm-date-field',
+    class: 'mm-date-range-field',
   },
   template: `
     <mat-form-field
@@ -58,26 +60,37 @@ import { DateState, SignalErrorValidator } from './adapters';
     >
       <mat-label>{{ state().label() }}</mat-label>
 
-      <input
-        matInput
-        [(ngModel)]="state().value"
-        [disabled]="state().disabled()"
-        [readonly]="state().readonly()"
-        [required]="state().required()"
-        [placeholder]="state().placeholder()"
-        [matDatepicker]="picker"
+      <mat-date-range-input
+        [rangePicker]="picker"
         [min]="state().min()"
         [max]="state().max()"
-        [mmSignalError]="state().error()"
-        (blur)="state().markAsTouched()"
-      />
+        [disabled]="state().disabled()"
+        [required]="state().required()"
+      >
+        <input
+          matStartDate
+          [(ngModel)]="state().children().start.value"
+          [readonly]="state().readonly()"
+          [placeholder]="state().children().start.placeholder()"
+          [mmSignalError]="state().error()"
+          (blur)="state().children().start.markAsTouched()"
+        />
+        <input
+          matEndDate
+          [readonly]="state().readonly()"
+          [(ngModel)]="state().children().end.value"
+          [placeholder]="state().children().end.placeholder()"
+          [mmSignalError]="state().error()"
+          (blur)="state().children().end.markAsTouched()"
+        />
+      </mat-date-range-input>
 
       <mat-datepicker-toggle
         matIconSuffix
         [for]="picker"
         [disabled]="state().disabled() || state().readonly()"
       />
-      <mat-datepicker #picker (closed)="state().markAsTouched()" />
+      <mat-date-range-picker #picker (closed)="state().markAsTouched()" />
 
       <mat-error
         [matTooltip]="state().errorTooltip()"
@@ -92,7 +105,7 @@ import { DateState, SignalErrorValidator } from './adapters';
     </mat-form-field>
   `,
   styles: `
-    .mm-date-field {
+    .mm-date-range-field {
       display: contents;
 
       mat-form-field {
@@ -105,8 +118,8 @@ import { DateState, SignalErrorValidator } from './adapters';
     }
   `,
 })
-export class DateFieldComponent<TParent = undefined, TDate = Date> {
-  readonly state = input.required<DateState<TParent, TDate>>();
+export class DateRangeFieldComponent<TParent = undefined, TDate = Date> {
+  readonly state = input.required<DateRangeState<TParent, TDate>>();
 
   readonly appearance = input<MatFormFieldAppearance>(
     inject(MAT_FORM_FIELD_DEFAULT_OPTIONS, { optional: true })?.appearance ??
@@ -125,12 +138,13 @@ export class DateFieldComponent<TParent = undefined, TDate = Date> {
       ?.hideRequiredMarker ?? false,
   );
 
-  private readonly model = viewChild.required(NgModel);
+  private readonly models = viewChildren(NgModel);
 
   constructor() {
     effect(() => {
-      if (this.state().touched()) this.model().control.markAsTouched();
-      else this.model().control.markAsUntouched();
+      if (this.state().touched())
+        this.models().forEach((m) => m.control.markAsTouched());
+      else this.models().forEach((m) => m.control.markAsUntouched());
     });
   }
 }

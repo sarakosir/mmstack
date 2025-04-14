@@ -5,6 +5,7 @@ export * from './lib/autocomplete-field.component';
 export * from './lib/boolean-field.component';
 export * from './lib/button-group.component';
 export * from './lib/date-field.component';
+export * from './lib/date-range-field.component';
 export * from './lib/multi-select-field.component';
 export * from './lib/number-field.component';
 export * from './lib/search-field.component';

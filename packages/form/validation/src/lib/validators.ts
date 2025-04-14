@@ -8,6 +8,7 @@ import {
 import { createArrayValidators } from './array';
 import { createBooleanValidators } from './boolean';
 import { createDateValidators } from './date';
+import { createDateRangeValidators } from './date/date-range';
 import { defaultFormatDate, defaultToDate } from './date/util';
 import { createGeneralValidators } from './general';
 import { createMergeValidators } from './merge-validators';
@@ -42,6 +43,7 @@ export type Validators<TDate = Date> = {
   string: ReturnType<typeof createStringValidators>;
   number: ReturnType<typeof createNumberValidators>;
   date: ReturnType<typeof createDateValidators<TDate>>;
+  dateRange: ReturnType<typeof createDateRangeValidators<TDate>>;
   array: ReturnType<typeof createArrayValidators>;
   boolean: ReturnType<typeof createBooleanValidators>;
 };
@@ -78,6 +80,14 @@ function createValidators<TDate = Date>(
     string: createStringValidators(msg?.string, general, merger),
     number: createNumberValidators(msg?.number, general, merger),
     date: createDateValidators<TDate>(
+      msg?.date,
+      toDate,
+      formatDate,
+      locale,
+      general,
+      merger,
+    ),
+    dateRange: createDateRangeValidators<TDate>(
       msg?.date,
       toDate,
       formatDate,

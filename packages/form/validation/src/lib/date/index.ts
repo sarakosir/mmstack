@@ -18,7 +18,7 @@ export type DateMessageFactories = {
   isDate: Parameters<typeof createIsDateValidator>[0];
 };
 
-const DEFAULT_MESSAGES: DateMessageFactories = {
+export const DEFAULT_DATE_MESSAGES: DateMessageFactories = {
   min: defaultMinDateMessageFactory,
   max: defaultMaxDateMessageFactory,
   isDate: defaultIsDateMessageFactory,
@@ -136,7 +136,7 @@ export function createDateValidators<TDate = Date>(
   generalValidators = createGeneralValidators(),
   merger = createMergeValidators(),
 ) {
-  const t = { ...DEFAULT_MESSAGES, ...factories };
+  const t = { ...DEFAULT_DATE_MESSAGES, ...factories };
   const base = {
     min: createMinDateValidator(t.min, toDate, formatDate, locale),
     max: createMaxDateValidator(t.max, toDate, formatDate, locale),
@@ -231,6 +231,10 @@ export function createDateValidators<TDate = Date>(
       }
 
       return merger(validators as Validator<TDate | null>[]);
+    },
+    util: {
+      toDate,
+      formatDate,
     },
   };
 }
