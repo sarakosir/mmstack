@@ -69,9 +69,6 @@
     "projects": ["packages/**", "!packages/table-**"],
     "releaseTagPattern": "{projectName}@{version}",
     "projectsRelationship": "independent",
-    "version": {
-      "conventionalCommits": true
-    },
     "changelog": {
       "projectChangelogs": true,
       "workspaceChangelog": false
