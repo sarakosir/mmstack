@@ -38,7 +38,13 @@ import { BooleanState, SignalErrorValidator } from './adapters';
       @let showError = state().error() && state().touched();
 
       @if (state().hint() && !showError) {
-        <span class="mm-checkbox-field-hint">{{ state().hint() }}</span>
+        <span
+          class="mm-checkbox-field-hint"
+          [matTooltip]="state().hintTooltip()"
+          matTooltipPositionAtOrigin
+          matTooltipClass="mm-multiline-tooltip"
+          >{{ state().hint() }}</span
+        >
       }
 
       @if (showError) {

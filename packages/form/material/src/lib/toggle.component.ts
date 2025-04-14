@@ -38,7 +38,13 @@ import { SignalErrorValidator, ToggleState } from './adapters';
       @let showError = state().error() && state().touched();
 
       @if (state().hint() && !showError) {
-        <span class="mm-toggle-hint">{{ state().hint() }}</span>
+        <span
+          class="mm-toggle-hint"
+          [matTooltip]="state().hintTooltip()"
+          matTooltipPositionAtOrigin
+          matTooltipClass="mm-multiline-tooltip"
+          >{{ state().hint() }}</span
+        >
       }
 
       @if (showError) {

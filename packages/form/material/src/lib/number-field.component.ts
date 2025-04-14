@@ -80,7 +80,12 @@ import { NumberState, SignalErrorValidator } from './adapters';
         >{{ state().error() }}</mat-error
       >
       @if (state().hint()) {
-        <mat-hint>{{ state().hint() }}</mat-hint>
+        <mat-hint
+          [matTooltip]="state().hintTooltip()"
+          matTooltipPositionAtOrigin
+          matTooltipClass="mm-multiline-tooltip"
+          >{{ state().hint() }}</mat-hint
+        >
       }
     </mat-form-field>
   `,
