@@ -1,9 +1,11 @@
 {
   "name": "@mmstack/table-client",
   "version": "19.0.0",
+  "dependencies": {
+    "@mmstack/table-core": "^19.0.1"
+  },
   "peerDependencies": {
-    "@angular/core": "^19.2.0",
-    "@mmstack/table-core": "19.0.1"
+    "@angular/core": "^19.2.0"
   },
   "sideEffects": false
 }

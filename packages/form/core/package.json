@@ -8,11 +8,13 @@
     "url": "https://github.com/mihajm/mmstack"
   },
   "homepage": "https://github.com/mihajm/mmstack/blob/master/packages/form/core",
-  "peerDependencies": {
-    "@angular/core": "~19.2.3",
-    "@mmstack/primitives": "~19.0.6",
-    "@mmstack/object": "~19.0.2",
+  "dependencies": {
+    "@mmstack/primitives": "^19.0.6",
+    "@mmstack/object": "^19.0.2",
     "uuid": "~11.1.0"
+  },
+  "peerDependencies": {
+    "@angular/core": "~19.2.3"
   },
   "sideEffects": false
 }

@@ -8,10 +8,12 @@
     "url": "https://github.com/mihajm/mmstack"
   },
   "homepage": "https://github.com/mihajm/mmstack/blob/master/packages/primitives",
+  "dependencies": {
+    "@mmstack/object": "^19.0.2"
+  },
   "peerDependencies": {
     "@angular/core": "~19.2.3",
-    "@angular/common": "~19.2.3",
-    "@mmstack/object": "~19.0.2"
+    "@angular/common": "~19.2.3"
   },
   "sideEffects": false
 }

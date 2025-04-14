@@ -8,17 +8,19 @@
     "url": "https://github.com/mihajm/mmstack"
   },
   "homepage": "https://github.com/mihajm/mmstack/blob/master/packages/form/material",
+  "dependencies": {
+    "@mmstack/form-adapters": "^19.0.15",
+    "@mmstack/form-core": "^19.0.9",
+    "@mmstack/form-validation": "^19.0.5",
+    "@mmstack/resource": "^19.0.9",
+    "@mmstack/primitives": "^19.0.6"
+  },
   "peerDependencies": {
     "@angular/core": "~19.2.3",
     "@angular/common": "~19.2.3",
     "@angular/forms": "~19.2.3",
     "@angular/material": "~19.2.4",
-    "@angular/cdk": "~19.2.4",
-    "@mmstack/form-adapters": "~19.0.15",
-    "@mmstack/form-core": "~19.0.9",
-    "@mmstack/form-validation": "~19.0.5",
-    "@mmstack/resource": "~19.0.9",
-    "@mmstack/primitives": "~19.0.6"
+    "@angular/cdk": "~19.2.4"
   },
   "sideEffects": false
 }
