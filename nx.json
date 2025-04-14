@@ -66,8 +66,15 @@
     }
   },
   "release": {
+    "projects": ["packages/**", "!packages/table-**"],
+    "releaseTagPattern": "{projectName}@{version}",
+    "projectsRelationship": "independent",
     "version": {
-      "preVersionCommand": "pnpm dlx nx run-many -t build"
+      "conventionalCommits": true
+    },
+    "changelog": {
+      "projectChangelogs": true,
+      "workspaceChangelog": false
     }
   }
 }
