@@ -1,6 +1,6 @@
 {
   "name": "@mmstack/primitives",
-  "version": "19.0.5",
+  "version": "19.0.6",
   "keywords": ["angular", "signals", "debounce", "mapArray", "primitives"],
   "license": "MIT",
   "repository": {
@@ -11,7 +11,7 @@
   "peerDependencies": {
     "@angular/core": "~19.2.3",
     "@angular/common": "~19.2.3",
-    "@mmstack/object": "~19.0.0"
+    "@mmstack/object": "~19.0.2"
   },
   "sideEffects": false
 }

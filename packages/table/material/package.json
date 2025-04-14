@@ -5,7 +5,7 @@
     "@angular/core": "~19.2.3",
     "@angular/material": "~19.2.3",
     "@mmstack/table-core": "~19.0.0",
-    "@mmstack/form-material": "^19.0.7"
+    "@mmstack/form-material": "^19.0.17"
   },
   "sideEffects": false
 }

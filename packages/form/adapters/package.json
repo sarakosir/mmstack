@@ -1,6 +1,6 @@
 {
   "name": "@mmstack/form-adapters",
-  "version": "19.0.14",
+  "version": "19.0.15",
   "keywords": ["angular", "signals", "form", "validation", "error"],
   "license": "MIT",
   "repository": {
@@ -12,9 +12,9 @@
     "@angular/core": "~19.2.3",
     "@angular/common": "~19.2.3",
     "@angular/forms": "~19.2.3",
-    "@mmstack/form-core": "~19.0.8",
-    "@mmstack/form-validation": "~19.0.4",
-    "@mmstack/primitives": "~19.0.5"
+    "@mmstack/form-core": "~19.0.9",
+    "@mmstack/form-validation": "~19.0.5",
+    "@mmstack/primitives": "~19.0.6"
   },
   "sideEffects": false
 }
