@@ -1,7 +1,14 @@
 {
   "name": "@mmstack/object",
-  "version": "19.0.2",
-  "keywords": ["object", "keys", "values", "entries", "merge", "empty"],
+  "version": "19.1.0",
+  "keywords": [
+    "object",
+    "keys",
+    "values",
+    "entries",
+    "merge",
+    "empty"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",

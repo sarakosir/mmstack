@@ -1,9 +1,9 @@
 {
   "name": "@mmstack/table-material",
-  "version": "19.0.0",
+  "version": "19.1.0",
   "dependencies": {
-    "@mmstack/table-core": "~19.0.1",
-    "@mmstack/form-material": "^19.0.17"
+    "@mmstack/table-core": "~19.1.0",
+    "@mmstack/form-material": "^19.1.0"
   },
   "peerDependencies": {
     "@angular/core": "~19.2.3",

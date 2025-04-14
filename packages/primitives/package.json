@@ -1,7 +1,13 @@
 {
   "name": "@mmstack/primitives",
-  "version": "19.0.6",
-  "keywords": ["angular", "signals", "debounce", "mapArray", "primitives"],
+  "version": "19.1.0",
+  "keywords": [
+    "angular",
+    "signals",
+    "debounce",
+    "mapArray",
+    "primitives"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -9,7 +15,7 @@
   },
   "homepage": "https://github.com/mihajm/mmstack/blob/master/packages/primitives",
   "dependencies": {
-    "@mmstack/object": "^19.0.2"
+    "@mmstack/object": "^19.1.0"
   },
   "peerDependencies": {
     "@angular/core": "~19.2.3",

@@ -1,7 +1,13 @@
 {
   "name": "@mmstack/form-validation",
-  "version": "19.0.5",
-  "keywords": ["angular", "signals", "form", "validation", "error"],
+  "version": "19.1.0",
+  "keywords": [
+    "angular",
+    "signals",
+    "form",
+    "validation",
+    "error"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",

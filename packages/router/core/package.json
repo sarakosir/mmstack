@@ -1,7 +1,14 @@
 {
   "name": "@mmstack/router-core",
-  "version": "19.0.2",
-  "keywords": ["angular", "signals", "router", "url", "query", "params"],
+  "version": "19.1.0",
+  "keywords": [
+    "angular",
+    "signals",
+    "router",
+    "url",
+    "query",
+    "params"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -9,7 +16,7 @@
   },
   "homepage": "https://github.com/mihajm/mmstack/blob/master/packages/router/core",
   "dependencies": {
-    "@mmstack/primitives": "^19.0.6"
+    "@mmstack/primitives": "^19.1.0"
   },
   "peerDependencies": {
     "@angular/core": "^19.2.3",
