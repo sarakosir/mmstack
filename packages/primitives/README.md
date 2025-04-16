@@ -3,6 +3,7 @@
 A collection of utility functions and primitives designed to enhance development with Angular Signals, providing helpful patterns and inspired by features from other reactive libraries. All value helpers also use pure derivations (no effects/RxJS).
 
 [![npm version](https://badge.fury.io/js/%40mmstack%2Fprimitives.svg)](https://badge.fury.io/js/%40mmstack%2Fprimitives)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/mihajm/mmstack/blob/master/packages/primitives/LICENSE)
 
 ## Installation
 

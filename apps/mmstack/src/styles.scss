@@ -2,3 +2,9 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mm-multiline-tooltip .mdc-tooltip__surface {
+  text-align: left;
+  white-space: pre;
+  max-width: 80vw;
+}

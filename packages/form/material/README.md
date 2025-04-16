@@ -15,6 +15,26 @@ It offers a collection of reusable, standalone Angular components (e.g., `<mm-st
 - **Material Styling:** Uses standard Angular Material components (`mat-form-field`, `matInput`, `matSelect`, etc.) ensuring theme consistency.
 - **Reduced Boilerplate:** Focus on your form logic, not the UI wiring.
 
+## Manual Installation
+
+1.  Install `@mmstack/form-core`.
+
+    ```bash
+    npm install @mmstack/form-core
+    ```
+
+2.  Add global styles to `styles` in `angular.json`
+
+    ```json
+    "targets": {
+      "build": {
+        "styles": [
+          "node_modules/@mmstack/form-material/styles/globals.css"
+        ]
+      }
+    }
+    ```
+
 ## Core primitives
 
 This library utilizes & re-exports [@mmstack/form-core](https://www.npmjs.com/package/@mmstack/form-core). This core library provides fully signal-based & type-safe form primitives, which you can use to build your own forms or control components. You can read more about the philosophy of these primitives & why we created them here: [Fun-grained reactivity in Angular: Part 2 – Forms](https://dev.to/mihamulec/fun-grained-reactivity-in-angular-part-2-forms-e84)
@@ -197,6 +217,7 @@ Here's a summary of the core form state adapters provided by `@mmstack/form-adap
 | **Boolean**               | `BooleanState`                    | `boolean`            | `labelPosition`                                                                            | `createBooleanState`, `injectCreateBooleanState`           |
 | **Toggle** (Boolean)      | `ToggleState`                     | `boolean`            | `labelPosition` (inherits from Boolean)                                                    | `createToggleState`, `injectCreateToggleState`             |
 | **Date**                  | `DateState<TDate = Date>`         | `TDate \| null`      | `min`, `max`, `placeholder`                                                                | `createDateState`, `injectCreateDateState`                 |
+| **Date Range**            | `DateRangeState<TDate = Date>`    | `DateRange<TDate>`   | `min`, `max`, `placeholder`, `children`                                                    | `createDateRangeState`, `injectCreateDateRangeState`       |
 | **Number**                | `NumberState`                     | `number \| null`     | `placeholder`, `step`                                                                      | `createNumberState`, `injectCreateNumberState`             |
 | **String**                | `StringState`                     | `string \| null`     | `placeholder`, `autocomplete` (HTML attr)                                                  | `createStringState`, `injectCreateStringState`             |
 | **Autocomplete** (String) | `AutocompleteState`               | `string \| null`     | `placeholder`, `options`, `panelWidth`, `displayWith`                                      | `createAutocompleteState`, `injectCreateAutocompleteState` |
@@ -317,6 +338,7 @@ Here's a simple table show casing all components. They are 1-1 matched with the 
 | `<mm-boolean-field>`      | `BooleanState`                   | `matCheckbox`                               | Checkbox for boolean values. (Uses custom layout for hint/error).                         |
 | `<mm-toggle>`             | `ToggleState`                    | `MatSlideToggle`                            | Toggle switch for boolean values. (Uses custom layout for hint/error).                    |
 | `<mm-date-field>`         | `DateState`                      | `matInput`, `matDatepicker`                 | Input field with a date picker integration.                                               |
+| `<mm-date-range-field>`   | `DateRangeState`                 | `matInput`, `matDateRangePicker`            | Input fields with a date-range picker integration                                         |
 | `<mm-select-field>`       | `SelectState<T>`                 | `matSelect`, `matOption`                    | Dropdown select for choosing a single option from a static list.                          |
 | `<mm-multi-select-field>` | `MultiSelectState<T>`            | `matSelect[multiple]`, `matOption`          | Dropdown select for choosing multiple options from a static list.                         |
 | `<mm-button-group>`       | `ButtonGroupState<T>`            | `MatButtonToggleGroup`, `MatButtonToggle`   | Group of toggle buttons for selecting a single option from a static list.                 |

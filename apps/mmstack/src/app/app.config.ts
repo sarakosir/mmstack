@@ -8,7 +8,8 @@ import {
   ApplicationConfig,
   provideExperimentalZonelessChangeDetection,
 } from '@angular/core';
-import { provideLuxonDateAdapter } from '@angular/material-luxon-adapter';
+import { provideDateFnsAdapter } from '@angular/material-date-fns-adapter';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 import {
   provideClientHydration,
   withEventReplay,
@@ -22,6 +23,7 @@ import {
   provideQueryCache,
 } from '@mmstack/resource';
 import { PreloadLinkStrategy } from '@mmstack/router-core';
+import { enUS } from 'date-fns/locale';
 import { DateTime } from 'luxon';
 import { delay } from 'rxjs';
 import { appRoutes } from './app.routes';
@@ -120,8 +122,11 @@ export const appConfig: ApplicationConfig = {
         return d.toJSDate();
       },
     ),
-
-    provideLuxonDateAdapter(),
+    provideDateFnsAdapter(),
+    {
+      provide: MAT_DATE_LOCALE,
+      useValue: enUS,
+    },
     provideExperimentalZonelessChangeDetection(),
     provideQueryCache(),
     provideHttpClient(
@@ -135,21 +140,21 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes, withPreloading(PreloadLinkStrategy)),
     provideValidatorConfig(
       (locale) => {
-        switch (locale) {
-          case 'sl-SI':
-            return {
-              general: {
-                required: () => 'To polje je obvezno',
-              },
-            };
-          default: {
-            return {
-              general: {
-                required: (label) => `This ${label} is required`,
-              },
-            };
-          }
-        }
+        // switch (locale) {
+        //   case 'sl-SI':
+        //     return {
+        //       general: {
+        //         required: () => 'To polje je obvezno',
+        //       },
+        //     };
+        //   default: {
+        //     return {
+        //       general: {
+        //         required: (label) => `${label} is required`,
+        //       },
+        //     };
+        //   }
+        // }
       },
       // provide a custom toDate function if you're using non-date objects like Luxon's DateTime or Moment
       (date) => new Date(date),

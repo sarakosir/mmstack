@@ -19,9 +19,30 @@ const DEFAULT_MESSAGES: ArrayMessageFactories = {
   maxLength: defaultMaxLengthMessageFactory,
 };
 
+/**
+ * Configuration options for creating a combined array validator using the
+ * `.all()` method returned by `createArrayValidators` (accessed via `injectValidators().array.all`).
+ */
 export type ArrayValidatorOptions = {
+  /**
+   * Minimum allowed array length.
+   * Validation fails if the array has fewer elements than this number.
+   * @example { minLength: 1 } // Array must not be empty
+   */
   minLength?: number;
+
+  /**
+   * Maximum allowed array length.
+   * Validation fails if the array has more elements than this number.
+   * @example { maxLength: 5 } // Array can have at most 5 items
+   */
   maxLength?: number;
+
+  /**
+   * Optional label for the array elements used in generated error messages
+   * (e.g., 'items', 'users', 'tags'). Defaults typically to 'items'.
+   * @example { minLength: 2, elementsLabel: 'tags' } // Error might be "Min 2 tags"
+   */
   elementsLabel?: string;
 };
 

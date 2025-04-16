@@ -34,6 +34,19 @@ const DEFAULT_MESSAGES: GeneralMessageFactories = {
   notOneOf: defaultNotOneOfMessageFactory,
 };
 
+/**
+ * Represents the consolidated object containing all available validator generators,
+ * configured with appropriate localization and date handling for the specified `TDate` type.
+ *
+ * Obtain this object using `injectValidators()` within an Angular injection context.
+ * Use the nested `.all()` methods (e.g., `validators.string.all({...})`) with their
+ * corresponding options types (e.g., `StringValidatorOptions`) to create combined
+ * validator functions for your form controls.
+ *
+ * Individual validators (e.g., `validators.general.required()`) are also available.
+ *
+ * @template TDate The type used for date values (e.g., Date, Luxon DateTime). Defaults to `Date`.
+ */
 export function createGeneralValidators(
   factories?: Partial<GeneralMessageFactories>,
 ) {

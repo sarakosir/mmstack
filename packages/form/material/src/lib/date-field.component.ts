@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   effect,
   inject,
   input,
@@ -67,8 +66,8 @@ import { DateState, SignalErrorValidator } from './adapters';
         [required]="state().required()"
         [placeholder]="state().placeholder()"
         [matDatepicker]="picker"
-        [min]="min()"
-        [max]="max()"
+        [min]="state().min()"
+        [max]="state().max()"
         [mmSignalError]="state().error()"
         (blur)="state().markAsTouched()"
       />
@@ -80,12 +79,20 @@ import { DateState, SignalErrorValidator } from './adapters';
       />
       <mat-datepicker #picker (closed)="state().markAsTouched()" />
 
-      <mat-error [matTooltip]="state().errorTooltip()">
-        {{ state().error() }}
-      </mat-error>
+      <mat-error
+        [matTooltip]="state().errorTooltip()"
+        matTooltipPositionAtOrigin
+        matTooltipClass="mm-multiline-tooltip"
+        >{{ state().error() }}</mat-error
+      >
 
       @if (state().hint()) {
-        <mat-hint>{{ state().hint() }}</mat-hint>
+        <mat-hint
+          [matTooltip]="state().hintTooltip()"
+          matTooltipPositionAtOrigin
+          matTooltipClass="mm-multiline-tooltip"
+          >{{ state().hint() }}</mat-hint
+        >
       }
     </mat-form-field>
   `,
@@ -124,9 +131,6 @@ export class DateFieldComponent<TParent = undefined, TDate = Date> {
   );
 
   private readonly model = viewChild.required(NgModel);
-
-  protected readonly min = computed(() => this.state().min?.() ?? null);
-  protected readonly max = computed(() => this.state().max?.() ?? null);
 
   constructor() {
     effect(() => {

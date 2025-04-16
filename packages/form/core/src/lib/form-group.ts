@@ -6,7 +6,7 @@ import {
   type Signal,
   type WritableSignal,
 } from '@angular/core';
-import { entries, values } from '@mmstack/object';
+import { entries, mergeIfObject, values } from '@mmstack/object';
 import {
   isDerivation,
   toFakeSignalDerivation,
@@ -231,7 +231,7 @@ export function formGroup<
       if (!from) continue;
       ctrl.reconcile(from(newValue));
     }
-    ctrl.reconcile(newValue);
+    ctrl.reconcile(mergeIfObject(newValue, untracked(value)));
   };
 
   const forceReconcile = (newValue: T) => {

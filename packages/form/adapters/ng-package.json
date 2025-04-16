@@ -3,5 +3,6 @@
   "dest": "../../../dist/packages/form/adapters",
   "lib": {
     "entryFile": "src/index.ts"
-  }
+  },
+  "allowedNonPeerDependencies": ["@mmstack/form-core", "@mmstack/form-validation", "@mmstack/primitives"]
 }

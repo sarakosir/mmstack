@@ -44,16 +44,120 @@ const DEFAULT_MESSAGES: StringMessageFactories = {
   maxLength: defaultMaxLengthMessageFactory,
 };
 
+/**
+ * Configuration options for creating a combined string validator using the `.all()`
+ * method returned by `createStringValidators` (accessed via `injectValidators().string.all`).
+ *
+ * Pass an object of this type to `validators.string.all({...})` to specify which
+ * string-related validations should be included in the resulting validator function.
+ * The validation function returned by `.all()` expects an input value of type `string | null`.
+ */
 export type StringValidatorOptions = {
-  pattern?: RegExp | 'email' | 'uri' | Omit<string, 'email' | 'uri'>;
-  trimmed?: boolean;
-  minLength?: number;
-  maxLength?: number;
+  /**
+   * If `true`, the string value must not be `null`, `undefined`, or an empty string (`''`).
+   * Uses the configured 'required' validation message.
+   * Note: This behavior (checking for empty string) might differ from a generic `required`
+   * check on other types.
+   * @see Validators.general.required
+   * @example { required: true }
+   */
   required?: boolean;
+
+  /**
+   * Specifies the minimum allowed length of the string (inclusive).
+   * Validation fails if `value.length < minLength`.
+   * Note: Behavior with leading/trailing whitespace depends on whether `trimmed` is also used
+   * or if the underlying implementation trims by default. Assumed to operate on raw length unless specified otherwise.
+   * Uses the configured 'minLength' validation message.
+   * @example { minLength: 3 } // Must be at least 3 characters long
+   * @see Validators.string.minLength
+   */
+  minLength?: number;
+
+  /**
+   * Specifies the maximum allowed length of the string (inclusive).
+   * Validation fails if `value.length > maxLength`.
+   * Uses the configured 'maxLength' validation message.
+   * @example { maxLength: 50 } // Cannot exceed 50 characters
+   * @see Validators.string.maxLength
+   */
+  maxLength?: number;
+
+  /**
+   * If `true`, the string value must not have leading or trailing whitespace.
+   * Validation fails if `value !== value.trim()`.
+   * Uses the configured 'trimmed' validation message.
+   * @example { trimmed: true } // Value like " test " would be invalid
+   * @see Validators.string.trimmed
+   */
+  trimmed?: boolean;
+
+  /**
+   * Requires the string to match a specific pattern. Accepts:
+   * - A `RegExp` object for custom patterns (e.g., `/^[a-z]+$/i`).
+   * - The string literal `'email'` to use a built-in email format validator.
+   * - The string literal `'uri'` to use a built-in URI/URL format validator.
+   * - Potentially other string representations of regex patterns (implementation dependent).
+   * Uses the configured 'pattern', 'email', or 'uri' validation message.
+   * @example { pattern: /^\d{3}-\d{2}-\d{4}$/ } // SSN format
+   * @example { pattern: 'email' }             // Standard email format
+   * @example { pattern: 'uri' }               // Standard URI format
+   * @see Validators.string.pattern
+   * @see Validators.string.email
+   * @see Validators.string.uri
+   */
+  pattern?: RegExp | 'email' | 'uri' | Omit<string, 'email' | 'uri'>;
+
+  /**
+   * The string value must be exactly equal to the specified string (or `null`).
+   * Case-sensitive comparison.
+   * Uses the configured `mustBe` validation message.
+   * @example { mustBe: "CONFIRMED" }
+   * @example { mustBe: null }
+   * @see Validators.general.mustBe
+   * @see Validators.general.mustBeNull
+   */
   mustBe?: string | null;
+
+  /**
+   * The string value must *not* be equal to the specified string (or `null`).
+   * Case-sensitive comparison.
+   * Uses the configured `not` validation message.
+   * @example { not: "password" } // Cannot be the literal string "password"
+   * @see Validators.general.not
+   */
   not?: string | null;
+
+  /**
+   * The string value must be one of the strings (or `null`) included in the specified array.
+   * Case-sensitive comparison.
+   * Uses the configured `oneOf` validation message.
+   * @example { oneOf: ["PENDING", "APPROVED", "REJECTED", null] }
+   * @see Validators.general.oneOf
+   */
   oneOf?: (string | null)[];
+
+  /**
+   * The string value must *not* be any of the strings (or `null`) included in the specified array.
+   * Case-sensitive comparison.
+   * Uses the configured `notOneOf` validation message.
+   * @example { notOneOf: ["admin", "root"] }
+   * @see Validators.general.notOneOf
+   */
   notOneOf?: (string | null)[];
+
+  /**
+   * Optional configuration passed down to specific message factories.
+   * Primarily used by the `required` validator's message factory.
+   */
+  messageOptions?: {
+    /**
+     * An optional label for the field (e.g., 'Username', 'Email Address')
+     * which can be incorporated into the 'required' error message by its factory.
+     * @example { required: true, messageOptions: { label: 'Email Address' } } // Error might be "Email Address is required"
+     */
+    label?: string;
+  };
 };
 
 export function createStringValidators(
@@ -78,7 +182,8 @@ export function createStringValidators(
     all: (opt: StringValidatorOptions) => {
       const validators: Validator<string | null>[] = [];
 
-      if (opt.required) validators.push(generalValidators.required());
+      if (opt.required)
+        validators.push(generalValidators.required(opt?.messageOptions?.label));
 
       validators.push(base.isString());
 
@@ -89,11 +194,6 @@ export function createStringValidators(
         validators.push(generalValidators.not(opt.not));
 
       if (opt.trimmed) validators.push(base.trimmed());
-
-      if (opt.oneOf) validators.push(generalValidators.oneOf(opt.oneOf));
-
-      if (opt.notOneOf)
-        validators.push(generalValidators.notOneOf(opt.notOneOf));
 
       if (opt.minLength !== undefined)
         validators.push(base.minLength(opt.minLength));
@@ -113,6 +213,11 @@ export function createStringValidators(
             break;
         }
       }
+
+      if (opt.oneOf) validators.push(generalValidators.oneOf(opt.oneOf));
+
+      if (opt.notOneOf)
+        validators.push(generalValidators.notOneOf(opt.notOneOf));
 
       return merger(validators);
     },

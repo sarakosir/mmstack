@@ -8,8 +8,8 @@ export function createIsDateValidator<TDate = Date>(
   createMsg: () => string,
   toDate: (date: TDate | string) => Date,
 ): () => Validator<TDate | string | null> {
+  const msg = createMsg();
   return () => {
-    const msg = createMsg();
     return (value) => {
       if (value === null) return '';
 

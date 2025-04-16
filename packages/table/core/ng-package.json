@@ -3,5 +3,10 @@
   "dest": "../../../dist/packages/table/core",
   "lib": {
     "entryFile": "src/index.ts"
-  }
+  },
+  "allowedNonPeerDependencies": [
+    "@mmstack/primitives",
+    "@mmstack/form-adapters",
+    "uuid"
+  ]
 }

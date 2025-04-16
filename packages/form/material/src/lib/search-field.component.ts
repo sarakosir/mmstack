@@ -32,6 +32,7 @@ import {
   MatSelect,
   MatSelectTrigger,
 } from '@angular/material/select';
+import { MatTooltip } from '@angular/material/tooltip';
 import { queryResource, QueryResourceOptions } from '@mmstack/resource';
 import { SearchState, SignalErrorValidator } from './adapters';
 
@@ -75,6 +76,7 @@ export function injectSearchResourceOptions(): QueryResourceOptions<any> {
     MatInput,
     MatProgressSpinner,
     SignalErrorValidator,
+    MatTooltip,
   ],
   host: {
     class: 'mm-search-field',
@@ -107,9 +109,7 @@ export function injectSearchResourceOptions(): QueryResourceOptions<any> {
         (closed)="state().markAsTouched(); cancelFocus()"
         (opened)="focus(searchInput)"
       >
-        <mat-select-trigger>
-          {{ state().valueLabel() }}
-        </mat-select-trigger>
+        <mat-select-trigger>{{ state().valueLabel() }}</mat-select-trigger>
 
         <mat-option disabled>
           <div>
@@ -145,13 +145,21 @@ export function injectSearchResourceOptions(): QueryResourceOptions<any> {
         }
       </mat-select>
 
-      <mat-error>{{ state().error() }}</mat-error>
+      <mat-error
+        [matTooltip]="state().errorTooltip()"
+        matTooltipPositionAtOrigin
+        matTooltipClass="mm-multiline-tooltip"
+        >{{ state().error() }}</mat-error
+      >
 
       @if (state().hint()) {
-        <mat-hint>{{ state().hint() }}</mat-hint>
+        <mat-hint
+          [matTooltip]="state().hintTooltip()"
+          matTooltipPositionAtOrigin
+          matTooltipClass="mm-multiline-tooltip"
+          >{{ state().hint() }}</mat-hint
+        >
       }
-
-      <ng-content />
     </mat-form-field>
   `,
   styles: `

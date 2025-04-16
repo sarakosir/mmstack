@@ -2,7 +2,24 @@
   "name": "@mmstack/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "keywords": [
+    "angular",
+    "signals",
+    "forms",
+    "reource",
+    "table",
+    "router",
+    "cache"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mihajm/mmstack"
+  },
+  "homepage": "https://github.com/mihajm/mmstack/blob/master",
+  "scripts": {
+    "serve:demo": "nx serve mmstack",
+    "build:all": "nx run-many --target=build"
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "^19.2.3",

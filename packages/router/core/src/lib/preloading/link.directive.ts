@@ -51,8 +51,7 @@ function noPreload(route: Route) {
 })
 export class PreloadLinkStrategy implements PreloadingStrategy {
   private readonly routeMap = flattenRoutes(inject(Router).config);
-  preload(route: Route, fn: () => Observable<any>): Observable<any> {
-    console.log('preload', route.path);
+  preload(route: Route, _: () => Observable<any>): Observable<any> {
     if (HAS_SLOW_CONNECTION || noPreload(route)) return EMPTY;
     return EMPTY;
   }
@@ -154,7 +153,6 @@ export class LinkDirective {
   readonly preloadOn = input<null | 'hover' | 'visible'>(null);
 
   protected onHover() {
-    console.log('hovering');
     if (untracked(this.preloadOn) !== 'hover') return;
     if (!this.preloader) {
       if (isDevMode())
@@ -164,14 +162,6 @@ export class LinkDirective {
       return;
     }
 
-    const t = requestIdleCallback(
-      () => {
-        console.log('yay');
-      },
-      {
-        timeout: 500,
-      },
-    );
     this.preloader?.preload().subscribe();
   }
 

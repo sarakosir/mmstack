@@ -1,0 +1,71 @@
+name: Feature Request
+description: Suggest an idea, enhancement, or new feature for @mmstack.
+title: '[FEAT] Brief title for the feature'
+labels: ['enhancement', 'needs-triage']
+assignees: ''
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an idea! Please search [existing issues](https://github.com/mihajm/mmstack/issues) and [discussions](https://github.com/mihajm/mmstack/discussions) first to see if a similar idea has already been proposed.
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Which package(s) does this relate to?
+      description: Select the package(s) this feature would affect or enhance. If it's a new package idea, choose 'New Package Idea'.
+      options:
+        - '@mmstack/object'
+        - '@mmstack/primitives'
+        - '@mmstack/resource'
+        - '@mmstack/router-core'
+        - '@mmstack/form-core'
+        - '@mmstack/form-validation'
+        - '@mmstack/form-adapters'
+        - '@mmstack/form-material'
+        - '@mmstack/table-core (Upcoming)'
+        - '@mmstack/table-client (Upcoming)'
+        - '@mmstack/table-material (Upcoming)'
+        - 'New Package Idea'
+        - 'Other / Not Sure'
+      multiple: true
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Is your feature request related to a problem?
+      description: A clear and concise description of what the problem is. Ex. "I'm always frustrated when..." or "It would be helpful if @mmstack could also..." If not related to a problem, describe the opportunity.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe the solution you'd like
+      description: A clear and concise description of what you want to happen. How should it work? What would the API look like?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Describe alternatives you've considered
+      description: A clear and concise description of any alternative solutions or features you've considered.
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Add any other context, code examples, mockups, API proposals, or screenshots about the feature request here. Why would this be valuable?
+      render: markdown
+
+  - type: checkboxes
+    id: assistance
+    attributes:
+      label: Contribution
+      description: Would you be willing to help implement this feature by submitting a Pull Request if it's approved? (Not required, but appreciated!)
+      options:
+        - label: Yes, I'd be willing to contribute!
+          required: false

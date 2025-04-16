@@ -1,4 +1,4 @@
-# @mmstack/primitives
+# @mmstack/router-core
 
 Core utilities and Signal-based primitives for enhancing development with `@angular/router`. This library provides helpers for common routing tasks and reactive integration with router state.
 

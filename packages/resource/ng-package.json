@@ -3,5 +3,6 @@
   "dest": "../../dist/packages/resource",
   "lib": {
     "entryFile": "src/index.ts"
-  }
+  },
+  "allowedNonPeerDependencies": ["uuid", "@mmstack/primitives", "@mmstack/object"]
 }

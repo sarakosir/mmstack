@@ -1,0 +1,92 @@
+name: Bug Report
+description: Report something that isn't working as expected in @mmstack.
+title: '[BUG] Brief description of the bug'
+labels: ['bug', 'needs-triage']
+assignees: ''
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report! Please search [existing issues](https://github.com/mihajm/mmstack/issues) first to avoid duplicates.
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Which package is affected?
+      description: Select the package where you encountered the bug. If unsure, select 'Other / Not Sure'.
+      options:
+        - '@mmstack/object'
+        - '@mmstack/primitives'
+        - '@mmstack/resource'
+        - '@mmstack/router-core'
+        - '@mmstack/form-core'
+        - '@mmstack/form-validation'
+        - '@mmstack/form-adapters'
+        - '@mmstack/form-material'
+        - '@mmstack/table-core (Upcoming)'
+        - '@mmstack/table-client (Upcoming)'
+        - '@mmstack/table-material (Upcoming)'
+        - 'Other / Not Sure'
+      multiple: true
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps To Reproduce
+      description: Please provide detailed steps to reproduce the behavior.
+      placeholder: |
+        1. Go to '...'
+        2. Use package '@mmstack/...' version '...'
+        3. See error '...'
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Please provide relevant environment details.
+      value: |
+        - @mmstack Library & Version(s):
+        - Angular Version:
+        - Node.js Version:
+        - Browser(s) (if applicable):
+        - OS:
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Screenshots & Additional Context
+      description: Add any other context about the problem here. Screenshots, code snippets, StackBlitz links, or links to minimal reproduction repositories are highly encouraged!
+      render: markdown
+
+  - type: checkboxes
+    id: assistance
+    attributes:
+      label: Contribution
+      description: Are you willing to submit a Pull Request to fix this bug? (Not required, but appreciated!)
+      options:
+        - label: Yes, I'd be willing to help fix this!
+          required: false

@@ -5,6 +5,7 @@ import {
   type Signal,
   type WritableSignal,
 } from '@angular/core';
+import { mergeArray } from '@mmstack/object';
 import { derived, type DerivedSignal } from '@mmstack/primitives';
 import {
   formControl,
@@ -199,7 +200,7 @@ export function formArray<
       ctrls.at(i)?.reconcile(newValue[i]); // reconcile existing controls that are relevant addition/removal will be handled after ctrl.reconcile through linkedSignal
     }
 
-    ctrl.reconcile(newValue);
+    ctrl.reconcile(mergeArray(newValue, untracked(ctrl.value)));
   };
 
   const forceReconcile = (newValue: T[]) => {

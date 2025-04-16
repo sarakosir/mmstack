@@ -5,6 +5,7 @@ import {
   effect,
   inject,
   input,
+  untracked,
   viewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -23,6 +24,7 @@ import {
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { MatTooltip } from '@angular/material/tooltip';
+import { toWritable } from '@mmstack/primitives';
 import { NumberState, SignalErrorValidator } from './adapters';
 
 @Component({
@@ -59,8 +61,8 @@ import { NumberState, SignalErrorValidator } from './adapters';
 
       <input
         matInput
-        type="number"
-        [(ngModel)]="state().value"
+        [type]="state().inputType()"
+        [(ngModel)]="value"
         [disabled]="state().disabled()"
         [readonly]="state().readonly()"
         [required]="state().required()"
@@ -68,13 +70,22 @@ import { NumberState, SignalErrorValidator } from './adapters';
         [mmSignalError]="state().error()"
         [step]="state().step()"
         (blur)="state().markAsTouched()"
+        (keydown)="state().keydownHandler()($event)"
       />
 
-      <mat-error [matTooltip]="state().errorTooltip()">
-        {{ state().error() }}
-      </mat-error>
+      <mat-error
+        [matTooltip]="state().errorTooltip()"
+        matTooltipPositionAtOrigin
+        matTooltipClass="mm-multiline-tooltip"
+        >{{ state().error() }}</mat-error
+      >
       @if (state().hint()) {
-        <mat-hint>{{ state().hint() }}</mat-hint>
+        <mat-hint
+          [matTooltip]="state().hintTooltip()"
+          matTooltipPositionAtOrigin
+          matTooltipClass="mm-multiline-tooltip"
+          >{{ state().hint() }}</mat-hint
+        >
       }
     </mat-form-field>
   `,
@@ -103,6 +114,7 @@ export class NumberFieldComponent<TParent = undefined> {
     inject(MAT_FORM_FIELD_DEFAULT_OPTIONS, { optional: true })?.floatLabel ??
       'auto',
   );
+
   readonly subscriptSizing = input<SubscriptSizing>(
     inject(MAT_FORM_FIELD_DEFAULT_OPTIONS, { optional: true })
       ?.subscriptSizing ?? 'fixed',
@@ -116,6 +128,11 @@ export class NumberFieldComponent<TParent = undefined> {
 
   protected readonly prefixIcon = computed(
     () => this.state().prefixIcon?.() ?? '',
+  );
+
+  protected readonly value = toWritable(
+    computed(() => this.state().localizedValue()),
+    (next) => untracked(this.state).setLocalizedValue(next),
   );
 
   constructor() {
