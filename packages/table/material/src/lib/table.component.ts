@@ -18,18 +18,18 @@ import { ToolbarComponent } from './toolbar.component';
   ],
   template: `
     <header>
-      <mm-toolbar  [globalFilterState]="state().features.globalFilter"/>
+      <mm-toolbar  [features]="state().features" [state]="state().header.rows()"/>
     </header>
     <div class="table-container">
       <div class="table">
         <div class="thead">
           @for (row of state().header.rows(); track row.id) {
-            <mm-header-row [state]="row" />
+            <mm-header-row [features]="state().features" [state]="row" />
           }
         </div>
         <div class="tbody">
-          @for (row of state().body.rows(); track row.id) {
-            <mm-row [state]="row" />
+          @for (row of state().body.rows(); track row.id; let odd = $odd; let last = $last) {
+            <mm-row [class.border-bottom]="!last" [class.odd]="odd" [features]="state().features" [state]="row" />
           }
         </div>
         <div class="tfoot">
@@ -54,10 +54,8 @@ import { ToolbarComponent } from './toolbar.component';
       overflow: hidden;
 
       header {
-        padding-top: var(--app-table-header-padding-top, 3px);
-        padding-bottom: var(--app-table-header-padding-bottom, 8px);
-        padding-left: var(--app-table-header-padding-left, 0);
-        padding-right: var(--app-table-header-padding-right, 0);
+        background: var(--mat-table-background-color, var(--mat-sys-surface, #fdfbff));
+        padding: var(--mm-table-header-padding, 8px 0);
       }
 
       div.table-container {
@@ -69,7 +67,7 @@ import { ToolbarComponent } from './toolbar.component';
         div.table {
           display: flex;
           flex-direction: column;
-          background: var(--mat-table-background-color, #fdfbff);
+          background: var(--mat-table-background-color, var(--mat-sys-surface, #fdfbff));
           table-layout: auto;
           white-space: normal;
           min-width: 100%;
@@ -78,6 +76,12 @@ import { ToolbarComponent } from './toolbar.component';
           border-collapse: collapse;
           width: fit-content;
 
+          div.tfoot {
+            position: sticky;
+            bottom: 0;
+            z-index: 500;
+            background: inherit;
+          }
           div.thead {
             z-index: 500;
             padding-top: 10px;
@@ -135,6 +139,6 @@ import { ToolbarComponent } from './toolbar.component';
     }
   `,
 })
-export class TableComponent<T> {
-  readonly state = input.required<Table<T>>();
+export class TableComponent<T, TColumnName extends string = string> {
+  readonly state = input.required<Table<T, TColumnName>>();
 }

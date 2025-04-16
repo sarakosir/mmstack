@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { type Cell } from '@mmstack/table-core';
+import { type FooterCell } from '@mmstack/table-core';
 
 @Component({
   selector: 'mm-footer-cell',
@@ -9,13 +9,7 @@ import { type Cell } from '@mmstack/table-core';
     :host {
       padding: 0 16px;
       background: inherit;
-      border-bottom-color: var(
-        --mat-table-row-item-outline-color,
-        rgba(0, 0, 0, 0.12)
-      );
-      border-bottom-width: var(--mat-table-row-item-outline-width, 1px);
-      border-bottom-style: solid;
-      letter-spacing: var(--mat-table-row-item-label-text-tracking, 0.01625em);
+      letter-spacing: var(--mat-sys-body-medium-tracking,0.01625em);
       line-height: inherit;
       box-sizing: border-box;
       text-align: left;
@@ -30,10 +24,11 @@ import { type Cell } from '@mmstack/table-core';
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
+        font-weight: var(--mat-sys-title-small-weight, 500);
       }
     }
   `,
 })
-export class FooterCellComponent {
-  readonly state = input.required<Cell<string>>();
+export class FooterCellComponent<TColumnName extends string> {
+  readonly state = input.required<FooterCell<TColumnName>>();
 }

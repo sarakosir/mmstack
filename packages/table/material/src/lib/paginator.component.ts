@@ -72,13 +72,13 @@ import { PaginationFeature } from '@mmstack/table-core';
       display: block;
       -moz-osx-font-smoothing: grayscale;
       -webkit-font-smoothing: antialiased;
-      color: var(--mat-paginator-container-text-color, rgba(0, 0, 0, 0.87));
-      background: var(--mat-table-background-color, #fdfbff);
-      font-family: var(--mat-paginator-container-text-font, Roboto, sans-serif);
-      line-height: var(--mat-paginator-container-text-line-height, 1rem);
-      font-size: var(--mat-paginator-container-text-size, 0.75rem);
-      font-weight: var(--mat-paginator-container-text-weight, 400);
-      letter-spacing: var(--mat-paginator-container-text-tracking, 0.025rem);
+      color: var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87));
+      background: var(--mat-sys-surface, #fdfbff);
+      font-family: var(--mat-sys-body-small-font, Roboto, sans-serif);
+      line-height: var(--mat-sys-body-small-line-height, 1rem);
+      font-size: var(--mat-sys-body-small-size, 0.75rem);
+      font-weight: var(--mat-sys-body-small-weight, 400);
+      letter-spacing: var(--mat-sys-body-small-tracking, 0.025rem);
       --mat-form-field-container-height: var(
         --mat-paginator-form-field-container-height,
         40px
@@ -104,10 +104,10 @@ import { PaginationFeature } from '@mmstack/table-core';
           gap: 16px;
           align-items: center;
           justify-content: flex-end;
-          padding-left: var(--app-paginator-padding-left, 8px);
-          padding-right: var(--app-paginator-padding-right, 0);
-          padding-top: var(--app-paginator-padding-top, 16px);
-          padding-bottom: var(--app-paginator-padding-bottom, 0);
+          padding-left: var(--mm-paginator-padding-left, 8px);
+          padding-right: var(--mm-paginator-padding-right, 0);
+          padding-top: var(--mm-paginator-padding-top, 16px);
+          padding-bottom: var(--mm-paginator-padding-bottom, 0);
           flex-wrap: nowrap;
           width: 100%;
           min-height: var(--mat-paginator-container-size, 56px);
@@ -127,7 +127,7 @@ import { PaginationFeature } from '@mmstack/table-core';
 
               mat-select-trigger {
                 font-size: var(
-                  --mat-paginator-select-trigger-text-size,
+                  --mat-sys-body-small-size,
                   0.75rem
                 );
               }

@@ -3,33 +3,44 @@ import { Component, computed } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { queryResource } from '@mmstack/resource';
-import { clientRowModel } from '@mmstack/table-client';
-import { ColumnDef, createTable, createTableState, TableState } from '@mmstack/table-core';
+import { createClientModel } from '@mmstack/table-client';
+import { ColumnDef, createColumnHelper, createTable, createTableState, TableState } from '@mmstack/table-core';
 import { TableComponent } from '@mmstack/table-material';
+import { faker } from '@faker-js/faker';
+
+
+
 type EventDef = {
   id: string;
   name: string;
+  age: number;
+  test: {
+    id: string;
+    label: string;
+  }
 };
 
-const columns: ColumnDef<EventDef, string>[] = [
-  {
-    name: 'id',
-    header: () => 'ID',
-    accessor: (row) => row.id,
-  },
-  {
-    name: 'name',
-    header: () => 'Name',
-    accessor: (row) => row.name,
-  },
-];
 
-type Todo = {
+const col = createColumnHelper<EventDef>();
+
+const columns = [
+  col.accessor((e) => e.id, {
+    name: "id"
+  }),
+  col.accessor((e) => e.name, {
+    name: "name"
+  }),
+]
+
+
+
+type Post = {
   id: number;
   title: string;
+  body: string;
 };
 
-const todoColumns: ColumnDef<Todo, string | number>[] = [
+const todoColumns: ColumnDef<Post, string | number, "id" | "title" | "body">[] = [
   {
     name: 'id',
     header: () => 'ID',
@@ -41,7 +52,12 @@ const todoColumns: ColumnDef<Todo, string | number>[] = [
     header: () => 'Title',
     accessor: (row) => row.title,
     footer: () => "zaz"
-
+  },
+  {
+    name: 'body',
+    header: () => 'Body',
+    accessor: (row) => row.body,
+    footer: () => "zaz"
   },
 ];
 
@@ -52,6 +68,17 @@ function resolveSort({ sort }: TableState): string | null {
   return sort.direction === "desc" ? `-${sort.name}` : sort.name;
 }
 
+
+const VALUES = Array.from({length: 3000}, (_, i): Post => {
+
+  return {
+    id: i,
+    title: faker.person.firstName(),
+    body: `Body ${i}`,
+  }
+
+})
+
 @Component({
   selector: 'app-root',
   imports: [MatProgressBar, TableComponent, MatCardModule],
@@ -61,7 +88,7 @@ function resolveSort({ sort }: TableState): string | null {
       [style.visibility]="events.isLoading() ? 'visible' : 'hidden'"
     />
     <mat-card>
-      <mm-table [state]="table" />
+      <mm-table [state]="todoTable" />
     </mat-card>
   `,
   styles: `
@@ -72,7 +99,7 @@ function resolveSort({ sort }: TableState): string | null {
   `,
 })
 export class AppComponent {
-  readonly tableState = createTableState();
+  readonly tableState = createTableState(columns);
 
   readonly events = queryResource<EventDef[]>(
     () => {
@@ -100,26 +127,28 @@ export class AppComponent {
     },
   );
 
-  readonly todos = httpResource<Todo[]>(
-    'https://jsonplaceholder.typicode.com/todos',
+  readonly todos = httpResource<Post[]>(
+    'https://jsonplaceholder.typicode.com/posts',
     {
       defaultValue: [],
     },
   );
-  readonly todoState = createTableState();
+  readonly todoState = createTableState(todoColumns);
 
-  readonly todoTable = createTable<Todo>({
-    data: clientRowModel(this.todos.value, this.todoState, (row) => row.title),
+  readonly todoTable = createTable({
+    data: () => VALUES,
+    model: createClientModel(),
     columns: todoColumns,
     state: this.todoState,
     opt: {
-      pagination: {
-        total: computed(() => this.todos.value().length),
-      },
-    },
+      rowSelect: {
+        enableRowSelection: true
+      }
+    }
   });
 
-  readonly table = createTable<EventDef>({
+
+  readonly table = createTable({
     data: this.events.value,
     columns,
     state: this.tableState,

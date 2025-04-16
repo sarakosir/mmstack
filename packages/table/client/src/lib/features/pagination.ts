@@ -1,12 +1,14 @@
-import { computed, Signal, WritableSignal } from '@angular/core';
-import { TableState } from '@mmstack/table-core';
+import { computed, Signal } from '@angular/core';
+import { TableFeatures } from '@mmstack/table-core';
+import { Wrapped } from '../util';
 
-export function createPaginatedData<T>(
-  source: Signal<T[]>,
-  state: WritableSignal<TableState>,
-): Signal<T[]> {
 
-  const from = computed(() => state().pagination.page * state().pagination.pageSize);
-  const to = computed(() => (state().pagination.page + 1) * state().pagination.pageSize);
- return computed(() => source().slice(from(), to()));
+
+export function createPaginationModel<T, TColumnName extends string = string>() {
+  return (data: Signal<Wrapped<T, TColumnName>[]>, {pagination}: TableFeatures<T, TColumnName>) => {
+    const from = computed(() => pagination.page() * pagination.pageSize.value());
+    const to = computed(() => (pagination.page() + 1) * pagination.pageSize.value());
+
+    return computed(() => data().slice(from(), to()));
+  };
 }
