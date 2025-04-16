@@ -3,18 +3,24 @@ import { TableState } from '../table';
 import { WritableSignal } from '@angular/core';
 import { derived } from '@mmstack/primitives';
 
-export type GlobalFilteringFeature = StringState<TableState>
+export type GlobalFilteringFeature = StringState<TableState> & {
+  clear: () => void;
+}
 
 export type GlobalFilteringState = string;
 
-export type GlobalFilteringOptions = {
+export type GlobalFilteringOptions<T> = {
   label?: () => string;
+  toString?: (value: T) => string;
 }
 
 
-export function createGlobalFilter(state: WritableSignal<TableState>, opt?: GlobalFilteringOptions): GlobalFilteringFeature {
+export function createGlobalFilter<T>(state: WritableSignal<TableState>, opt?: GlobalFilteringOptions<T>): GlobalFilteringFeature {
   const filter = createStringState(derived(state, 'globalFilter'), {
     label: () => opt?.label?.() ?? 'Search',
   })
-  return filter;
+  return {
+    ...filter,
+    clear: () => filter.value.set('')
+  };
 }

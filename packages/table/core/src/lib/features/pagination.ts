@@ -3,7 +3,7 @@ import {
   isSignal,
   untracked,
   WritableSignal,
-  type Signal,
+  type Signal, signal
 } from '@angular/core';
 import { createSelectState, type SelectState } from '@mmstack/form-adapters';
 import { derived } from '@mmstack/primitives';
@@ -20,6 +20,7 @@ export type PaginationFeature = {
   fromTo: Signal<string>;
   showFirstLast: Signal<boolean>;
   perPage: Signal<string>;
+  setTotalSource: (total: Signal<number>) => void;
 };
 
 function defaultCreateTotalMessage(
@@ -67,7 +68,8 @@ export function createPaginationFeature(
 
   const currentLast = computed(() => (page() + 1) * pageSize.value());
 
-  const total = isSignal(opt.total) ? opt.total : computed(opt.total);
+  const totalSrc = signal(isSignal(opt.total) ? opt.total : computed(opt.total));
+  const total = computed(() => totalSrc()());
   const canNext = computed(() => currentLast() < total());
   const canPrevious = computed(() => page() > 0);
 
@@ -99,5 +101,8 @@ export function createPaginationFeature(
     ),
     showFirstLast: computed(() => opt.showFirstLast?.() ?? true),
     perPage: computed(perPageFn),
+    setTotalSource: (totalSrcFn) => {
+      totalSrc.set(totalSrcFn)
+    }
   };
 }

@@ -1,1 +1,1 @@
-export * from './lib/row-model';
+export * from './lib/model';
