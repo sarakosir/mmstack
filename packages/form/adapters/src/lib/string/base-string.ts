@@ -216,7 +216,7 @@ export function injectCreateStringState() {
     const resolvedError = computed(() => {
       const merger = mergedValidator();
 
-      return merger.resolve(state.error());
+      return merger.resolve(state.errorTooltip() || state.error());
     });
 
     return {

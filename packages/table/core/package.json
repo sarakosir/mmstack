@@ -3,7 +3,7 @@
   "version": "19.1.0",
   "dependencies": {
     "@mmstack/primitives": "^19.1.0",
-    "@mmstack/form-adapters": "^19.1.1",
+    "@mmstack/form-adapters": "^19.1.2",
     "uuid": "^11.1.0"
   },
   "peerDependencies": {

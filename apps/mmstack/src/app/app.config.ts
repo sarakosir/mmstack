@@ -91,27 +91,6 @@ export const appConfig: ApplicationConfig = {
                 min: (min) => `Mora biti po ${min}`,
                 max: (max) => `Mora biti pred ${max}`,
               },
-              merge: (errors) => {
-                const first = errors.at(0);
-
-                if (!first)
-                  return {
-                    error: '',
-                    tooltip: '',
-                  };
-
-                if (errors.length === 1) {
-                  return {
-                    error: first,
-                    tooltip: '',
-                  };
-                }
-
-                return {
-                  error: `${first}, +${errors.length} problemov`,
-                  tooltip: errors.join('\n'),
-                };
-              },
             };
           default:
             return;

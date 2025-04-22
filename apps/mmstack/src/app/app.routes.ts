@@ -1,5 +1,9 @@
 import { Route } from '@angular/router';
-import { HomeComponent } from './home.component';
+import { FormsPlaygroundComponent } from './forms.component';
 
 export const appRoutes: Route[] = [
+  {
+    path: 'forms',
+    component: FormsPlaygroundComponent,
+  },
 ];
