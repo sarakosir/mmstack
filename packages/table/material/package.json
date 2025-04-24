@@ -3,7 +3,8 @@
   "version": "19.1.0",
   "dependencies": {
     "@mmstack/table-core": "^19.1.0",
-    "@mmstack/form-material": "^19.1.0"
+    "@mmstack/form-material": "^19.1.0",
+    "@angular/cdk": "^19.2.6"
   },
   "peerDependencies": {
     "@angular/core": "~19.2.3",
